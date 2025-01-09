@@ -12,7 +12,7 @@ void GamePlayScene::Initialize()
 	//カメラの生成	
 	pCamera_ = new Camera();
 	pCamera_->SetRotate({ 0,0,0, });
-	pCamera_->SetTranslate({ 0,0,-50, });
+	pCamera_->SetTranslate({ 0,0,-50 });
 	Object3DCommon::GetInstance()->SetDefaultCamera(pCamera_);
 
 
@@ -87,7 +87,7 @@ void GamePlayScene::Update()
 			SceneManager::GetInstance()->ChangeScene("GAMEOVER");
 		}
 
-		ImGui::SliderFloat3("cameraPos", &cameraPos_.x, -70.0f, 70.0f);	
+		ImGui::SliderFloat3("cameraPos", &cameraPos_.x, -50.0f, 50.0f);	
 		ImGui::SliderFloat3("cameraRot", &cameraRot_.x, -3.0f, 3.0f);
 
 		pField_->ImGui();
