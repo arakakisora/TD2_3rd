@@ -9,6 +9,8 @@
 
 #include "SceneManager.h"
 
+#include "Field.h"
+
 class GamePlayScene :public BaseScene
 {
 public:
@@ -32,7 +34,16 @@ public:
 
 private:	
 
+	//カメラのポインタ
+	Camera* pCamera_ = nullptr;
+	Vector3 cameraPos_ = Vector3(0.0f, 0.0f, -5.0f);
+	Vector3 cameraRot_ = Vector3(0.0f, 0.0f, 0.0f);
 
+	// 3Dオブジェクト
+	std::vector<Object3D*> pFieldObject_ = {};
 
+	// Field
+	std::unique_ptr<Field> pField_ = nullptr;
+	
 };
 
