@@ -15,12 +15,12 @@ Input* Input::GetInstans()
 
 void Input::Finalize()
 {
-	delete instance;	
+	delete instance;
 	instance = nullptr;
 
 }
 
-void Input::Initialize(WinApp *winApp)
+void Input::Initialize(WinApp* winApp)
 {
 	winApp_ = winApp;
 	HRESULT hr;
@@ -28,7 +28,7 @@ void Input::Initialize(WinApp *winApp)
 	hr = DirectInput8Create(winApp->GetHInstance(), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&directInput, nullptr);
 	assert(SUCCEEDED(hr));
 	//キーボードデバイス生成
-	
+
 	hr = directInput->CreateDevice(GUID_SysKeyboard, &keyboard, NULL);
 	assert(SUCCEEDED(hr));
 	//入力データ形式のセット

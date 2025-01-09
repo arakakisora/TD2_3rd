@@ -40,7 +40,7 @@ void GamePlayScene::Finalize()
 	delete sampleCamera;
 	delete sampleObj3d;
 	delete sampleSprite;
-	
+
 
 }
 
@@ -53,14 +53,16 @@ void GamePlayScene::Update()
 	//スプライトの更新
 	sampleSprite->Update();
 
-	
+
 
 
 #ifdef _DEBUG
 
 	if (ImGui::CollapsingHeader("Scene", ImGuiTreeNodeFlags_DefaultOpen))
+
 	{
 		ImGui::Text("gamePlayScene %d");
+
 		if (ImGui::Button("GameClearScene"))
 		{
 			SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
@@ -73,8 +75,8 @@ void GamePlayScene::Update()
 
 	}
 
-	if (ImGui::CollapsingHeader("sumple", ImGuiTreeNodeFlags_DefaultOpen)){
-		
+	if (ImGui::CollapsingHeader("sumple", ImGuiTreeNodeFlags_DefaultOpen)) {
+
 		if (ImGui::CollapsingHeader("Object3d", ImGuiTreeNodeFlags_DefaultOpen)) {
 
 			Transform transform = sampleObj3d->GetTransform();
@@ -85,7 +87,7 @@ void GamePlayScene::Update()
 
 		}
 		if (ImGui::CollapsingHeader("Sprite", ImGuiTreeNodeFlags_DefaultOpen)) {
-		
+
 			Vector2 transform = sampleSprite->GetPosition();
 			Vector2 scale = sampleSprite->GetSize();
 
@@ -94,7 +96,7 @@ void GamePlayScene::Update()
 			ImGui::DragFloat2("*scale", &scale.x, 0.01f);
 			sampleSprite->SetPosition(transform);
 			sampleSprite->SetSize(scale);
-		
+
 		}
 		if (ImGui::CollapsingHeader("Sound", ImGuiTreeNodeFlags_DefaultOpen)) {
 
@@ -123,7 +125,7 @@ void GamePlayScene::Update()
 
 		}
 
-	
+
 	}
 #endif // _DEBUG
 }
