@@ -32,7 +32,13 @@ public:
 
 private:	
 
+	//サンプル
+	Camera* sampleCamera = nullptr;//カメラ
+	Object3D* sampleObj3d = nullptr;//3Dオブジェクト
+	Sprite* sampleSprite = nullptr;//スプライト
+	SoundData sampleSoundData;//サウンドデータ
 
-
+	//サウンド再生中かどうか
+	bool soundPlaying = false;
 };
 
