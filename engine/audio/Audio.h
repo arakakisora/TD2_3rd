@@ -74,6 +74,8 @@ public:
 	//再開
 	void ResumeAudio();
 
+	//再生速度の設定
+	void SetPlaybackSpeed(float speed);
 
 	//getter
 	IXAudio2* GetXAudio2() const { return xAudio2.Get(); }

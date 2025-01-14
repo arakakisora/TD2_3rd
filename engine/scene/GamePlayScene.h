@@ -30,7 +30,7 @@ public:
 	/// </summary>
 	void Draw()override;
 
-private:	
+private:
 
 	//サンプル
 	Camera* sampleCamera = nullptr;//カメラ
@@ -40,5 +40,6 @@ private:
 
 	//サウンド再生中かどうか
 	bool soundPlaying = false;
+	float playbackSpeed = 1.0f;
 };
 

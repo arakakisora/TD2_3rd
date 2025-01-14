@@ -197,6 +197,16 @@ void Audio::ResumeAudio()
 
 }
 
+void Audio::SetPlaybackSpeed(float speed)
+{
+	if (pSourceVoice) {
+		// 再生速度を設定 (1.0が通常速度、2.0が2倍速など)
+		HRESULT hr = pSourceVoice->SetFrequencyRatio(speed);
+		assert(SUCCEEDED(hr));
+	}
+
+}
+
 bool Audio::IsSoundPlaying() const
 {
 	if (pSourceVoice) {

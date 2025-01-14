@@ -122,6 +122,11 @@ void GamePlayScene::Update()
 				Audio::GetInstance()->ResumeAudio();
 			}
 
+			//再生速度の設定
+			
+			ImGui::SliderFloat("PlaybackSpeed", &playbackSpeed, 0.1f, 10.0f);
+			Audio::GetInstance()->SetPlaybackSpeed(playbackSpeed);
+
 
 		}
 
