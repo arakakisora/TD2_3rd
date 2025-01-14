@@ -3,6 +3,7 @@
 #include "MyMath.h"
 #include "TextureManager.h"
 #include "ModelManager.h"
+#include "CameraManager.h"
 
 
 
@@ -36,8 +37,9 @@ void Object3D::Initialize(Object3DCommon* object3DCommon)
 
 	//カメラとモデルのTrandform変数
 	transform = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f} ,{0.0f,0.0f,0.0f} };
-	
-	this->camera = object3DCommon->GetDefaultCamera();
+
+
+
 
 
 
@@ -48,9 +50,10 @@ void Object3D::Update()
 {
 
 	worldMatrix = MyMath::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+	Camera* activeCamera = CameraManager::GetInstans()->GetActiveCamera();
 
-	if (camera) {
-		const Matrix4x4& viewProjectionMatrix = camera->GetViewprojectionMatrix();
+	if (activeCamera) {
+		const Matrix4x4& viewProjectionMatrix = activeCamera->GetViewprojectionMatrix();
 		worldViewProjectionMatrix = worldMatrix * viewProjectionMatrix;
 	}
 	else {
