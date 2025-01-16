@@ -87,6 +87,8 @@ void Field::Draw()
 
 void Field::ImGui()
 {
+	ImGui::Text("type 2 : %.0f %.0f %.0f", GetBlockPosition(2).x, GetBlockPosition(2).y, GetBlockPosition(2).z);
+
 	for (int z = 0; z < DEPTH; z++)
 	{
 		for (int y = 0; y < HEIGHT; y++)

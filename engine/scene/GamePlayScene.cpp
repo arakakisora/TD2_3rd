@@ -48,7 +48,9 @@ void GamePlayScene::Finalize()
 		delete pFieldObject_;
 	}
 
+	CameraManager::GetInstans()->RemoveCamera("main");
 	delete pCamera_;
+
 }
 
 void GamePlayScene::Update()
@@ -58,8 +60,8 @@ void GamePlayScene::Update()
 
 	pField_->Update();
 
-	pCamera_->SetTranslate(cameraPos_);
-	pCamera_->SetRotate(cameraRot_);
+	CameraManager::GetInstans()->GetActiveCamera()->SetTranslate(cameraPos_);
+	CameraManager::GetInstans()->GetActiveCamera()->SetRotate(cameraRot_);
 	
 	// ゴール判定
 	if (pField_->IsGoal())
@@ -74,22 +76,22 @@ void GamePlayScene::Update()
 	prePos_ = pField_->GetBlockPosition(2);
 	
 	// 仮置きクリア(右端のtypeが変わったらゴール)
-	if (Input::GetInstans()->TriggerKey(DIK_RIGHT) && prePos_.x >= 0)
+	if (Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x >= 0 && (int)prePos_.x <= WIDTH - 1)
 	{
 		pField_->SetBlockType((int)prePos_.x + 1, (int)prePos_.y, (int)prePos_.z, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
-	if (Input::GetInstans()->TriggerKey(DIK_LEFT) && prePos_.x <= WIDTH)
+	if (Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 1 && (int)prePos_.x <= WIDTH - 1)
 	{
 		pField_->SetBlockType((int)prePos_.x - 1, (int)prePos_.y, (int)prePos_.z, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
-	if (Input::GetInstans()->TriggerKey(DIK_UP) && prePos_.y <= HEIGHT)
+	if (Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.y <= HEIGHT - 1)
 	{
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y + 1, (int)prePos_.z, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
-	if (Input::GetInstans()->TriggerKey(DIK_DOWN) && prePos_.y >= 0)
+	if (Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.y >= 0)
 	{
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y - 1, (int)prePos_.z, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
