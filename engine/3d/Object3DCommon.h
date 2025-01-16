@@ -9,7 +9,7 @@ public:
 	static Object3DCommon* GetInstance();
 
 
-	
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -20,7 +20,7 @@ public:
 
 	//共通描画設定
 	void CommonDraw();
-	
+
 	//ルートシグネチャの作成
 	void RootSignatureInitialize();
 	//グラフィックスパイプライン
@@ -29,8 +29,8 @@ public:
 	//DXCommon
 	DirectXCommon* GetDxCommon()const { return dxCommon_; }
 
-	void SetDefaultCamera(Camera* camera) { this->defaultCamera = camera; }
-	Camera* GetDefaultCamera()const { return defaultCamera; }
+	//void SetDefaultCamera(Camera* camera) { this->defaultCamera = camera; }
+	//Camera* GetDefaultCamera()const { return defaultCamera; }
 
 private:
 

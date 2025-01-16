@@ -41,9 +41,9 @@ public:
 	//位置
 	void SetTranslate(const Vector3& transrate) { transform.translate = transrate; }
 	//カメラ
-	void SetCamera(Camera* camera) { this->camera = camera; }
-	//デフォルトカメラ
-	
+	//void SetCamera(Camera* camera) { this->camera = camera; }
+	////デフォルトカメラ
+
 
 private:
 	Object3DCommon* object3DCommon_ = nullptr;
@@ -70,7 +70,7 @@ private:
 	Matrix4x4 worldViewProjectionMatrix;
 
 	Camera* camera = nullptr;
-	
+
 
 
 
