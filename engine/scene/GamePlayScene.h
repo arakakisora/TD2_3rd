@@ -31,7 +31,6 @@ public:
 	void Draw()override;
 
 private:	
-
 	// Player
 	Player* player;
 
