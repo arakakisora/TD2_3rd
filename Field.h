@@ -69,6 +69,9 @@ public: // ゲッター
 		return Vector3(0, 0, 0);
 	};
 
+	// ゲームオーバーフラグ
+	bool IsGameOver() const { return isGameOver_; }
+
 private: // 構造体	
 
 	struct Block
@@ -85,5 +88,10 @@ private:
 	// ゴールフラグ
 	bool isGoal_ = false;
 
-};
+	// ボールの位置
+	Vector3 ballPos_ = { 0,0,0 };
 
+	// ゲームオーバーフラグ
+	bool isGameOver_ = false;
+
+};
