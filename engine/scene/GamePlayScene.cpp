@@ -83,32 +83,54 @@ void GamePlayScene::Update()
 
 
 	// ------------テスト----------------
-	
+	// ボールの位置テスト
 	prePos_ = pField_->GetBlockPosition(2);
 	
-	// 仮置きクリア(右端のtypeが変わったらゴール)
-	if (Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x >= 0 && (int)prePos_.x <= WIDTH - 1)
+	// パス
+	if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x <= WIDTH - 3)
+	{
+		pField_->SetBlockType((int)prePos_.x + 2, (int)prePos_.y, (int)prePos_.z, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	}
+	else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 2)
+	{
+		pField_->SetBlockType((int)prePos_.x - 2, (int)prePos_.y, (int)prePos_.z, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	}
+	else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.y <= HEIGHT - 3)
+	{
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y + 2, (int)prePos_.z, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	}
+	else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.y >= 2)
+	{
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y - 2, (int)prePos_.z, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	}
+
+	// ドリブル
+	else if (Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x >= 0 && (int)prePos_.x <= WIDTH - 2)
 	{
 		pField_->SetBlockType((int)prePos_.x + 1, (int)prePos_.y, (int)prePos_.z, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
-	if (Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 1 && (int)prePos_.x <= WIDTH - 1)
+	else if (Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 1 && (int)prePos_.x <= WIDTH-1)
 	{
 		pField_->SetBlockType((int)prePos_.x - 1, (int)prePos_.y, (int)prePos_.z, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
-	if (Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.y <= HEIGHT - 1)
+	else if (Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.y >= 0 && (int)prePos_.y <= HEIGHT - 2)
 	{
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y + 1, (int)prePos_.z, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
-	if (Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.y >= 0)
+	else if (Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.y >= 1 && (int)prePos_.y <= HEIGHT-1)
 	{
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y - 1, (int)prePos_.z, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
 
-
+	
 
 #ifdef _DEBUG
 
