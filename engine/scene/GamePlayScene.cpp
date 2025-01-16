@@ -10,6 +10,13 @@
 
 void GamePlayScene::Initialize()
 {
+
+
+	//Playerの初期化
+	player = new Player();
+	player->Initialize();
+	
+
 	//カメラの生成	
 	pCamera_ = new Camera();
 	pCamera_->SetRotate({ 0,0,0, });
@@ -41,6 +48,9 @@ void GamePlayScene::Initialize()
 
 void GamePlayScene::Finalize()
 {
+	player->Finalize();
+	delete player;
+
 
 	pField_->Finalize();
 	for (auto pFieldObject_ : pFieldObject_)
@@ -53,6 +63,7 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update()
 {
+	player->Update();
 	//カメラの更新
 	CameraManager::GetInstans()->GetActiveCamera()->Update();
 
@@ -72,7 +83,6 @@ void GamePlayScene::Update()
 	{
 		pField_->SetBlockType(6, 0, 0, 99);	 // 右端の typeを99に変更( 1 以外ならなんでもいい)
 	}
-
 
 #ifdef _DEBUG
 
@@ -104,6 +114,7 @@ void GamePlayScene::Draw()
 	//3dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
 	Object3DCommon::GetInstance()->CommonDraw();
 
+	//player->Draw();
 	pField_->Draw();
 
 #pragma endregion
