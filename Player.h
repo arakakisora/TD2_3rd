@@ -16,13 +16,16 @@ public:
 	void Draw();
 	// 終了
 	void Finalize();
-	// 移動前のチェック
-	void MoveBeforeCheck();
+
 private:
 	Model* model;
-	Object3D* object3D;
+	Object3D* object3D_;
 
-	// プレイヤーの一手前の位置
+	// プレイヤーの一手前の位置リスト
+	std::vector<Vector2>beforePosition;
+	const int ThousendDaysHand = 2;
+	Vector3 preBeforePos;
+	Vector3 postBeforePos;
 
 
 };
