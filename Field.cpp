@@ -13,6 +13,12 @@ void Field::Initialize(std::vector<Object3D*> object3D)
 				pBlocks_[z][y][x].object3D.SetTranslate(Vector3(float(x) - 3, float(y) - 2, float(z)));
 				pBlocks_[z][y][x].object3D.SetScale(Vector3(0.3f, 0.3f, 0.3f));
 				pBlocks_[z][y][x].type = 0;
+			
+				// ゴールの位置Typeを1にしてる(仮置き)
+				if (x == 6)
+				{
+					pBlocks_[z][y][x].type = 1;
+				}
 			}
 		}
 	}
@@ -32,15 +38,18 @@ void Field::Update()
 			{
 				pBlocks_[z][y][x].object3D.Update();
 
-				if (x == 0 or x == 6)
-				{
-					pBlocks_[z][y][x].type = 1;
-				}
-
+				// ゴール位置(とりあえずでっかくしてる)
 				if (pBlocks_[z][y][x].type == 1)
 				{
 					pBlocks_[z][y][x].object3D.SetScale(Vector3(0.8f, 0.8f, 0.8f));
 				}
+
+				// ゴール判定  右端のtypeが1以外ならゴール
+				if (pBlocks_[z][y][6].type != 1)
+				{
+					isGoal_ = true;
+				}
+
 			}
 		}
 	}

@@ -36,19 +36,6 @@ void GamePlayScene::Initialize()
 	pField_ = std::make_unique<Field>();
 	pField_->Initialize(pFieldObject_);
 
-	
-	for (int y = 0; y < 5; y++)
-	{
-		for (int x = 0; x < 7; x++)
-		{
-			if (x == 0 or x == 6)
-			{
-				pField_->SetBlockType(x, y, 0, 1);
-			}
-		}
-	}
-	
-
 }
 
 void GamePlayScene::Finalize()
@@ -73,6 +60,19 @@ void GamePlayScene::Update()
 	pCamera_->SetTranslate(cameraPos_);
 	pCamera_->SetRotate(cameraRot_);
 	
+	// ゴール判定
+	if (pField_->IsGoal())
+	{
+		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+	}
+
+	// 仮置きクリア(右端のtypeが変わったらゴール)
+	if (Input::GetInstans()->TriggerKey(DIK_RIGHT))
+	{
+		pField_->SetBlockType(6, 0, 0, 99);	 // 右端の typeを99に変更( 1 以外ならなんでもいい)
+	}
+
+
 #ifdef _DEBUG
 
 	if (ImGui::CollapsingHeader("Model", ImGuiTreeNodeFlags_DefaultOpen))
@@ -93,8 +93,6 @@ void GamePlayScene::Update()
 		pField_->ImGui();
 	}
 
-
-
 #endif // _DEBUG
 }
 
@@ -111,12 +109,10 @@ void GamePlayScene::Draw()
 
 
 #pragma region スプライト描画
+
 	//Spriteの描画準備。spriteの描画に共通のグラフィックスコマンドを積む
 	SpriteCommon::GetInstance()->CommonDraw();
 
 #pragma endregion
-
-
-
 
 }

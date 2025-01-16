@@ -44,6 +44,8 @@ public: // ゲッター
         return -1; // 無効なブロックを返す
     }
 
+	bool IsGoal() const { return isGoal_; }
+
 private: // 構造体	
 
 	struct Block
@@ -56,6 +58,9 @@ private:
 
 	// ブロックの配列
 	std::array<std::array<std::array<Block, WIDTH>, HEIGHT>, DEPTH> pBlocks_;
+
+	// ゴールフラグ
+	bool isGoal_ = false;
 
 };
 
