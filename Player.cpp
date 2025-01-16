@@ -11,8 +11,8 @@ Player::~Player()
 void Player::Initialize()
 {
 	// カメラの初期化
-	camera = new Camera();
-	camera->SetTranslate(Vector3(0.0f, 0.0f, -5.0f));
+	//camera = new Camera();
+	//camera->SetTranslate(Vector3(0.0f, 0.0f, -5.0f));
 	//CameraMaanager::GetInstance()->SetCamera(camera);
 	// プレイヤーの初期化
 

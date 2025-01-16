@@ -30,6 +30,6 @@ private:
 		Vector3 scale;
 	};
 	PlayerData playerData;
-	Camera* camera;
+	//Camera* camera;
 };
 
