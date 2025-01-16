@@ -12,22 +12,19 @@ void GamePlayScene::Initialize()
 	
 
 
-	//Playerの初期化
-	player = new Player();
-	player->Initialize();
+	
 	
 
 }
 
 void GamePlayScene::Finalize()
 {
-	player->Finalize();
-	delete player;
+	
 }
 
 void GamePlayScene::Update()
 {
-	player->Update();
+	
 
 #ifdef _DEBUG
 
@@ -55,7 +52,7 @@ void GamePlayScene::Draw()
 	//3dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
 	Object3DCommon::GetInstance()->CommonDraw();
 
-	//player->Draw();
+	
 #pragma endregion
 
 
