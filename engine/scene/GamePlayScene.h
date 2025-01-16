@@ -6,7 +6,7 @@
 #include "Object3D.h"
 #include "Audio.h"
 #include "BaseScene.h"
-
+#include"Player.h"
 #include "SceneManager.h"
 
 class GamePlayScene :public BaseScene
@@ -32,6 +32,8 @@ public:
 
 private:	
 
+	// Player
+	Player* player;
 
 
 };

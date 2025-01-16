@@ -3,6 +3,8 @@
 #include "ModelManager.h"
 #include "Input.h"
 #include "Object3D.h"
+#include "Object3DCommon.h"
+#include "Camera.h"
 class Player
 {
 public:
@@ -21,12 +23,13 @@ private:
 	Model* model;
 	Object3D* object3D_;
 
-	// プレイヤーの一手前の位置リスト
-	std::vector<Vector2>beforePosition;
-	const int ThousendDaysHand = 2;
-	Vector3 preBeforePos;
-	Vector3 postBeforePos;
-
-
+	struct PlayerData
+	{
+		Vector3 position;
+		Vector3 rotate;
+		Vector3 scale;
+	};
+	PlayerData playerData;
+	Camera* camera;
 };
 
