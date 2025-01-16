@@ -37,7 +37,9 @@ void GamePlayScene::Initialize()
 
 	//エネミー
 	enemy_ = std::make_unique<Enemy>();
+	enemy_->SetField(pField_.get());
 	enemy_->Initialize(Object3DCommon::GetInstance(), "cube.obj");
+	
 }
 
 void GamePlayScene::Finalize()
