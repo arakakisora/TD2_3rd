@@ -20,7 +20,6 @@ void GamePlayScene::Initialize()
 	ModelManager::GetInstans()->LoadModel("cube.obj");
 
 	// フィールド
-
 	for (int y = 0; y < 5; y++)
 	{
 		for (int x = 0; x < 7; x++)
@@ -36,6 +35,9 @@ void GamePlayScene::Initialize()
 	pField_ = std::make_unique<Field>();
 	pField_->Initialize(pFieldObject_);
 
+	//エネミー
+	enemy_ = std::make_unique<Enemy>();
+	enemy_->Initialize(Object3DCommon::GetInstance(), "cube.obj");
 }
 
 void GamePlayScene::Finalize()
@@ -59,6 +61,9 @@ void GamePlayScene::Update()
 
 	pCamera_->SetTranslate(cameraPos_);
 	pCamera_->SetRotate(cameraRot_);
+
+	//エネミーの更新
+	enemy_->Update();
 	
 	// ゴール判定
 	if (pField_->IsGoal())
@@ -104,6 +109,9 @@ void GamePlayScene::Draw()
 	Object3DCommon::GetInstance()->CommonDraw();
 
 	pField_->Draw();
+
+	//エネミーの描画
+	enemy_->Draw();
 
 #pragma endregion
 
