@@ -38,8 +38,8 @@ private:
 
 	//カメラのポインタ
 	Camera* pCamera_ = nullptr;
-	Vector3 cameraPos_ = Vector3(0.0f, 0.0f, -20.0f);
-	Vector3 cameraRot_ = Vector3(0.0f, 0.0f, 0.0f);
+	Vector3 cameraPos_ = Vector3(0.0f, -20.0f, 0.0f);
+	Vector3 cameraRot_ = Vector3(-1.5f, 0.0f, 0.0f);
 
 
 	// 3Dオブジェクト
@@ -48,5 +48,9 @@ private:
 	// Field
 	std::unique_ptr<Field> pField_ = nullptr;
 	
+
+	// テスト用
+	Vector3 prePos_{};
+
 };
 
