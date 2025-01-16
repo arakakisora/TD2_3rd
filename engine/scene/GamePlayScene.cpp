@@ -2,6 +2,7 @@
 #include <ModelManager.h>
 #include "Object3DCommon.h"
 #include "SpriteCommon.h"
+#include "CameraManager.h"
 #include "ImGuiManager.h"
 #include <imgui.h>
 #include "Input.h"
@@ -12,8 +13,8 @@ void GamePlayScene::Initialize()
 	//カメラの生成	
 	pCamera_ = new Camera();
 	pCamera_->SetRotate({ 0,0,0, });
-	pCamera_->SetTranslate({ 0,0,-50 });
-	Object3DCommon::GetInstance()->SetDefaultCamera(pCamera_);
+	pCamera_->SetTranslate({ 0,0,-20 });
+	CameraManager::GetInstans()->AddCamera("main", pCamera_);
 
 
 	// 3Dオブジェクト
@@ -53,7 +54,7 @@ void GamePlayScene::Finalize()
 void GamePlayScene::Update()
 {
 	//カメラの更新
-	pCamera_->Update();
+	CameraManager::GetInstans()->GetActiveCamera()->Update();
 
 	pField_->Update();
 
