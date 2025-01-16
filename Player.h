@@ -5,20 +5,23 @@
 #include "Object3D.h"
 #include "Object3DCommon.h"
 #include "Camera.h"
+#include "input.h"
+
 class Player
 {
 public:
 	Player();
 	~Player();
 	// 初期化
-	void Initialize();
+	void Initialize(int posZ);
 	// 更新
 	void Update();
 	// 描画
 	void Draw();
 	// 終了
 	void Finalize();
-
+	// 移動
+	void Move(int WIDTH, int DEPTH);
 private:
 	Model* model;
 	Object3D* object3D_;
@@ -31,5 +34,8 @@ private:
 	};
 	PlayerData playerData;
 	//Camera* camera;
+	int posX = -3;
+	int posY = 0;
+	int posZ ;
 };
 

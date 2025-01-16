@@ -14,7 +14,7 @@ void GamePlayScene::Initialize()
 
 	//Playerの初期化
 	player = new Player();
-	player->Initialize();
+	player->Initialize(0);
 	
 
 	//カメラの生成	
@@ -162,8 +162,8 @@ void GamePlayScene::Draw()
 	//3dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
 	Object3DCommon::GetInstance()->CommonDraw();
 
-	player->Draw();
 	pField_->Draw();
+	player->Draw();
 
 #pragma endregion
 
