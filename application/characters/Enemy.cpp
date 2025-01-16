@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include <algorithm>
 
 void Enemy::Initialize(Object3DCommon* objectCommon, const std::string& filename)
 {
@@ -18,9 +19,52 @@ void Enemy::Update()
 	ImGui::End();
 #endif
 
+	// 入力処理
+	HandleInput();
 
+	// 移動処理
+	UpdateEasingMovement();
+
+	// 3Dオブジェクトの更新
+	UpdateTransform();
+}
+
+void Enemy::Draw()
+{
+	// 3Dオブジェクトの描画
+	object3D_->Draw();
+}
+
+void Enemy::Move(Vector3 distance)
+{
+	// 移動中は移動を受け付けない
+    if (isEaseStart_) { return; }
+
+	Vector3 newPosition = transform_.translate + distance;
+
+    // マップの範囲内か確認
+    if (newPosition.x >= 0 && newPosition.x < WIDTH && newPosition.y >= 0 && newPosition.y < HEIGHT)
+    {
+        // 進む先のブロックのtypeが0なら進む
+        if (field_->GetBlockType((int)newPosition.x, (int)newPosition.y, 0) == 0)
+        {
+        	// 現在の位置を記録
+            moveStartPosition_ = transform_.translate;
+			// 目標位置を設定
+            moveTargetPosition_ = newPosition;
+			// 移動開始
+            moveProgress_ = 0.0f;
+			isEaseStart_ = true;
+        }
+    }
+}
+
+void Enemy::HandleInput()
+{
+	// 移動ベクトルの初期化
     Vector3 distance{ 0.0f, 0.0f, 0.0f };
 
+    // キー入力の確認
     if (Input::GetInstans()->TriggerKey(DIK_W))
     {
         distance.y += 1.0f;
@@ -43,28 +87,17 @@ void Enemy::Update()
     {
         Move(distance);
     }
-	// 3Dオブジェクトの更新
-	UpdateTransform();
 }
 
-void Enemy::Draw()
+void Enemy::UpdateEasingMovement()
 {
-	// 3Dオブジェクトの描画
-	object3D_->Draw();
-}
-
-void Enemy::Move(Vector3 distance)
-{
-	Vector3 newPosition = transform_.translate + distance;
-
-    // マップの範囲内か確認
-    if (newPosition.x >= 0 && newPosition.x < WIDTH && newPosition.y >= 0 && newPosition.y < HEIGHT)
-    {
-        // 進む先のブロックのtypeが0なら進む
-        if (field_->GetBlockType((int)newPosition.x, (int)newPosition.y, 0) == 0)
-        {
-			transform_.translate = newPosition;
-			transform_.translate.z = -2.0f;
+    if (isEaseStart_) {
+        // 移動中の場合、イージングを適用して現在の位置を更新
+        moveProgress_ += 1.0f / 60.0f * 2.0f;
+        moveProgress_ = (std::min)(moveProgress_, 1.0f);
+        transform_.translate = moveStartPosition_ + (moveTargetPosition_ - moveStartPosition_) * EaseInSine(moveProgress_);
+        if (moveProgress_ >= 1.0f) {
+            isEaseStart_ = false;
         }
     }
 }

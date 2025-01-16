@@ -1,6 +1,10 @@
 #pragma once
 #include "Field.h"
 #include "Object3D.h"
+#include <numbers>
+#include <cmath>
+
+inline float EaseInSine(float x) { return 1.0f - std::cos((x * std::numbers::pi_v<float>) / 2.0f); }
 
 class Enemy
 {
@@ -29,18 +33,37 @@ public: //アクセッサ
 	void SetField(Field* field) { field_ = field; }
 
 private:
+
+	// 入力処理
+	void HandleInput();
+
+	// イージングによる移動更新
+	void UpdateEasingMovement();
+
 	//トランスフォームを３Dオブジェクトに適用する
 	void UpdateTransform();
 
 private:
+	//フィールド
+	Field* field_ = nullptr;
+
 	// 3Dオブジェクト
 	std::unique_ptr<Object3D> object3D_;
 
 	//トランスフォーム
 	Transform transform_ = { { 0.5f,0.5f,0.5f }, { 0.0f,0.0f,0.0f }, {} };
 
+	//移動経過時間
 	float moveTimer_ = 0.0f;
+	//移動間隔
 	const float moveInterval_ = 2.0f;
-	Field* field_ = nullptr;
+
+	// 移動開始位置と目標位置
+	Vector3 moveStartPosition_;
+	Vector3 moveTargetPosition_;
+	// 移動の進行度
+	float moveProgress_ = 1.0f;
+	//イージングの開始フラグ
+	bool isEaseStart_ = false;
 };
 
