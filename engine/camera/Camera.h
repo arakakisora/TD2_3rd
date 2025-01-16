@@ -24,6 +24,7 @@ public:
 	const Matrix4x4& GetProjextionMatrix()const { return projectionMatrix; }
 	const Matrix4x4& GetViewprojectionMatrix()const { return viewProjectionMatrix; }
 	const Transform& GetTransform()const { return transform; }
+	
 
 private:
 	

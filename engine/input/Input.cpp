@@ -3,6 +3,9 @@
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
 
+#include "CameraManager.h"
+#include "MyMath.h"
+
 Input* Input::instance = nullptr;
 
 Input* Input::GetInstans()
@@ -113,3 +116,34 @@ bool Input::TriggerMouse(int buttonNumber)
 	}
 	return false;
 }
+
+
+
+Vector3 Input::GetMouseWorldPosition() {
+	const Vector2& mousePos = GetMousePos();
+
+	// アクティブカメラを取得
+	Camera* activeCamera = CameraManager::GetInstans()->GetActiveCamera();
+	if (!activeCamera) {
+		return Vector3(0, 0, 0); // カメラが存在しない場合
+	}
+
+	// カメラ行列を取得
+	const Matrix4x4& viewProjectionMatrix = activeCamera->GetViewprojectionMatrix();
+
+	// ウィンドウサイズを取得
+	float windowWidth = static_cast<float>(WinApp::kClientWindth);
+	float windowHeight = static_cast<float>(WinApp::kClientHeight);
+
+	// マウス位置を正規化デバイス座標 (NDC) に変換
+	float ndcX = (2.0f * mousePos.x / windowWidth) - 1.0f;
+	float ndcY = 1.0f - (2.0f * mousePos.y / windowHeight); // Y座標を反転
+
+	// クリップ空間座標をワールド空間に変換
+	Vector3 clipSpacePos(ndcX, ndcY, 1.0f);
+	Matrix4x4 invViewProjectionMatrix = viewProjectionMatrix.Inverse();
+	return MyMath::Transform(clipSpacePos, invViewProjectionMatrix);
+}
+
+
+

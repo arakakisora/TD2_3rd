@@ -7,6 +7,7 @@
 #include "WinApp.h"
 #include <Vector2.h>
 #include <array>
+#include <Vector3.h>
 template <class T>using ComPtr = Microsoft::WRL::ComPtr<T>;
 class Input
 {
@@ -58,6 +59,8 @@ public:
 
 	//	return mouse.lZ;
 	//};
+	// Input.h
+	Vector3 GetMouseWorldPosition();
 
 
 
