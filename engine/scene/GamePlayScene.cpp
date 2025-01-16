@@ -6,14 +6,15 @@
 #include <imgui.h>
 #include "Input.h"
 #include "TitleScene.h"
+#include "CameraManager.h"
 
 void GamePlayScene::Initialize()
 {
 	//カメラの生成
 	sampleCamera = new Camera();
 	sampleCamera->SetTranslate({ 0,0,-10, });//カメラの位置
-	Object3DCommon::GetInstance()->SetDefaultCamera(sampleCamera);//defaultカメラの設定
-
+	CameraManager::GetInstans()->AddCamera("samplecam", sampleCamera);
+	
 
 	//モデルの読み込み
 	ModelManager::GetInstans()->LoadModel("cube.obj");
@@ -47,7 +48,7 @@ void GamePlayScene::Finalize()
 void GamePlayScene::Update()
 {
 	//カメラの更新
-	sampleCamera->Update();
+	CameraManager::GetInstans()->GetActiveCamera()->Update();
 	//3Dオブジェクトの更新
 	sampleObj3d->Update();
 	//スプライトの更新
