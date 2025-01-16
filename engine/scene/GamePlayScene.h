@@ -45,5 +45,9 @@ private:
 	// Field
 	std::unique_ptr<Field> pField_ = nullptr;
 	
+
+	// テスト用
+	Vector3 prePos_{};
+
 };
 
