@@ -19,10 +19,10 @@ void Player::Initialize()
 	playerData.position = Vector3(0.0f, 0.0f, -5.0f);
 	playerData.rotate = Vector3(0.0f, 0.0f, 0.0f);
 	playerData.scale = Vector3(1.0f, 1.0f, 1.0f);
-	ModelManager::GetInstans()->LoadModel("Player.obj");
+	ModelManager::GetInstans()->LoadModel("cube.obj");
 	// モデルの生成
 	object3D_ = new Object3D;
-	object3D_->SetModel("Player.obj");
+	object3D_->SetModel("cube.obj");
 	object3D_->Initialize(Object3DCommon::GetInstance());
 	object3D_->SetTranslate(playerData.position);
 	object3D_->SetRotate(playerData.rotate);
