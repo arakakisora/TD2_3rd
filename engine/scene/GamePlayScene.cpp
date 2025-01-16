@@ -29,7 +29,7 @@ void GamePlayScene::Initialize()
 
 	// フィールド
 
-	for (int y = 0; y < 5; y++)
+	for (int z = 0; z < 5; z++)
 	{
 		for (int x = 0; x < 7; x++)
 		{
@@ -97,14 +97,14 @@ void GamePlayScene::Update()
 		pField_->SetBlockType((int)prePos_.x - 2, (int)prePos_.y, (int)prePos_.z, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
-	else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.y <= HEIGHT - 3)
+	else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.z >= 2)
 	{
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y + 2, (int)prePos_.z, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z - 2, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
-	else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.y >= 2)
+	else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.z <= DEPTH - 3)
 	{
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y - 2, (int)prePos_.z, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z + 2, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
 
@@ -119,14 +119,14 @@ void GamePlayScene::Update()
 		pField_->SetBlockType((int)prePos_.x - 1, (int)prePos_.y, (int)prePos_.z, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
-	else if (Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.y >= 0 && (int)prePos_.y <= HEIGHT - 2)
+	else if (Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.z >= 1 && (int)prePos_.z <= DEPTH - 1)
 	{
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y + 1, (int)prePos_.z, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z - 1, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
-	else if (Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.y >= 1 && (int)prePos_.y <= HEIGHT-1)
+	else if (Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.z >= 0 && (int)prePos_.z <= DEPTH - 2)
 	{
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y - 1, (int)prePos_.z, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z + 1, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
 
