@@ -35,6 +35,7 @@ public: // セッター
 
 public: // ゲッター
 
+	// ブロックの種類
     uint32_t GetBlockType(int x, int y, int z) const 
     {
         if (z >= 0 && z < DEPTH && y >= 0 && y < HEIGHT && x >= 0 && x < WIDTH) 
@@ -44,7 +45,29 @@ public: // ゲッター
         return -1; // 無効なブロックを返す
     }
 
+	// ゴールフラグ
 	bool IsGoal() const { return isGoal_; }
+
+	// 特定の種類の位置を取得
+	Vector3 GetBlockPosition(uint32_t type) const
+	{
+		for (int z = 0; z < DEPTH; z++)
+		{
+			for (int y = 0; y < HEIGHT; y++)
+			{
+				for (int x = 0; x < WIDTH; x++)
+				{
+					if (pBlocks_[z][y][x].type == type)
+					{
+						Vector3 pos = { (float)x,(float)y, (float)z };
+
+						return pos;
+					}
+				}
+			}
+		}
+		return Vector3(0, 0, 0);
+	};
 
 private: // 構造体	
 

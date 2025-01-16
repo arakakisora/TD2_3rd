@@ -78,11 +78,35 @@ void GamePlayScene::Update()
 		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
 	}
 
+
+
+	// ------------テスト----------------
+	
+	prePos_ = pField_->GetBlockPosition(2);
+	
 	// 仮置きクリア(右端のtypeが変わったらゴール)
-	if (Input::GetInstans()->TriggerKey(DIK_RIGHT))
+	if (Input::GetInstans()->TriggerKey(DIK_RIGHT) && prePos_.x >= 0)
 	{
-		pField_->SetBlockType(6, 0, 0, 99);	 // 右端の typeを99に変更( 1 以外ならなんでもいい)
+		pField_->SetBlockType((int)prePos_.x + 1, (int)prePos_.y, (int)prePos_.z, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
+	if (Input::GetInstans()->TriggerKey(DIK_LEFT) && prePos_.x <= WIDTH)
+	{
+		pField_->SetBlockType((int)prePos_.x - 1, (int)prePos_.y, (int)prePos_.z, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	}
+	if (Input::GetInstans()->TriggerKey(DIK_UP) && prePos_.y <= HEIGHT)
+	{
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y + 1, (int)prePos_.z, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	}
+	if (Input::GetInstans()->TriggerKey(DIK_DOWN) && prePos_.y >= 0)
+	{
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y - 1, (int)prePos_.z, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	}
+
+
 
 #ifdef _DEBUG
 
