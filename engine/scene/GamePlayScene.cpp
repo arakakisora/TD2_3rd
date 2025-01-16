@@ -10,6 +10,13 @@
 
 void GamePlayScene::Initialize()
 {
+
+
+	//Playerの初期化
+	player = new Player();
+	player->Initialize();
+	
+
 	//カメラの生成	
 	pCamera_ = new Camera();
 	pCamera_->SetRotate({ 0,0,0, });
@@ -22,7 +29,7 @@ void GamePlayScene::Initialize()
 
 	// フィールド
 
-	for (int y = 0; y < 5; y++)
+	for (int z = 0; z < 5; z++)
 	{
 		for (int x = 0; x < 7; x++)
 		{
@@ -41,6 +48,9 @@ void GamePlayScene::Initialize()
 
 void GamePlayScene::Finalize()
 {
+	player->Finalize();
+	delete player;
+
 
 	pField_->Finalize();
 	for (auto pFieldObject_ : pFieldObject_)
@@ -55,6 +65,7 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update()
 {
+	player->Update();
 	//カメラの更新
 	CameraManager::GetInstans()->GetActiveCamera()->Update();
 
@@ -97,6 +108,34 @@ void GamePlayScene::Update()
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
 
+
+
+	// ------------テスト----------------
+	// ボールの位置テスト
+	prePos_ = pField_->GetBlockPosition(2);
+	
+	// パス
+	if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x <= WIDTH - 3)
+	{
+		pField_->SetBlockType((int)prePos_.x + 2, (int)prePos_.y, (int)prePos_.z, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	}
+	else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 2)
+	{
+		pField_->SetBlockType((int)prePos_.x - 2, (int)prePos_.y, (int)prePos_.z, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	}
+	else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.z >= 2)
+	{
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z - 2, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	}
+	else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.z <= DEPTH - 3)
+	{
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z + 2, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	}
+
 	// ドリブル
 	else if (Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x >= 0 && (int)prePos_.x <= WIDTH - 2)
 	{
@@ -108,19 +147,18 @@ void GamePlayScene::Update()
 		pField_->SetBlockType((int)prePos_.x - 1, (int)prePos_.y, (int)prePos_.z, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
-	else if (Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.y >= 0 && (int)prePos_.y <= HEIGHT - 2)
+	else if (Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.z >= 1 && (int)prePos_.z <= DEPTH - 1)
 	{
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y + 1, (int)prePos_.z, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z - 1, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
-	else if (Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.y >= 1 && (int)prePos_.y <= HEIGHT-1)
+	else if (Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.z >= 0 && (int)prePos_.z <= DEPTH - 2)
 	{
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y - 1, (int)prePos_.z, 2);
+		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z + 1, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
 
 	
-
 
 #ifdef _DEBUG
 
@@ -152,6 +190,7 @@ void GamePlayScene::Draw()
 	//3dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
 	Object3DCommon::GetInstance()->CommonDraw();
 
+	//player->Draw();
 	pField_->Draw();
 
 #pragma endregion

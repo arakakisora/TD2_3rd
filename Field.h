@@ -6,8 +6,8 @@
 
 // 定数としてマップサイズを定義
 constexpr int WIDTH = 7;  // x軸方向のサイズ
-constexpr int HEIGHT = 5; // y軸方向のサイズ
-constexpr int DEPTH = 1;  // z軸方向のサイズ
+constexpr int HEIGHT = 1; // y軸方向のサイズ
+constexpr int DEPTH = 5;  // z軸方向のサイズ
 
 class Field
 {
