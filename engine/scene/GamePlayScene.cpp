@@ -114,7 +114,7 @@ void GamePlayScene::Draw()
 	//3dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
 	Object3DCommon::GetInstance()->CommonDraw();
 
-	//player->Draw();
+	player->Draw();
 	pField_->Draw();
 
 #pragma endregion
