@@ -37,6 +37,12 @@ void GamePlayScene::Initialize()
 	pField_ = std::make_unique<Field>();
 	pField_->Initialize(pFieldObject_);
 
+	MouseObject = new Object3D();	
+	MouseObject->Initialize(Object3DCommon::GetInstance());
+	MouseObject->SetModel("cube.obj");
+
+
+	
 }
 
 void GamePlayScene::Finalize()
@@ -53,8 +59,15 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update()
 {
+
 	//カメラの更新
 	CameraManager::GetInstans()->GetActiveCamera()->Update();
+
+	mousePos = Input::GetInstans()->GetMouseWorldPosition();
+	//mousePos.z += 20.0f;
+
+	MouseObject->SetTranslate(mousePos);
+	MouseObject->Update();
 
 	pField_->Update();
 
@@ -87,6 +100,7 @@ void GamePlayScene::Update()
 		{
 			SceneManager::GetInstance()->ChangeScene("GAMEOVER");
 		}
+		ImGui::DragFloat3("mousPos", &mousePos.x, 0.1f);
 
 		ImGui::SliderFloat3("cameraPos", &cameraPos_.x, -50.0f, 50.0f);	
 		ImGui::SliderFloat3("cameraRot", &cameraRot_.x, -3.0f, 3.0f);
@@ -104,6 +118,8 @@ void GamePlayScene::Draw()
 	//3dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
 	Object3DCommon::GetInstance()->CommonDraw();
 
+	//3Dオブジェクトの描画
+	MouseObject->Draw();
 	pField_->Draw();
 
 #pragma endregion

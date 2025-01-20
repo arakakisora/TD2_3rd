@@ -45,5 +45,8 @@ private:
 	// Field
 	std::unique_ptr<Field> pField_ = nullptr;
 	
+
+	Vector3 mousePos = Vector3(0, 0, 0);
+	Object3D* MouseObject = nullptr;
 };
 
