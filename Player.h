@@ -22,6 +22,22 @@ public:
 	void Finalize();
 	// 移動
 	void Move(int WIDTH, int DEPTH);
+
+	// ImGui  追加
+	void ImGui();
+
+public: // ゲッター  追加
+
+	// プレイヤーの位置(マス) 追加
+	int GetPosX() { return posX; }
+	int GetPosY() { return posY; }
+	int GetPosZ() { return posZ; }
+
+	// プレイヤーの前の位置(マス)  追加
+	int GetPrePosX() { return prePosX; }
+	int GetPrePosY() { return prePosY; }
+	int GetPrePosZ() { return prePosZ; }
+
 private:
 	Model* model;
 	Object3D* object3D_;
@@ -37,5 +53,10 @@ private:
 	int posX = -3;
 	int posY = 0;
 	int posZ ;
+
+	// プレイヤーの前の位置　追加
+	int prePosX = 0;
+	int prePosY = 0;
+	int prePosZ = 0;
 };
 
