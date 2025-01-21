@@ -40,51 +40,20 @@ void Enemy::Move(Vector3 distance)
 	// 移動中は移動を受け付けない
     if (isEaseStart_) { return; }
 
+    //移動先
 	Vector3 newPosition = transform_.translate + distance;
 
     // マップの範囲内か確認
     if ((newPosition.x >= 0 && newPosition.x < WIDTH) && (newPosition.z>= 0 && newPosition.z < DEPTH))
     {
-        // 進む先のブロックのtypeが0なら進む
-       
-        	// 現在の位置を記録
-            moveStartPosition_ = transform_.translate;
-			// 目標位置を設定
-            moveTargetPosition_ = newPosition;
-			// 移動開始
-            moveProgress_ = 0.0f;
-			isEaseStart_ = true;
-        
-    }
-}
-
-void Enemy::HandleInput()
-{
-	// 移動ベクトルの初期化
-    Vector3 distance{ 0.0f, 0.0f, 0.0f };
-
-    // キー入力の確認
-    if (Input::GetInstans()->TriggerKey(DIK_W))
-    {
-        distance.z += 1.0f;
-    }
-    if (Input::GetInstans()->TriggerKey(DIK_S))
-    {
-        distance.z -= 1.0f;
-    }
-    if (Input::GetInstans()->TriggerKey(DIK_A))
-    {
-        distance.x -= 1.0f;
-    }
-    if (Input::GetInstans()->TriggerKey(DIK_D))
-    {
-        distance.x += 1.0f;
-    }
-
-    // 移動がある場合のみ実行
-    if (distance.x != 0.0f || distance.z != 0.0f)
-    {
-        Move(distance);
+        // 現在の位置を記録
+        moveStartPosition_ = transform_.translate;
+		// 目標位置を設定
+        moveTargetPosition_ = newPosition;
+		// 移動開始
+        moveProgress_ = 0.0f;
+		// 移動開始フラグを立てる
+		isEaseStart_ = true;
     }
 }
 
