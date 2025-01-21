@@ -33,7 +33,7 @@ public:
 	//transrat
 	void SetTransform(const Transform& transform) { this->transform = transform; }
 	Transform GetTransform() { return transform; }
-
+	Vector2 GetPosition() { return Vector2(transform.translate.x, transform.translate.z); }
 	//スケール
 	void SetScale(const Vector3& scale) { transform.scale = scale; }
 	//回転
@@ -41,9 +41,9 @@ public:
 	//位置
 	void SetTranslate(const Vector3& transrate) { transform.translate = transrate; }
 	//カメラ
-	void SetCamera(Camera* camera) { this->camera = camera; }
-	//デフォルトカメラ
-	
+	//void SetCamera(Camera* camera) { this->camera = camera; }
+	////デフォルトカメラ
+
 
 private:
 	Object3DCommon* object3DCommon_ = nullptr;
@@ -70,7 +70,7 @@ private:
 	Matrix4x4 worldViewProjectionMatrix;
 
 	Camera* camera = nullptr;
-	
+
 
 
 
