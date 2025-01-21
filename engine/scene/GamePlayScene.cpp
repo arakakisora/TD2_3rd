@@ -13,7 +13,7 @@ void GamePlayScene::Initialize()
 	//カメラの生成	
 	pCamera_ = new Camera();
 	pCamera_->SetRotate({ 0,0,0, });
-	pCamera_->SetTranslate({ 0,0,-20 });
+	pCamera_->SetTranslate({ 0,0,0 });
 	CameraManager::GetInstans()->AddCamera("main", pCamera_);
 
 
@@ -43,7 +43,7 @@ void GamePlayScene::Initialize()
 	pPlayer_ = new Player();
 	pPlayer_->Initialize(0);
 	// プレイヤーの位置をフィールドにセット
-	pField_->SetPlayerPos(pPlayer_->GetPosX() + 3, pPlayer_->GetPosY(), pPlayer_->GetPosZ());
+	pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
 	//エネミー
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->SetField(pField_.get());
@@ -84,7 +84,7 @@ void GamePlayScene::Update()
 	// プレイヤーの更新
 	pPlayer_->Update();
 	// プレイヤーの位置をフィールドにセット
-	pField_->SetPlayerPos(pPlayer_->GetPosX() + 3, pPlayer_->GetPosY(), pPlayer_->GetPosZ());
+	pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
 
 	// フィールドの更新
 	pField_->Update();
@@ -105,7 +105,7 @@ void GamePlayScene::Update()
 
 	// ------------テスト----------------
 	// プレイヤーの位置テスト
-	prePlayerPos_ = { pPlayer_->GetPrePosX() + 3,pPlayer_->GetPrePosY(),pPlayer_->GetPrePosZ() };
+	prePlayerPos_ = { pPlayer_->GetPrePosX(),pPlayer_->GetPrePosY(),pPlayer_->GetPrePosZ() };
 	pField_->SetBlockType(prePlayerPos_.x, prePlayerPos_.y, prePlayerPos_.z, 0);
 	
 	// ボールの位置テスト

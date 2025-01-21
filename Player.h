@@ -50,7 +50,7 @@ private:
 	};
 	PlayerData playerData;
 	//Camera* camera;
-	int posX = -3;
+	int posX = 0;
 	int posY = 0;
 	int posZ ;
 
