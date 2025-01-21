@@ -1,4 +1,5 @@
 #include "MyMath.h"
+#include <stdexcept>
 
 
 
@@ -272,6 +273,30 @@ Matrix4x4 MyMath::MakeViewportMatrix(float left, float top, float width, float h
 
 	return ans;
 
+}
+
+Matrix4x4 MyMath::Inverse(const Matrix4x4& matrix)
+{
+	Matrix4x4 result;
+	float det = 0;
+
+	for (int i = 0; i < 4; i++)
+		det += (matrix.m[0][i] * (matrix.m[1][(i + 1) % 4] * matrix.m[2][(i + 2) % 4] * matrix.m[3][(i + 3) % 4]
+			- matrix.m[1][(i + 3) % 4] * matrix.m[2][(i + 2) % 4] * matrix.m[3][(i + 1) % 4]));
+
+	if (det == 0)
+		throw std::runtime_error("Matrix is not invertible");
+
+	float invDet = 1.0f / det;
+
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			result.m[j][i] = ((matrix.m[(i + 1) % 4][(j + 1) % 4] * matrix.m[(i + 2) % 4][(j + 2) % 4] * matrix.m[(i + 3) % 4][(j + 3) % 4])
+				- (matrix.m[(i + 1) % 4][(j + 3) % 4] * matrix.m[(i + 2) % 4][(j + 2) % 4] * matrix.m[(i + 3) % 4][(j + 1) % 4])) * invDet;
+		}
+	}
+
+	return result;
 }
 
 

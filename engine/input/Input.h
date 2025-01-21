@@ -60,7 +60,7 @@ public:
 	//	return mouse.lZ;
 	//};
 	// Input.h
-	Vector3 GetMouseWorldPosition();
+	Vector3 GetMouseWorldPosition(float zDistance = 0.0f);
 
 
 
