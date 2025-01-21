@@ -33,7 +33,6 @@ public: //アクセッサ
 	void SetField(Field* field) { field_ = field; }
 
 private:
-
 	// 入力処理
 	void HandleInput();
 
