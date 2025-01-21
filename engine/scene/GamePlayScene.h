@@ -6,7 +6,7 @@
 #include "Object3D.h"
 #include "Audio.h"
 #include "BaseScene.h"
-
+#include"Player.h"
 #include "SceneManager.h"
 
 #include "Field.h"
@@ -33,11 +33,14 @@ public:
 	void Draw()override;
 
 private:	
+	// Player
+	Player* player;
 
 	//カメラのポインタ
 	Camera* pCamera_ = nullptr;
-	Vector3 cameraPos_ = Vector3(0.0f, 0.0f, -20.0f);
-	Vector3 cameraRot_ = Vector3(0.0f, 0.0f, 0.0f);
+	Vector3 cameraPos_ = Vector3(0.0f, -20.0f, 0.0f);
+	Vector3 cameraRot_ = Vector3(-1.5f, 0.0f, 0.0f);
+
 
 	// 3Dオブジェクト
 	std::vector<Object3D*> pFieldObject_ = {};
@@ -45,6 +48,10 @@ private:
 	// Field
 	std::unique_ptr<Field> pField_ = nullptr;
 	
+
+	// テスト用
+	Vector3 prePos_{};
+
 
 	Vector3 mousePos = Vector3(0, 0, 0);
 	Object3D* MouseObject = nullptr;

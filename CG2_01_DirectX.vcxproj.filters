@@ -156,7 +156,10 @@
     <ClCompile Include="engine\scene\GameOverScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+ <ClCompile Include="Player.cpp">
+
     <ClCompile Include="CameraManager.cpp">
+
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Field.cpp">
@@ -280,7 +283,11 @@
     <ClInclude Include="engine\scene\GameOverScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+
+    <ClInclude Include="Player.h">
+
     <ClInclude Include="CameraManager.h">
+
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Field.h">
