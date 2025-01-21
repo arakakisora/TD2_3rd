@@ -10,6 +10,7 @@
 #include "SceneManager.h"
 
 #include "Field.h"
+#include "application/characters/Enemy.h"
 
 class GamePlayScene :public BaseScene
 {
@@ -47,6 +48,9 @@ private:
 
 	// Field
 	std::unique_ptr<Field> pField_ = nullptr;
+
+	//エネミー
+	std::unique_ptr<Enemy> enemy_ = nullptr;
 	
 
 	// テスト用

@@ -10,7 +10,7 @@ void Field::Initialize(std::vector<Object3D*> object3D)
 			for (int x = 0; x < WIDTH; x++)
 			{
 				pBlocks_[z][y][x].object3D = *object3D[x + y * WIDTH + z * WIDTH * HEIGHT];
-				pBlocks_[z][y][x].object3D.SetTranslate(Vector3(float(x) - 3, float(y) - 2, float(z)));
+				pBlocks_[z][y][x].object3D.SetTranslate(Vector3(float(x), float(y), float(z)));
 				pBlocks_[z][y][x].object3D.SetScale(Vector3(0.3f, 0.3f, 0.3f));
 				pBlocks_[z][y][x].type = 0;
 			

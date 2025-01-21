@@ -29,6 +29,7 @@ void GamePlayScene::Initialize()
 
 	// フィールド
 
+
 	for (int z = 0; z < 5; z++)
 	{
 		for (int x = 0; x < 7; x++)
@@ -44,6 +45,11 @@ void GamePlayScene::Initialize()
 	pField_ = std::make_unique<Field>();
 	pField_->Initialize(pFieldObject_);
 
+	//エネミー
+	enemy_ = std::make_unique<Enemy>();
+	enemy_->SetField(pField_.get());
+	enemy_->Initialize(Object3DCommon::GetInstance(), "cube.obj");
+	
 }
 
 void GamePlayScene::Finalize()
@@ -70,6 +76,9 @@ void GamePlayScene::Update()
 	CameraManager::GetInstans()->GetActiveCamera()->Update();
 
 	pField_->Update();
+
+	//エネミーの更新
+	enemy_->Update();
 
 	CameraManager::GetInstans()->GetActiveCamera()->SetTranslate(cameraPos_);
 	CameraManager::GetInstans()->GetActiveCamera()->SetRotate(cameraRot_);
@@ -164,6 +173,9 @@ void GamePlayScene::Draw()
 
 	pField_->Draw();
 	player->Draw();
+
+	//エネミーの描画
+	enemy_->Draw();
 
 #pragma endregion
 
