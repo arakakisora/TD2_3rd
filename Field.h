@@ -28,10 +28,31 @@ public:
 	// ImGui
 	void ImGui();
 
+
+public: // 構造体	
+
+	struct Block
+	{
+		Object3D object3D;
+		uint32_t type;
+	};
+
+	// 何かしらの座標
+	struct Pos
+	{
+		int x;
+		int y;
+		int z;
+	};
+
+
 public: // セッター
 
 	// ブロックの種類
 	void SetBlockType(int x, int y, int z, uint32_t type) { pBlocks_[z][y][x].type = type; }
+
+	// プレイヤーの位置
+	void SetPlayerPos(int x, int y, int z) { playerPos_={ x,y,z }; }
 
 public: // ゲッター
 
@@ -72,13 +93,8 @@ public: // ゲッター
 	// ゲームオーバーフラグ
 	bool IsGameOver() const { return isGameOver_; }
 
-private: // 構造体	
-
-	struct Block
-	{
-		Object3D object3D;
-		uint32_t type;
-	};
+	// プレイヤーの位置
+	Pos GetPlayerPos() const { return playerPos_; }
 
 private:
 
@@ -90,6 +106,9 @@ private:
 
 	// ボールの位置
 	Vector3 ballPos_ = { 0,0,0 };
+
+	// プレイヤーの位置
+	Pos playerPos_;
 
 	// ゲームオーバーフラグ
 	bool isGameOver_ = false;

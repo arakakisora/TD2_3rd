@@ -34,7 +34,7 @@ public:
 
 private:	
 	// Player
-	Player* player;
+	Player* pPlayer_;
 
 	//カメラのポインタ
 	Camera* pCamera_ = nullptr;
@@ -51,6 +51,7 @@ private:
 
 	// テスト用
 	Vector3 prePos_{};
+	Field::Pos prePlayerPos_{};
 
 };
 

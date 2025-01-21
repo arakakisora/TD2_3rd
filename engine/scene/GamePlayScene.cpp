@@ -10,13 +10,6 @@
 
 void GamePlayScene::Initialize()
 {
-
-
-	//Playerの初期化
-	player = new Player();
-	player->Initialize(0);
-	
-
 	//カメラの生成	
 	pCamera_ = new Camera();
 	pCamera_->SetRotate({ 0,0,0, });
@@ -44,12 +37,19 @@ void GamePlayScene::Initialize()
 	pField_ = std::make_unique<Field>();
 	pField_->Initialize(pFieldObject_);
 
+
+
+	//Playerの初期化
+	pPlayer_ = new Player();
+	pPlayer_->Initialize(0);
+	// プレイヤーの位置をフィールドにセット
+	pField_->SetPlayerPos(pPlayer_->GetPosX() + 3, pPlayer_->GetPosY(), pPlayer_->GetPosZ());
 }
 
 void GamePlayScene::Finalize()
 {
-	player->Finalize();
-	delete player;
+	pPlayer_->Finalize();
+	delete pPlayer_;
 
 
 	pField_->Finalize();
@@ -65,15 +65,22 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update()
 {
-	player->Update();
 	//カメラの更新
 	CameraManager::GetInstans()->GetActiveCamera()->Update();
-
-	pField_->Update();
 
 	CameraManager::GetInstans()->GetActiveCamera()->SetTranslate(cameraPos_);
 	CameraManager::GetInstans()->GetActiveCamera()->SetRotate(cameraRot_);
 	
+
+	// プレイヤーの更新
+	pPlayer_->Update();
+	// プレイヤーの位置をフィールドにセット
+	pField_->SetPlayerPos(pPlayer_->GetPosX() + 3, pPlayer_->GetPosY(), pPlayer_->GetPosZ());
+
+	// フィールドの更新
+	pField_->Update();
+
+
 	// ゴール判定
 	if (pField_->IsGoal())
 	{
@@ -88,6 +95,10 @@ void GamePlayScene::Update()
 
 
 	// ------------テスト----------------
+	// プレイヤーの位置テスト
+	prePlayerPos_ = { pPlayer_->GetPrePosX() + 3,pPlayer_->GetPrePosY(),pPlayer_->GetPrePosZ() };
+	pField_->SetBlockType(prePlayerPos_.x, prePlayerPos_.y, prePlayerPos_.z, 0);
+	
 	// ボールの位置テスト
 	prePos_ = pField_->GetBlockPosition(1);
 	
@@ -135,7 +146,18 @@ void GamePlayScene::Update()
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
 
-	
+	// フィールド毎フレーム更新するやつ
+	for (int z = 0; z < DEPTH; z++)
+	{
+		for (int x = 0; x < WIDTH; x++)
+		{
+			if (pField_->GetBlockType(6, 0, z) != 1)
+			{
+				pField_->SetBlockType(6, 0, z, 2);
+			}
+		}
+	}
+
 
 #ifdef _DEBUG
 
@@ -155,6 +177,10 @@ void GamePlayScene::Update()
 		ImGui::SliderFloat3("cameraRot", &cameraRot_.x, -3.0f, 3.0f);
 
 		pField_->ImGui();
+
+		pPlayer_->ImGui();
+
+		ImGui::Text("prePlayerPos %d", &prePlayerPos_.x);
 	}
 
 #endif // _DEBUG
@@ -168,7 +194,7 @@ void GamePlayScene::Draw()
 	Object3DCommon::GetInstance()->CommonDraw();
 
 	pField_->Draw();
-	player->Draw();
+	pPlayer_->Draw();
 
 #pragma endregion
 
