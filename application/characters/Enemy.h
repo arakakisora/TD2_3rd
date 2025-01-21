@@ -4,6 +4,8 @@
 #include <numbers>
 #include <cmath>
 
+#include "Player.h"
+
 inline float EaseInSine(float x) { return 1.0f - std::cos((x * std::numbers::pi_v<float>) / 2.0f); }
 
 class Enemy
@@ -32,9 +34,14 @@ public: //アクセッサ
 
 	void SetField(Field* field) { field_ = field; }
 
+	void SetPlayer(Player* player) { player_ = player; }
+
 private:
 	// 入力処理
 	void HandleInput();
+
+	// AI処理
+	void HandleAI();
 
 	// イージングによる移動更新
 	void UpdateEasingMovement();
@@ -45,6 +52,9 @@ private:
 private:
 	//フィールド
 	Field* field_ = nullptr;
+
+	//プレイヤー
+	Player* player_ = nullptr;
 
 	// 3Dオブジェクト
 	std::unique_ptr<Object3D> object3D_;

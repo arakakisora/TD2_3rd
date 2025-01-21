@@ -19,8 +19,8 @@ void Enemy::Update()
 	ImGui::End();
 #endif
 
-	// 入力処理
-	HandleInput();
+	//
+    HandleAI();
 
 	// 移動処理
 	UpdateEasingMovement();
@@ -43,11 +43,10 @@ void Enemy::Move(Vector3 distance)
 	Vector3 newPosition = transform_.translate + distance;
 
     // マップの範囲内か確認
-    if (newPosition.x >= 0 && newPosition.x < WIDTH && newPosition.z>= 0 && newPosition.z < HEIGHT)
+    if ((newPosition.x >= 0 && newPosition.x < WIDTH) && (newPosition.z>= 0 && newPosition.z < DEPTH))
     {
         // 進む先のブロックのtypeが0なら進む
-        if (field_->GetBlockType((int)newPosition.x, (int)newPosition.z, 0) == 0)
-        {
+       
         	// 現在の位置を記録
             moveStartPosition_ = transform_.translate;
 			// 目標位置を設定
@@ -55,7 +54,7 @@ void Enemy::Move(Vector3 distance)
 			// 移動開始
             moveProgress_ = 0.0f;
 			isEaseStart_ = true;
-        }
+        
     }
 }
 
@@ -83,6 +82,33 @@ void Enemy::HandleInput()
     }
 
     // 移動がある場合のみ実行
+    if (distance.x != 0.0f || distance.z != 0.0f)
+    {
+        Move(distance);
+    }
+}
+
+void Enemy::HandleAI()
+{
+    if (!player_) return; // プレイヤー情報がない場合はスキップ
+
+    // プレイヤー位置の取得
+    Vector3 playerPos = player_->GetPosition();
+
+    // 現在位置との差分を計算
+    Vector3 diff = playerPos - transform_.translate;
+
+    // 最短方向に基づいて移動（X および Z 両方）
+    Vector3 distance{ 0.0f, 0.0f, 0.0f };
+
+    if (std::abs(diff.x) > 0.1f) { // 小さな差分は無視
+        distance.x = (diff.x > 0) ? 1.0f : -1.0f;
+    }
+    if (std::abs(diff.z) > 0.1f) { // 小さな差分は無視
+        distance.z = (diff.z > 0) ? 1.0f : -1.0f;
+    }
+
+    // 移動指示
     if (distance.x != 0.0f || distance.z != 0.0f)
     {
         Move(distance);
