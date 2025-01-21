@@ -43,10 +43,10 @@ void Enemy::Move(Vector3 distance)
 	Vector3 newPosition = transform_.translate + distance;
 
     // マップの範囲内か確認
-    if (newPosition.x >= 0 && newPosition.x < WIDTH && newPosition.y >= 0 && newPosition.y < HEIGHT)
+    if (newPosition.x >= 0 && newPosition.x < WIDTH && newPosition.z>= 0 && newPosition.z < HEIGHT)
     {
         // 進む先のブロックのtypeが0なら進む
-        if (field_->GetBlockType((int)newPosition.x, (int)newPosition.y, 0) == 0)
+        if (field_->GetBlockType((int)newPosition.x, (int)newPosition.z, 0) == 0)
         {
         	// 現在の位置を記録
             moveStartPosition_ = transform_.translate;
@@ -67,11 +67,11 @@ void Enemy::HandleInput()
     // キー入力の確認
     if (Input::GetInstans()->TriggerKey(DIK_W))
     {
-        distance.y += 1.0f;
+        distance.z += 1.0f;
     }
     if (Input::GetInstans()->TriggerKey(DIK_S))
     {
-        distance.y -= 1.0f;
+        distance.z -= 1.0f;
     }
     if (Input::GetInstans()->TriggerKey(DIK_A))
     {
@@ -83,7 +83,7 @@ void Enemy::HandleInput()
     }
 
     // 移動がある場合のみ実行
-    if (distance.x != 0.0f || distance.y != 0.0f)
+    if (distance.x != 0.0f || distance.z != 0.0f)
     {
         Move(distance);
     }
