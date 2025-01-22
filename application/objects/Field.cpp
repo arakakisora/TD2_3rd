@@ -69,6 +69,8 @@ void Field::Update()
 				// プレイヤーのボールが取られたらゲームオーバー
 
 
+				// パス
+
 				// -----------------テスト-----------------
 				// 大きさ戻す
 				if (pBlocks_[z][y][x].type == 0)
@@ -120,17 +122,17 @@ void Field::ImGui()
 
 	ImGui::Text("type 5 : %.0f %.0f %.0f", GetBlockPosition(5).x, GetBlockPosition(5).y, GetBlockPosition(5).z);
 
-	//for (int z = 0; z < DEPTH; z++)
-	//{
-	//	for (int y = 0; y < HEIGHT; y++)
-	//	{
-	//		for (int x = 0; x < WIDTH; x++)
-	//		{
-	//			ImGui::Text("Block Position %.2f %.2f %.2f", 
-	//				pBlocks_[z][y][x].object3D.GetTransform().translate.x,
-	//				pBlocks_[z][y][x].object3D.GetTransform().translate.y,
-	//				pBlocks_[z][y][x].object3D.GetTransform().translate.z);
-	//		}
-	//	}
-	//}
+	for (int z = 0; z < DEPTH; z++)
+	{
+		for (int y = 0; y < HEIGHT; y++)
+		{
+			for (int x = 0; x < WIDTH; x++)
+			{
+				ImGui::Text("Block Position %.2f %.2f %.2f", 
+					pBlocks_[z][y][x].object3D.GetTransform().translate.x,
+					pBlocks_[z][y][x].object3D.GetTransform().translate.y,
+					pBlocks_[z][y][x].object3D.GetTransform().translate.z);
+			}
+		}
+	}
 }

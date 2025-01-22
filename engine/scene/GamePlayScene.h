@@ -6,11 +6,13 @@
 #include "Object3D.h"
 #include "Audio.h"
 #include "BaseScene.h"
-#include"Player.h"
 #include "SceneManager.h"
 
-#include "Field.h"
+#include "application/turn/BaseTurnState.h"
+
+#include "application/objects/Field.h"
 #include "application/characters/Enemy.h"
+#include "application/characters/Player.h"
 
 class GamePlayScene :public BaseScene
 {
@@ -33,9 +35,24 @@ public:
 	/// </summary>
 	void Draw()override;
 
+	// ターンステート
+	void ChangeState(std::unique_ptr<BaseTurnState> _pState);
+
+public: // ゲッター
+
+	// プレイヤー (ターンステートで使いたい)
+	std::shared_ptr<Player> GetPlayer() { return pPlayer_; }
+	
+	// エネミー (ターンステートで使いたい)
+	std::shared_ptr<Enemy> GetEnemy() { return enemy_; }
+
+	// フィールド (ターンステートで使いたい)
+	std::shared_ptr<Field> GetField() { return pField_; }
+
 private:	
+
 	// Player
-	Player* pPlayer_;
+	std::shared_ptr<Player> pPlayer_;
 
 	//カメラのポインタ
 	Camera* pCamera_ = nullptr;
@@ -47,11 +64,13 @@ private:
 	std::vector<Object3D*> pFieldObject_ = {};
 
 	// Field
-	std::unique_ptr<Field> pField_ = nullptr;
+	std::shared_ptr<Field> pField_ = nullptr;
 
 	//エネミー
-	std::unique_ptr<Enemy> enemy_ = nullptr;
+	std::shared_ptr<Enemy> enemy_ = nullptr;
 	
+	// ターンステート
+	std::unique_ptr<BaseTurnState> pState_ = nullptr;
 
 	// テスト用
 	Vector3 prePos_{};

@@ -1,5 +1,5 @@
 #pragma once
-#include "Field.h"
+#include "application/objects/Field.h"
 #include "Object3D.h"
 #include <numbers>
 #include <cmath>
@@ -21,10 +21,19 @@ public:
 	//移動
 	void Move(Vector3 distance);
 
+	// ImGui
+	void ImGui();
+
+	//トランスフォームを３Dオブジェクトに適用する  privateから移動
+	void UpdateTransform();
+
 public: //アクセッサ
 	Vector3 GetPosition() const { return transform_.translate; }
 	Vector3 GetRotation() const { return transform_.rotate; }
 	Vector3 GetScale() const { return transform_.scale; }
+
+	// ターンエンドゲッター 追加
+	bool IsTurnEnd() { return isTurnEnd_; }
 
 	void SetPosition(const Vector3& pos) { transform_.translate = pos; }
 	void SetRotation(const Vector3& rot) { transform_.rotate = rot; }
@@ -32,15 +41,15 @@ public: //アクセッサ
 
 	void SetField(Field* field) { field_ = field; }
 
+	// ターンエンドセッター 追加
+	void SetTurnEnd(bool isTurnEnd) { isTurnEnd_ = isTurnEnd; }
+
 private:
 	// 入力処理
 	void HandleInput();
 
 	// イージングによる移動更新
 	void UpdateEasingMovement();
-
-	//トランスフォームを３Dオブジェクトに適用する
-	void UpdateTransform();
 
 private:
 	//フィールド
@@ -64,5 +73,8 @@ private:
 	float moveProgress_ = 1.0f;
 	//イージングの開始フラグ
 	bool isEaseStart_ = false;
+
+	// ターンエンド 追加
+	bool isTurnEnd_ = false;
 };
 

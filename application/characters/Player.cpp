@@ -1,5 +1,5 @@
 #include "Player.h"
-#include "Field.h"
+#include "application/objects/Field.h"
 Player::Player()
 {
 }
@@ -49,7 +49,6 @@ void Player::Draw()
 void Player::Finalize()
 {
 	delete object3D_;
-	delete model;
 }
 
 void Player::Move(int WIDTH, int DEPTH)
@@ -60,24 +59,32 @@ void Player::Move(int WIDTH, int DEPTH)
 		prePosX = posX;
 		prePosZ = posZ;
 		posZ += 1;
+
+		isTurnEnd_ = true; // ターンエンド 追加
 	}
 	if (Input::GetInstans()->TriggerKey(DIK_W) && posZ > 0)
 	{
 		prePosX = posX;
 		prePosZ = posZ;
 		posZ -= 1;
+
+		isTurnEnd_ = true; // ターンエンド 追加
 	}
 	if (Input::GetInstans()->TriggerKey(DIK_A) && posX > 0)
 	{
 		prePosX = posX;
 		prePosZ = posZ;
 		posX -= 1;
+
+		isTurnEnd_ = true; // ターンエンド 追加
 	}
 	if (Input::GetInstans()->TriggerKey(DIK_D) && posX < WIDTH - 1)
 	{
 		prePosX = posX;
 		prePosZ = posZ;
 		posX += 1;
+
+		isTurnEnd_ = true; // ターンエンド 追加
 	}
 
 	// プレイヤーの位置を更新

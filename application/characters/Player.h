@@ -38,8 +38,16 @@ public: // ゲッター  追加
 	int GetPrePosY() { return prePosY; }
 	int GetPrePosZ() { return prePosZ; }
 
+	// ターンエンド  追加
+	bool IsTurnEnd() { return isTurnEnd_; }
+
+public: // セッター  追加
+
+	// ターンエンド  追加
+	void SetTurnEnd(bool isTurnEnd) { isTurnEnd_ = isTurnEnd; }
+
 private:
-	Model* model;
+
 	Object3D* object3D_;
 
 	struct PlayerData
@@ -58,5 +66,8 @@ private:
 	int prePosX = 0;
 	int prePosY = 0;
 	int prePosZ = 0;
+
+	// ターンエンド 追加
+	bool isTurnEnd_ = false;
 };
 

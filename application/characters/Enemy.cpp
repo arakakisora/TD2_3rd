@@ -43,10 +43,10 @@ void Enemy::Move(Vector3 distance)
 	Vector3 newPosition = transform_.translate + distance;
 
     // マップの範囲内か確認
-    if (newPosition.x >= 0 && newPosition.x < WIDTH && newPosition.z>= 0 && newPosition.z < HEIGHT)
+    if (newPosition.x >= 0 && newPosition.x < WIDTH && newPosition.z>= 0 && newPosition.z < DEPTH)
     {
         // 進む先のブロックのtypeが0なら進む
-        if (field_->GetBlockType((int)newPosition.x, (int)newPosition.z, 0) == 0)
+        if (field_->GetBlockType((int)newPosition.x, 0, (int)newPosition.z) == 0)
         {
         	// 現在の位置を記録
             moveStartPosition_ = transform_.translate;
@@ -59,6 +59,11 @@ void Enemy::Move(Vector3 distance)
     }
 }
 
+void Enemy::ImGui()
+{
+	ImGui::Text("Enemy Position %.2f %.2f %.2f", transform_.translate.x, transform_.translate.y, transform_.translate.z);
+}
+
 void Enemy::HandleInput()
 {
 	// 移動ベクトルの初期化
@@ -67,11 +72,11 @@ void Enemy::HandleInput()
     // キー入力の確認
     if (Input::GetInstans()->TriggerKey(DIK_W))
     {
-        distance.z += 1.0f;
+        distance.z -= 1.0f;
     }
     if (Input::GetInstans()->TriggerKey(DIK_S))
     {
-        distance.z -= 1.0f;
+        distance.z += 1.0f;
     }
     if (Input::GetInstans()->TriggerKey(DIK_A))
     {
@@ -98,6 +103,8 @@ void Enemy::UpdateEasingMovement()
         transform_.translate = moveStartPosition_ + (moveTargetPosition_ - moveStartPosition_) * EaseInSine(moveProgress_);
         if (moveProgress_ >= 1.0f) {
             isEaseStart_ = false;
+
+			isTurnEnd_ = true; // ターンエンド 追加
         }
     }
 }

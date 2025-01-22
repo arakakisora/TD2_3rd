@@ -8,6 +8,9 @@
 #include "Input.h"
 #include "TitleScene.h"
 
+#include "application/turn/PlayerTurn.h"
+#include "application/turn/EnemyTurn.h"
+
 void GamePlayScene::Initialize()
 {
 	//カメラの生成	
@@ -21,7 +24,6 @@ void GamePlayScene::Initialize()
 	ModelManager::GetInstans()->LoadModel("cube.obj");
 
 	// フィールド
-
 	for (int z = 0; z < DEPTH; z++)
 	{
 		for (int x = 0; x < WIDTH; x++)
@@ -32,40 +34,48 @@ void GamePlayScene::Initialize()
 			pFieldObject_.push_back(pFieldObject);
 		}
 	}
-	
-
-	pField_ = std::make_unique<Field>();
+	// フィールドの初期化
+	pField_ = std::make_shared<Field>();
 	pField_->Initialize(pFieldObject_);
 
-
-
 	//Playerの初期化
-	pPlayer_ = new Player();
-	pPlayer_->Initialize(0);
+	pPlayer_ = std::make_shared<Player>();
+	pPlayer_->Initialize(3);
 	// プレイヤーの位置をフィールドにセット
 	pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
+	
+
 	//エネミー
-	enemy_ = std::make_unique<Enemy>();
+	enemy_ = std::make_shared<Enemy>();
 	enemy_->SetField(pField_.get());
 	enemy_->Initialize(Object3DCommon::GetInstance(), "cube.obj");
-	
+
+	// ステート
+	ChangeState(std::make_unique<PlayerTurn>(this));
 }
 
 void GamePlayScene::Finalize()
 {
 	pPlayer_->Finalize();
-	delete pPlayer_;
+	pPlayer_.reset();
+	
+	enemy_.reset();
 
-
-	pField_->Finalize();
-	for (auto pFieldObject_ : pFieldObject_)
-	{
-		delete pFieldObject_;
-	}
+	pField_.reset();
 
 	CameraManager::GetInstans()->RemoveCamera("main");
 	delete pCamera_;
 
+	// 3Dオブジェクトの解放
+	for (auto& pFieldObject : pFieldObject_)
+	{
+		if (pFieldObject)
+		{
+			delete pFieldObject;
+			pFieldObject = nullptr;
+		}
+	}
+	pFieldObject_.clear();
 }
 
 void GamePlayScene::Update()
@@ -73,22 +83,8 @@ void GamePlayScene::Update()
 	//カメラの更新
 	CameraManager::GetInstans()->GetActiveCamera()->Update();
 
-
-	//エネミーの更新
-	enemy_->Update();
-
 	CameraManager::GetInstans()->GetActiveCamera()->SetTranslate(cameraPos_);
 	CameraManager::GetInstans()->GetActiveCamera()->SetRotate(cameraRot_);
-	
-
-	// プレイヤーの更新
-	pPlayer_->Update();
-	// プレイヤーの位置をフィールドにセット
-	pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
-
-	// フィールドの更新
-	pField_->Update();
-
 
 	// ゴール判定
 	if (pField_->IsGoal())
@@ -102,6 +98,14 @@ void GamePlayScene::Update()
 		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
 	}
 
+	// プレイヤーの更新 , エネミーの更新
+	pState_->Update();
+
+	// プレイヤーの位置をフィールドにセット
+	pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
+
+	// フィールドの更新
+	pField_->Update();
 
 	// ------------テスト----------------
 	// プレイヤーの位置テスト
@@ -185,11 +189,15 @@ void GamePlayScene::Update()
 		ImGui::SliderFloat3("cameraPos", &cameraPos_.x, -50.0f, 50.0f);	
 		ImGui::SliderFloat3("cameraRot", &cameraRot_.x, -3.0f, 3.0f);
 
-		pField_->ImGui();
 
 		pPlayer_->ImGui();
 
 		ImGui::Text("prePlayerPos %d", &prePlayerPos_.x);
+
+		enemy_->ImGui();
+
+		pField_->ImGui();
+
 	}
 
 #endif // _DEBUG
@@ -218,4 +226,9 @@ void GamePlayScene::Draw()
 
 #pragma endregion
 
+}
+
+void GamePlayScene::ChangeState(std::unique_ptr<BaseTurnState> _pState)
+{
+	pState_ = std::move(_pState);
 }
