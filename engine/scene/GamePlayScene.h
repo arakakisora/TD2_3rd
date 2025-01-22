@@ -8,7 +8,6 @@
 #include "BaseScene.h"
 #include"Player.h"
 #include "SceneManager.h"
-
 #include "Field.h"
 
 class GamePlayScene :public BaseScene
@@ -32,7 +31,7 @@ public:
 	/// </summary>
 	void Draw()override;
 
-private:	
+private:
 	// Player
 	Player* player;
 
@@ -47,10 +46,12 @@ private:
 
 	// Field
 	std::unique_ptr<Field> pField_ = nullptr;
-	
+
 
 	// テスト用
 	Vector3 prePos_{};
 
+	std::vector <Player*> players;
+	int initPosZ = 0;
 };
 

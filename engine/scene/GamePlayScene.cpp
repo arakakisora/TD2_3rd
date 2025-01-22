@@ -13,8 +13,8 @@ void GamePlayScene::Initialize()
 
 
 	//Playerの初期化
-	player = new Player();
-	player->Initialize(0);
+	// ひとつ前のフェーズで初期化されたプレイヤーの位置を引き継ぐ
+	// ビルドを通すために直入力
 	
 	for (Player* player : players) {
 		player = new Player();
@@ -53,8 +53,11 @@ void GamePlayScene::Initialize()
 
 void GamePlayScene::Finalize()
 {
-	player->Finalize();
-	delete player;
+	//Playerの終了処理
+	for (Player* player : players) {
+		player->Finalize();
+		delete player;
+	}
 
 
 	pField_->Finalize();
@@ -70,7 +73,10 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update()
 {
-	player->Update();
+	//Playerの更新
+	for (Player* player : players) {
+		player->Update();
+	}
 	//カメラの更新
 	CameraManager::GetInstans()->GetActiveCamera()->Update();
 
@@ -168,7 +174,11 @@ void GamePlayScene::Draw()
 	Object3DCommon::GetInstance()->CommonDraw();
 
 	pField_->Draw();
-	player->Draw();
+
+	//Playerの描画
+	for (Player* player : players) {
+		player->Draw();
+	}
 
 #pragma endregion
 
