@@ -16,6 +16,11 @@ void GamePlayScene::Initialize()
 	player = new Player();
 	player->Initialize(0);
 	
+	for (Player* player : players) {
+		player = new Player();
+		player->Initialize(initPosZ);
+		players.push_back(player);
+	}
 
 	//カメラの生成	
 	pCamera_ = new Camera();
