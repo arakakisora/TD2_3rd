@@ -1,6 +1,11 @@
 #include "Enemy.h"
 #include <algorithm>
 
+float EaseInSine(float x) { return 1.0f - std::cos((x * std::numbers::pi_v<float>) / 2.0f); }
+
+template<class T> T EasingToEnd(T start, T end, T(*func)(T), T progress) { return start + func(progress) * (end - start); }
+
+
 void Enemy::Initialize(Object3DCommon* objectCommon, const std::string& filename)
 {
 	// 3Dオブジェクトの初期化
@@ -46,6 +51,8 @@ void Enemy::Move(Vector3 distance)
     // マップの範囲内か確認
     if ((newPosition.x >= 0 && newPosition.x < WIDTH) && (newPosition.z>= 0 && newPosition.z < DEPTH))
     {
+		//プレイヤーがいる場所には移動しない
+        if (newPosition.x == player_->GetPosition().x && newPosition.z == player_->GetPosition().z) { return; }
         // 現在の位置を記録
         moveStartPosition_ = transform_.translate;
 		// 目標位置を設定
@@ -73,7 +80,7 @@ void Enemy::HandleAI()
     if (std::abs(diff.x) > 0.1f) { // 小さな差分は無視
         distance.x = (diff.x > 0) ? 1.0f : -1.0f;
     }
-    if (std::abs(diff.z) > 0.1f) { // 小さな差分は無視
+	else if (std::abs(diff.z) > 0.1f) { // 小さな差分は無視
         distance.z = (diff.z > 0) ? 1.0f : -1.0f;
     }
 
@@ -90,8 +97,9 @@ void Enemy::UpdateEasingMovement()
         // 移動中の場合、イージングを適用して現在の位置を更新
         moveProgress_ += 1.0f / 60.0f * 2.0f;
         moveProgress_ = (std::min)(moveProgress_, 1.0f);
-        transform_.translate = moveStartPosition_ + (moveTargetPosition_ - moveStartPosition_) * EaseInSine(moveProgress_);
-        if (moveProgress_ >= 1.0f) {
+		transform_.translate.x = EasingToEnd(moveStartPosition_.x, moveTargetPosition_.x, EaseInSine, moveProgress_);
+		transform_.translate.z = EasingToEnd(moveStartPosition_.z, moveTargetPosition_.z, EaseInSine, moveProgress_);
+    	if (moveProgress_ >= 1.0f) {
             isEaseStart_ = false;
         }
     }

@@ -6,7 +6,7 @@
 
 #include "Player.h"
 
-inline float EaseInSine(float x) { return 1.0f - std::cos((x * std::numbers::pi_v<float>) / 2.0f); }
+
 
 class Enemy
 {

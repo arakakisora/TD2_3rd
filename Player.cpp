@@ -77,7 +77,7 @@ void Player::Move(int WIDTH, int DEPTH)
 	}
 
 	// プレイヤーの位置を更新
-	playerData.position = Vector3(static_cast<float>(posX) * 1.5f, 8.0f, static_cast<float>(posZ) * 1.5f);
+	playerData.position = Vector3(static_cast<float>(posX), 8.0f, static_cast<float>(posZ));
 }
 
 
