@@ -88,6 +88,14 @@ void Player::Move(int WIDTH, int DEPTH)
 	playerData.position = Vector3(static_cast<float>(posX), 8.0f, static_cast<float>(posZ));
 }
 
+void Player::UpdateTransform()
+{
+	object3D_->SetTranslate(playerData.position);
+	object3D_->SetRotate(playerData.rotate);
+	object3D_->SetScale(playerData.scale);
+	object3D_->Update();
+}
+
 void Player::ImGui()
 {
 	ImGui::Text("Player");

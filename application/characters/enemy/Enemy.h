@@ -12,6 +12,9 @@ public:
 	//更新
 	void Update();
 
+	//トランスフォームを３Dオブジェクトに適用する
+	void UpdateTransform();
+
 	//描画
 	void Draw();
 
@@ -45,9 +48,6 @@ private:
 
 	// イージングによる移動更新
 	void UpdateEasingMovement();
-
-	//トランスフォームを３Dオブジェクトに適用する
-	void UpdateTransform();
 
 private:
 	//フィールド

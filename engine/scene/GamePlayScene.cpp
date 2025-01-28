@@ -117,6 +117,13 @@ void GamePlayScene::Update()
 	// フィールドの更新
 	pField_->Update();
 
+	//プレイヤーの３Dオブジェクトを更新
+	pPlayer_->UpdateTransform();
+
+	//エネミーの３Dオブジェクトを更新
+	enemy_->UpdateTransform();
+
+
 	// ゴール判定
 	if (pField_->IsGoal())
 	{
