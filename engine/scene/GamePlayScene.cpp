@@ -10,7 +10,6 @@
 
 void GamePlayScene::Initialize()
 {
-
 	//カメラの生成	
 	pCamera_ = new Camera();
 	pCamera_->SetRotate({ 0,0,0, });
@@ -34,19 +33,12 @@ void GamePlayScene::Initialize()
 		}
 	}
 
-
 	pField_ = std::make_unique<Field>();
 	pField_->Initialize(pFieldObject_);
-
 
 	MouseObject = new Object3D();
 	MouseObject->Initialize(Object3DCommon::GetInstance());
 	MouseObject->SetModel("cube.obj");
-
-
-
-
-
 
 	//Playerの初期化
 	pPlayer_ = new Player();
@@ -57,8 +49,6 @@ void GamePlayScene::Initialize()
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->SetField(pField_.get());
 	enemy_->Initialize(Object3DCommon::GetInstance(), "cube.obj");
-	
-
 }
 
 void GamePlayScene::Finalize()
