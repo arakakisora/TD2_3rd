@@ -185,6 +185,8 @@ void GamePlayScene::Update()
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
 
+	
+
 
 	// フィールド毎フレーム更新するやつ
 	for (int z = 0; z < DEPTH; z++)
