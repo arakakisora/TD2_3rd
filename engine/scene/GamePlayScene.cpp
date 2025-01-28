@@ -10,7 +10,6 @@
 
 void GamePlayScene::Initialize()
 {
-
 	//カメラの生成	
 	pCamera_ = new Camera();
 	pCamera_->SetRotate({ 0,0,0, });
