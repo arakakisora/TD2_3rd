@@ -24,7 +24,7 @@ void Enemy::Update()
 	ImGui::End();
 #endif
 
-	//
+	// AI処理
     HandleAI();
 
 	// 移動処理
@@ -42,8 +42,8 @@ void Enemy::Draw()
 
 void Enemy::Move(Vector3 distance)
 {
-	// 移動中は移動を受け付けない
-    if (isEaseStart_) { return; }
+	// 移動中またはターン終了中は移動しない
+    if (isEaseStart_ || isTurnEnd_) { return; }
 
     //移動先
 	Vector3 newPosition = transform_.translate + distance;
@@ -52,7 +52,12 @@ void Enemy::Move(Vector3 distance)
     if ((newPosition.x >= 0 && newPosition.x < WIDTH) && (newPosition.z>= 0 && newPosition.z < DEPTH))
     {
 		//プレイヤーがいる場所には移動しない
-        if (newPosition.x == player_->GetPosition().x && newPosition.z == player_->GetPosition().z) { return; }
+        if (newPosition.x == player_->GetPosition().x && newPosition.z == player_->GetPosition().z)
+        {
+			//ターン終了
+			isTurnEnd_ = true;
+        	return;
+        }
         // 現在の位置を記録
         moveStartPosition_ = transform_.translate;
 		// 目標位置を設定
@@ -100,7 +105,10 @@ void Enemy::UpdateEasingMovement()
 		transform_.translate.x = EasingToEnd(moveStartPosition_.x, moveTargetPosition_.x, EaseInSine, moveProgress_);
 		transform_.translate.z = EasingToEnd(moveStartPosition_.z, moveTargetPosition_.z, EaseInSine, moveProgress_);
     	if (moveProgress_ >= 1.0f) {
-            isEaseStart_ = false;
+			// 移動完了
+    		isEaseStart_ = false;
+            //ターン終了
+			isTurnEnd_ = true;
         }
     }
 }

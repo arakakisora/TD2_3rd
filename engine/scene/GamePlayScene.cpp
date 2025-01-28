@@ -92,10 +92,25 @@ void GamePlayScene::Update()
 		pPlayer_->Update();
 		// プレイヤーの位置をフィールドにセット
 		pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
+
+		// ターン終了
+		//NOTE:今はエンターキーでターンを切り替える
+		if (Input::GetInstans()->TriggerKey(DIK_RETURN))
+		{
+			turnState_ = TurnState::ENEMY;
+			// エネミーのターン開始
+			enemy_->SetTurnEnd(false);
+		}
+
 		break;
 	case TurnState::ENEMY:
 		//エネミーの更新
 		enemy_->Update();
+		// ターン終了
+		if (enemy_->IsTurnEnd())
+		{
+			turnState_ = TurnState::PLAYER;
+		}
 		break;
 	}
 
@@ -222,6 +237,7 @@ void GamePlayScene::Update()
 		if (ImGui::Button("Turn Enemy"))
 		{
 			turnState_ = TurnState::ENEMY;
+			enemy_->SetTurnEnd(false);
 		}
 
 	}

@@ -1,12 +1,7 @@
 #pragma once
 #include "Field.h"
 #include "Object3D.h"
-#include <numbers>
-#include <cmath>
-
 #include "Player.h"
-
-
 
 class Enemy
 {
@@ -40,6 +35,10 @@ public: //アクセッサ
 	// プレイヤーのポインタをセット
 	void SetPlayer(Player* player) { player_ = player; }
 
+	// ターン終了フラグの取得、設定
+	bool IsTurnEnd() const { return isTurnEnd_; }
+	void SetTurnEnd(bool isTurnEnd) { isTurnEnd_ = isTurnEnd; }
+
 private:
 	// AI処理
 	void HandleAI();
@@ -53,6 +52,9 @@ private:
 private:
 	//フィールド
 	Field* field_ = nullptr;
+
+	//ターン終了フラグ
+	bool isTurnEnd_ = false;
 
 	//プレイヤー
 	Player* player_ = nullptr;
