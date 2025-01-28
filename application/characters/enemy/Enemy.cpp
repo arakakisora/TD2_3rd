@@ -16,14 +16,6 @@ void Enemy::Initialize(Object3DCommon* objectCommon, const std::string& filename
 
 void Enemy::Update()
 {
-#ifdef _DEBUG
-	ImGui::Begin("enemy");
-	ImGui::DragFloat3("position", &transform_.translate.x, 0.1f);
-	ImGui::DragFloat3("scale", &transform_.scale.x, 0.1f);
-	ImGui::DragFloat3("rotate", &transform_.rotate.x, 0.1f);
-	ImGui::End();
-#endif
-
 	// AI処理
     HandleAI();
 
@@ -117,10 +109,30 @@ void Enemy::UpdateEasingMovement()
     }
 }
 
+void Enemy::ImGui()
+{
+#ifdef _DEBUG
+    ImGui::Begin("enemy");
+    ImGui::DragFloat3("position", &transform_.translate.x, 0.1f);
+    ImGui::DragFloat3("scale", &transform_.scale.x, 0.1f);
+    ImGui::DragFloat3("rotate", &transform_.rotate.x, 0.1f);
+    ImGui::End();
+#endif
+}
+
 void Enemy::UpdateTransform()
 {
 	object3D_->SetTranslate(transform_.translate);
 	object3D_->SetRotate(transform_.rotate);
 	object3D_->SetScale(transform_.scale);
 	object3D_->Update();
+
+	//ImGuiも常に表示
+#ifdef _DEBUG
+    ImGui::Begin("enemy");
+    ImGui::DragFloat3("position", &transform_.translate.x, 0.1f);
+    ImGui::DragFloat3("scale", &transform_.scale.x, 0.1f);
+    ImGui::DragFloat3("rotate", &transform_.rotate.x, 0.1f);
+    ImGui::End();
+#endif
 }

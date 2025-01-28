@@ -49,6 +49,8 @@ private:
 	// イージングによる移動更新
 	void UpdateEasingMovement();
 
+	void ImGui();
+
 private:
 	//フィールド
 	Field* field_ = nullptr;
