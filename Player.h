@@ -22,6 +22,15 @@ public:
 	void Finalize();
 	// 移動
 	void Move(int WIDTH, int DEPTH);
+	//3Dオブジェクトの更新
+	void UpdateTransform();
+public: //アクセッサ
+	Vector3 GetPosition() { return playerData.position; }
+	void SetPosition(Vector3 pos) { playerData.position = pos; }
+	Vector3 GetRotate() { return playerData.rotate; }
+	void SetRotate(Vector3 rot) { playerData.rotate = rot; }
+	Vector3 GetScale() { return playerData.scale; }
+	void SetScale(Vector3 scale) { playerData.scale = scale; }
 
 	// ImGui  追加
 	void ImGui();
@@ -37,7 +46,6 @@ public: // ゲッター  追加
 	int GetPrePosX() { return prePosX; }
 	int GetPrePosY() { return prePosY; }
 	int GetPrePosZ() { return prePosZ; }
-
 private:
 	Model* model;
 	Object3D* object3D_;
