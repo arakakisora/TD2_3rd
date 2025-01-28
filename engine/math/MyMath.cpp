@@ -171,6 +171,16 @@ Matrix4x4 MyMath::MakeRotateZMatrix(float radian)
 
 }
 
+Matrix4x4 MyMath::MakeRotateMatrix(const Vector3& rotate)
+{
+	// 各軸の回転行列を計算
+	Matrix4x4 rotateX = MakeRotateXMatrix(rotate.x); // X軸回転
+	Matrix4x4 rotateY = MakeRotateYMatrix(rotate.y); // Y軸回転
+	Matrix4x4 rotateZ = MakeRotateZMatrix(rotate.z); // Z軸回転
+
+	// 合成回転行列 (順序: Z → Y → X)
+	return rotateZ * rotateY * rotateX;
+}
 
 Matrix4x4 MyMath::MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate)
 {

@@ -117,44 +117,42 @@ bool Input::TriggerMouse(int buttonNumber)
 	return false;
 }
 
-Vector3 Input::GetMouseWorldPosition(float zDistance ) {
-	POINT mousePos;
-	GetCursorPos(&mousePos);
-	HWND hwnd = WinApp::GetInstance()->GetHwnd();
-	ScreenToClient(hwnd, &mousePos);
-
-	// アクティブカメラを取得
+Vector3 Input::GetMouseWorldPosition(float distance) {
+	// アクティブなカメラを取得
 	Camera* activeCamera = CameraManager::GetInstans()->GetActiveCamera();
-	//ビュープロジェクションビューポート合成行列
-	Matrix4x4 viewProjectionMatrix = activeCamera->GetViewprojectionMatrix();
-	//ビューポート行列
-	Matrix4x4 viewportMatrix = MyMath::MakeViewportMatrix(0, 0, WinApp::kClientWindth, WinApp::kClientHeight, 0, 1);
-	//ビュープロジェクションビューポート合成行列
-	Matrix4x4 VPVMatrix = viewProjectionMatrix * viewportMatrix;
-	
-	
-	// マウス座標をNDC座標に変換
-	Vector3 posNear = Vector3((float)mousePos.x,(float) mousePos.y, 0);
-	Vector3 posFar = Vector3((float)mousePos.x,(float) mousePos.y, 1);
-	// NDC座標をワールド座標に変換
-	posNear = MyMath::Transform(posNear, VPVMatrix.Inverse());
-	posFar = MyMath::Transform(posFar, VPVMatrix.Inverse());
-	// マウスの方向ベクトルを取得
-	Vector3 mousDirection = posFar - posNear;
-	//Vector3 NomalizedMouseDirection = mousDirection.Normalize();
+	if (!activeCamera) {
+		return Vector3(0, 0, 0); // アクティブカメラが存在しない場合
+	}
 
-	float kDistanceTestObject = (zDistance - posNear.z) / (posFar.z - posNear.z); // ZがzDistanceとなるtを計算 // Zが0となるtを計算
-	//kDistanceTestObject += 10;
-	//const float kDistanceTestObject =CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.z*-1;
-	//const float kDistanceTestObject = -17;
-	return posNear + mousDirection * kDistanceTestObject;
+	// カメラのビュープロジェクション行列を取得
+	const Matrix4x4& viewProjectionMatrix = activeCamera->GetViewprojectionMatrix();
+	Matrix4x4 invViewProjectionMatrix = viewProjectionMatrix.Inverse();
 
-	//if (!activeCamera) {
-	//	return Vector3(0, 0, 0); // カメラが存在しない場合
-	//}
+	// マウス座標を正規化デバイス座標 (NDC) に変換
+	float ndcX = (2.0f * mousePos.x) / WinApp::kClientWindth - 1.0f;
+	float ndcY = 1.0f - (2.0f * mousePos.y) / WinApp::kClientHeight; // Y座標は反転
 
+	// 視錐台の近点 (Z=0) と遠点 (Z=1) を定義
+	Vector3 clipSpaceNear(ndcX, ndcY, 0.0f);
+	Vector3 clipSpaceFar(ndcX, ndcY, 1.0f);
+
+	// クリップ空間座標をワールド空間に変換
+	Vector3 worldNear = MyMath::Transform(clipSpaceNear, invViewProjectionMatrix);
+	Vector3 worldFar = MyMath::Transform(clipSpaceFar, invViewProjectionMatrix);
+
+	// レイの方向を計算
+	Vector3 rayDirection = (worldFar - worldNear).Normalize();
+
+	// 近点を基準に一定距離進んだ位置を返す（例: 10単位進む）
 	
+	return worldNear + rayDirection * distance;
 }
+
+
+
+
+
+
 
 
 //Vector3 Input::GetMouseWorldPosition() {

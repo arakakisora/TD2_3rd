@@ -15,7 +15,7 @@ void GamePlayScene::Initialize()
 	//Playerの初期化
 	player = new Player();
 	player->Initialize(0);
-	
+
 
 	//カメラの生成	
 	pCamera_ = new Camera();
@@ -39,17 +39,17 @@ void GamePlayScene::Initialize()
 			pFieldObject_.push_back(pFieldObject);
 		}
 	}
-	
+
 
 	pField_ = std::make_unique<Field>();
 	pField_->Initialize(pFieldObject_);
 
-	MouseObject = new Object3D();	
+	MouseObject = new Object3D();
 	MouseObject->Initialize(Object3DCommon::GetInstance());
 	MouseObject->SetModel("cube.obj");
 
 
-	
+
 }
 
 void GamePlayScene::Finalize()
@@ -75,9 +75,15 @@ void GamePlayScene::Update()
 	//カメラの更新
 	CameraManager::GetInstans()->GetActiveCamera()->Update();
 
-	mousePos = Input::GetInstans()->GetMouseWorldPosition();
+	//mousePos = Input::GetInstans()->GetMouseWorldPosition();
 	//mousePos.z += 20.0f;
 
+	//float cameraZ = CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.z;
+	mousePos = Input::GetInstans()->GetMouseWorldPosition(CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.y);
+	
+	// 現在のカメラの位置を基準にしたマウス位置取得
+
+	
 	MouseObject->SetTranslate(mousePos);
 	MouseObject->Update();
 
@@ -85,7 +91,7 @@ void GamePlayScene::Update()
 
 	CameraManager::GetInstans()->GetActiveCamera()->SetTranslate(cameraPos_);
 	CameraManager::GetInstans()->GetActiveCamera()->SetRotate(cameraRot_);
-	
+
 	// ゴール判定
 	if (pField_->IsGoal())
 	{
@@ -97,7 +103,7 @@ void GamePlayScene::Update()
 	// ------------テスト----------------
 	// ボールの位置テスト
 	prePos_ = pField_->GetBlockPosition(2);
-	
+
 	// パス
 	if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x <= WIDTH - 3)
 	{
@@ -126,7 +132,7 @@ void GamePlayScene::Update()
 		pField_->SetBlockType((int)prePos_.x + 1, (int)prePos_.y, (int)prePos_.z, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
-	else if (Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 1 && (int)prePos_.x <= WIDTH-1)
+	else if (Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 1 && (int)prePos_.x <= WIDTH - 1)
 	{
 		pField_->SetBlockType((int)prePos_.x - 1, (int)prePos_.y, (int)prePos_.z, 2);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
@@ -142,7 +148,7 @@ void GamePlayScene::Update()
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
 
-	
+
 
 #ifdef _DEBUG
 
@@ -159,10 +165,20 @@ void GamePlayScene::Update()
 		}
 		ImGui::DragFloat3("mousPos", &mousePos.x, 0.1f);
 
-		ImGui::SliderFloat3("cameraPos", &cameraPos_.x, -50.0f, 50.0f);	
+		ImGui::SliderFloat3("cameraPos", &cameraPos_.x, -50.0f, 50.0f);
 		ImGui::SliderFloat3("cameraRot", &cameraRot_.x, -3.0f, 3.0f);
 
 		pField_->ImGui();
+#ifdef _DEBUG
+		const Vector3& cameraPos = CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate;
+		const Vector3& cameraRot = CameraManager::GetInstans()->GetActiveCamera()->GetTransform().rotate;
+		ImGui::Text("Camera Position: (%.2f, %.2f, %.2f)", cameraPos.x, cameraPos.y, cameraPos.z);
+		ImGui::Text("Camera Rotation: (%.2f, %.2f, %.2f)", cameraRot.x, cameraRot.y, cameraRot.z);
+#endif
+
+
+
+
 	}
 
 #endif // _DEBUG
