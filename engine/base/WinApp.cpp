@@ -27,7 +27,13 @@ LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-
+WinApp* WinApp::instance = nullptr;
+WinApp* WinApp::GetInstance() {
+	if (instance == nullptr) {
+		instance = new WinApp;
+	}
+	return instance;
+}
 
 
 void WinApp::Initialize()
@@ -80,6 +86,8 @@ void WinApp::Finalize()
 	
 	CloseWindow(hwnd);
 	CoUninitialize();
+	delete instance;
+	instance = nullptr;
 
 }
 

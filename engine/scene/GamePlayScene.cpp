@@ -10,6 +10,7 @@
 
 void GamePlayScene::Initialize()
 {
+
 	//カメラの生成	
 	pCamera_ = new Camera();
 	pCamera_->SetRotate({ 0,0,0, });
@@ -32,10 +33,18 @@ void GamePlayScene::Initialize()
 			pFieldObject_.push_back(pFieldObject);
 		}
 	}
-	
+
 
 	pField_ = std::make_unique<Field>();
 	pField_->Initialize(pFieldObject_);
+
+
+	MouseObject = new Object3D();
+	MouseObject->Initialize(Object3DCommon::GetInstance());
+	MouseObject->SetModel("cube.obj");
+
+
+
 
 
 
@@ -49,6 +58,7 @@ void GamePlayScene::Initialize()
 	enemy_->SetField(pField_.get());
 	enemy_->Initialize(Object3DCommon::GetInstance(), "cube.obj");
 	
+
 }
 
 void GamePlayScene::Finalize()
@@ -74,6 +84,23 @@ void GamePlayScene::Update()
 	CameraManager::GetInstans()->GetActiveCamera()->Update();
 
 
+	//mousePos = Input::GetInstans()->GetMouseWorldPosition();
+	//mousePos.z += 20.0f;
+
+	//float cameraZ = CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.z;
+	mousePos = Input::GetInstans()->GetMouseWorldPosition(CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.y);
+	
+	// 現在のカメラの位置を基準にしたマウス位置取得
+
+	
+	MouseObject->SetTranslate(mousePos);
+	MouseObject->Update();
+
+	
+
+
+
+
 	//エネミーの更新
 	enemy_->Update();
 
@@ -88,6 +115,7 @@ void GamePlayScene::Update()
 
 	// フィールドの更新
 	pField_->Update();
+
 
 
 	// ゴール判定
@@ -109,8 +137,10 @@ void GamePlayScene::Update()
 	pField_->SetBlockType(prePlayerPos_.x, prePlayerPos_.y, prePlayerPos_.z, 0);
 	
 	// ボールの位置テスト
+
 	prePos_ = pField_->GetBlockPosition(1);
 	
+
 	// パス
 	if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x <= WIDTH - 3)
 	{
@@ -139,7 +169,7 @@ void GamePlayScene::Update()
 		pField_->SetBlockType((int)prePos_.x + 1, (int)prePos_.y, (int)prePos_.z, 1);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
-	else if (Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 1 && (int)prePos_.x <= WIDTH-1)
+	else if (Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 1 && (int)prePos_.x <= WIDTH - 1)
 	{
 		pField_->SetBlockType((int)prePos_.x - 1, (int)prePos_.y, (int)prePos_.z, 1);
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
@@ -155,6 +185,7 @@ void GamePlayScene::Update()
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
 
+
 	// フィールド毎フレーム更新するやつ
 	for (int z = 0; z < DEPTH; z++)
 	{
@@ -166,6 +197,7 @@ void GamePlayScene::Update()
 			}
 		}
 	}
+
 
 
 #ifdef _DEBUG
@@ -181,15 +213,28 @@ void GamePlayScene::Update()
 		{
 			SceneManager::GetInstance()->ChangeScene("GAMEOVER");
 		}
+		ImGui::DragFloat3("mousPos", &mousePos.x, 0.1f);
 
-		ImGui::SliderFloat3("cameraPos", &cameraPos_.x, -50.0f, 50.0f);	
+		ImGui::SliderFloat3("cameraPos", &cameraPos_.x, -50.0f, 50.0f);
 		ImGui::SliderFloat3("cameraRot", &cameraRot_.x, -3.0f, 3.0f);
 
 		pField_->ImGui();
 
+#ifdef _DEBUG
+		const Vector3& cameraPos = CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate;
+		const Vector3& cameraRot = CameraManager::GetInstans()->GetActiveCamera()->GetTransform().rotate;
+	
+#endif
+
+
+
+
+
+
 		pPlayer_->ImGui();
 
 		ImGui::Text("prePlayerPos %d", &prePlayerPos_.x);
+
 	}
 
 #endif // _DEBUG
@@ -202,6 +247,8 @@ void GamePlayScene::Draw()
 	//3dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
 	Object3DCommon::GetInstance()->CommonDraw();
 
+	//3Dオブジェクトの描画
+	MouseObject->Draw();
 	pField_->Draw();
 	pPlayer_->Draw();
 

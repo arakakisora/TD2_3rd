@@ -8,6 +8,8 @@
 
 void GameClearScene::Initialize()
 {
+
+
 }
 
 void GameClearScene::Finalize()
