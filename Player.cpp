@@ -16,7 +16,7 @@ void Player::Initialize(int posZ)
 	//CameraMaanager::GetInstance()->SetCamera(camera);
 	// プレイヤーの初期化
 	this->posZ = posZ;
-	playerData.position = Vector3(-3.0f, 10.0f, 10.0f);
+	playerData.position = Vector3(0.0f, 0.0f, 10.0f);
 	playerData.rotate = Vector3(0.0f, 0.0f, 0.0f);
 	playerData.scale = Vector3(1.0f, 1.0f, 1.0f);
 	ModelManager::GetInstans()->LoadModel("cube.obj");
@@ -57,23 +57,39 @@ void Player::Move(int WIDTH, int DEPTH)
 	// キー入力に応じてプレイヤーの位置を更新
 	if (Input::GetInstans()->TriggerKey(DIK_S) && posZ < DEPTH - 1)
 	{
+		prePosX = posX;
+		prePosZ = posZ;
 		posZ += 1;
 	}
 	if (Input::GetInstans()->TriggerKey(DIK_W) && posZ > 0)
 	{
+		prePosX = posX;
+		prePosZ = posZ;
 		posZ -= 1;
 	}
-	if (Input::GetInstans()->TriggerKey(DIK_A) && posX > -3)
+	if (Input::GetInstans()->TriggerKey(DIK_A) && posX > 0)
 	{
+		prePosX = posX;
+		prePosZ = posZ;
 		posX -= 1;
 	}
-	if (Input::GetInstans()->TriggerKey(DIK_D) && posX < WIDTH - 4)
+	if (Input::GetInstans()->TriggerKey(DIK_D) && posX < WIDTH - 1)
 	{
+		prePosX = posX;
+		prePosZ = posZ;
 		posX += 1;
 	}
 
 	// プレイヤーの位置を更新
-	playerData.position = Vector3(static_cast<float>(posX) * 1.5f, 8.0f, static_cast<float>(posZ) * 1.5f);
+	playerData.position = Vector3(static_cast<float>(posX) * 1.0f, 0.0f, static_cast<float>(posZ) * 1.0f);
+}
+
+void Player::ImGui()
+{
+	ImGui::Text("Player");
+	ImGui::Text("posX : %d", posX);
+	ImGui::Text("posY : %d", posY);
+	ImGui::Text("posZ : %d", posZ);
 }
 
 
