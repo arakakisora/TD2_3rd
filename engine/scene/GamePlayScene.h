@@ -33,7 +33,16 @@ public:
 	/// </summary>
 	void Draw()override;
 
-private:	
+private:
+	//ターン
+	enum class TurnState
+	{
+		NONE,
+		PLAYER,
+		ENEMY,
+	};
+	TurnState turnState_ = TurnState::NONE;
+
 	// Player
 	Player* pPlayer_;
 

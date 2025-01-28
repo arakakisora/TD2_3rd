@@ -74,36 +74,33 @@ void GamePlayScene::Update()
 {
 	//カメラの更新
 	CameraManager::GetInstans()->GetActiveCamera()->Update();
-
-
-	//mousePos = Input::GetInstans()->GetMouseWorldPosition();
-	//mousePos.z += 20.0f;
-
-	//float cameraZ = CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.z;
 	mousePos = Input::GetInstans()->GetMouseWorldPosition(CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.y);
-	
-	// 現在のカメラの位置を基準にしたマウス位置取得
-
-	
+	// 現在のカメラの位置を基準にしたマウス位置取得	
 	MouseObject->SetTranslate(mousePos);
 	MouseObject->Update();
-
-	//エネミーの更新
-	enemy_->Update();
-
 	CameraManager::GetInstans()->GetActiveCamera()->SetTranslate(cameraPos_);
 	CameraManager::GetInstans()->GetActiveCamera()->SetRotate(cameraRot_);
-	
 
-	// プレイヤーの更新
-	pPlayer_->Update();
-	// プレイヤーの位置をフィールドにセット
-	pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
+
+	//ターンごとに更新を行う
+	switch (turnState_)
+	{
+	case TurnState::NONE:
+		break;
+	case TurnState::PLAYER:
+		// プレイヤーの更新
+		pPlayer_->Update();
+		// プレイヤーの位置をフィールドにセット
+		pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
+		break;
+	case TurnState::ENEMY:
+		//エネミーの更新
+		enemy_->Update();
+		break;
+	}
 
 	// フィールドの更新
 	pField_->Update();
-
-
 
 	// ゴール判定
 	if (pField_->IsGoal())
@@ -216,6 +213,16 @@ void GamePlayScene::Update()
 		pPlayer_->ImGui();
 
 		ImGui::Text("prePlayerPos %d", &prePlayerPos_.x);
+
+		if(ImGui::Button("Turn Player"))
+		{
+			turnState_ = TurnState::PLAYER;
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Turn Enemy"))
+		{
+			turnState_ = TurnState::ENEMY;
+		}
 
 	}
 
