@@ -11,3 +11,7 @@ void EnemyManager::Initialize(Object3DCommon* objectCommon, const std::string& f
 		enemy->Initialize(objectCommon, filename);
 	}
 }
+
+void EnemyManager::Update()
+{
+}
