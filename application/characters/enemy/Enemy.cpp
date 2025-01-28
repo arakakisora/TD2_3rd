@@ -16,15 +16,7 @@ void Enemy::Initialize(Object3DCommon* objectCommon, const std::string& filename
 
 void Enemy::Update()
 {
-#ifdef _DEBUG
-	ImGui::Begin("enemy");
-	ImGui::DragFloat3("position", &transform_.translate.x, 0.1f);
-	ImGui::DragFloat3("scale", &transform_.scale.x, 0.1f);
-	ImGui::DragFloat3("rotate", &transform_.rotate.x, 0.1f);
-	ImGui::End();
-#endif
-
-	//
+	// AI処理
     HandleAI();
 
 	// 移動処理
@@ -42,8 +34,8 @@ void Enemy::Draw()
 
 void Enemy::Move(Vector3 distance)
 {
-	// 移動中は移動を受け付けない
-    if (isEaseStart_) { return; }
+	// 移動中またはターン終了中は移動しない
+    if (isEaseStart_ || isTurnEnd_) { return; }
 
     //移動先
 	Vector3 newPosition = transform_.translate + distance;
@@ -52,7 +44,12 @@ void Enemy::Move(Vector3 distance)
     if ((newPosition.x >= 0 && newPosition.x < WIDTH) && (newPosition.z>= 0 && newPosition.z < DEPTH))
     {
 		//プレイヤーがいる場所には移動しない
-        if (newPosition.x == player_->GetPosition().x && newPosition.z == player_->GetPosition().z) { return; }
+        if (newPosition.x == player_->GetPosition().x && newPosition.z == player_->GetPosition().z)
+        {
+			//ターン終了
+			isTurnEnd_ = true;
+        	return;
+        }
         // 現在の位置を記録
         moveStartPosition_ = transform_.translate;
 		// 目標位置を設定
@@ -88,6 +85,10 @@ void Enemy::HandleAI()
     if (distance.x != 0.0f || distance.z != 0.0f)
     {
         Move(distance);
+    }else
+    {
+		//プレイヤーと同じ位置にいる場合はターン終了
+		isTurnEnd_ = true;
     }
 }
 
@@ -100,9 +101,23 @@ void Enemy::UpdateEasingMovement()
 		transform_.translate.x = EasingToEnd(moveStartPosition_.x, moveTargetPosition_.x, EaseInSine, moveProgress_);
 		transform_.translate.z = EasingToEnd(moveStartPosition_.z, moveTargetPosition_.z, EaseInSine, moveProgress_);
     	if (moveProgress_ >= 1.0f) {
-            isEaseStart_ = false;
+			// 移動完了
+    		isEaseStart_ = false;
+            //ターン終了
+			isTurnEnd_ = true;
         }
     }
+}
+
+void Enemy::ImGui()
+{
+#ifdef _DEBUG
+    ImGui::Begin("enemy");
+    ImGui::DragFloat3("position", &transform_.translate.x, 0.1f);
+    ImGui::DragFloat3("scale", &transform_.scale.x, 0.1f);
+    ImGui::DragFloat3("rotate", &transform_.rotate.x, 0.1f);
+    ImGui::End();
+#endif
 }
 
 void Enemy::UpdateTransform()
@@ -111,4 +126,13 @@ void Enemy::UpdateTransform()
 	object3D_->SetRotate(transform_.rotate);
 	object3D_->SetScale(transform_.scale);
 	object3D_->Update();
+
+	//ImGuiも常に表示
+#ifdef _DEBUG
+    ImGui::Begin("enemy");
+    ImGui::DragFloat3("position", &transform_.translate.x, 0.1f);
+    ImGui::DragFloat3("scale", &transform_.scale.x, 0.1f);
+    ImGui::DragFloat3("rotate", &transform_.rotate.x, 0.1f);
+    ImGui::End();
+#endif
 }

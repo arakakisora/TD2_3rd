@@ -22,6 +22,8 @@ public:
 	void Finalize();
 	// 移動
 	void Move(int WIDTH, int DEPTH);
+	//3Dオブジェクトの更新
+	void UpdateTransform();
 public: //アクセッサ
 	Vector3 GetPosition() { return playerData.position; }
 	void SetPosition(Vector3 pos) { playerData.position = pos; }
