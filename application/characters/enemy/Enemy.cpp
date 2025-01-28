@@ -93,6 +93,10 @@ void Enemy::HandleAI()
     if (distance.x != 0.0f || distance.z != 0.0f)
     {
         Move(distance);
+    }else
+    {
+		//プレイヤーと同じ位置にいる場合はターン終了
+		isTurnEnd_ = true;
     }
 }
 
