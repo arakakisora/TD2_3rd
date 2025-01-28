@@ -65,6 +65,7 @@ void GamePlayScene::Finalize()
 {
 	pPlayer_->Finalize();
 	delete pPlayer_;
+	delete MouseObject;
 
 
 	pField_->Finalize();
