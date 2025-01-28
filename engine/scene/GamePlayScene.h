@@ -45,6 +45,9 @@ private:
 
 	// Player
 	Player* pPlayer_;
+	Player* pPlayer2_;
+	Player* pPlayer3_;
+
 	//カメラのポインタ
 	Camera* pCamera_ = nullptr;
 	Vector3 cameraPos_ = Vector3(3.0f, -20.0f, 0.0f);
@@ -57,7 +60,12 @@ private:
 	std::unique_ptr<Enemy> enemy_ = nullptr;
 	// テスト用
 	Vector3 prePos_{};
+	Vector3 prePos2_{};
+	Vector3 prePos3_{};
 	Field::Pos prePlayerPos_{};
+	Field::Pos prePlayerPos2_{};
+	Field::Pos prePlayerPos3_{};
+
 
 	Vector3 mousePos = Vector3(0, 0, 0);
 	Object3D* MouseObject = nullptr;

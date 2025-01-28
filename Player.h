@@ -13,7 +13,7 @@ public:
 	Player();
 	~Player();
 	// 初期化
-	void Initialize(int posZ);
+	void Initialize(int posX,int posZ);
 	// 更新
 	void Update();
 	// 描画
