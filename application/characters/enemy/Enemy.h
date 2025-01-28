@@ -4,7 +4,9 @@
 #include <numbers>
 #include <cmath>
 
-inline float EaseInSine(float x) { return 1.0f - std::cos((x * std::numbers::pi_v<float>) / 2.0f); }
+#include "Player.h"
+
+
 
 class Enemy
 {
@@ -22,19 +24,25 @@ public:
 	void Move(Vector3 distance);
 
 public: //アクセッサ
+	// 位置、回転、拡大率の取得
 	Vector3 GetPosition() const { return transform_.translate; }
 	Vector3 GetRotation() const { return transform_.rotate; }
 	Vector3 GetScale() const { return transform_.scale; }
 
+	// 位置、回転、拡大率の設定
 	void SetPosition(const Vector3& pos) { transform_.translate = pos; }
 	void SetRotation(const Vector3& rot) { transform_.rotate = rot; }
 	void SetScale(const Vector3& scale) { transform_.scale = scale; }
 
+	// フィールドのポインタをセット
 	void SetField(Field* field) { field_ = field; }
 
+	// プレイヤーのポインタをセット
+	void SetPlayer(Player* player) { player_ = player; }
+
 private:
-	// 入力処理
-	void HandleInput();
+	// AI処理
+	void HandleAI();
 
 	// イージングによる移動更新
 	void UpdateEasingMovement();
@@ -45,6 +53,9 @@ private:
 private:
 	//フィールド
 	Field* field_ = nullptr;
+
+	//プレイヤー
+	Player* player_ = nullptr;
 
 	// 3Dオブジェクト
 	std::unique_ptr<Object3D> object3D_;

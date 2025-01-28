@@ -49,6 +49,7 @@ void GamePlayScene::Initialize()
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->SetField(pField_.get());
 	enemy_->Initialize(Object3DCommon::GetInstance(), "cube.obj");
+	enemy_->SetPlayer(pPlayer_);
 }
 
 void GamePlayScene::Finalize()
@@ -86,11 +87,6 @@ void GamePlayScene::Update()
 	
 	MouseObject->SetTranslate(mousePos);
 	MouseObject->Update();
-
-	
-
-
-
 
 	//エネミーの更新
 	enemy_->Update();
@@ -216,11 +212,6 @@ void GamePlayScene::Update()
 		const Vector3& cameraRot = CameraManager::GetInstans()->GetActiveCamera()->GetTransform().rotate;
 	
 #endif
-
-
-
-
-
 
 		pPlayer_->ImGui();
 

@@ -10,7 +10,7 @@
 #include "SceneManager.h"
 
 #include "Field.h"
-#include "application/characters/Enemy.h"
+#include "application/characters/enemy/Enemy.h"
 
 class GamePlayScene :public BaseScene
 {

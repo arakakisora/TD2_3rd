@@ -34,6 +34,10 @@ void Player::Update()
 {
 	//playerData.rotate.z += 0.01f;
 	//playerData.rotate.y += 0.01f;
+	ImGui::Begin("player");
+	ImGui::DragFloat3("position", &playerData.position.x, 0.1f);
+	ImGui::End();
+
 	Move(WIDTH, DEPTH);
 	object3D_->SetTranslate(playerData.position);
 	object3D_->SetRotate(playerData.rotate);
@@ -81,7 +85,7 @@ void Player::Move(int WIDTH, int DEPTH)
 	}
 
 	// プレイヤーの位置を更新
-	playerData.position = Vector3(static_cast<float>(posX) * 1.0f, 0.0f, static_cast<float>(posZ) * 1.0f);
+	playerData.position = Vector3(static_cast<float>(posX), 8.0f, static_cast<float>(posZ));
 }
 
 void Player::ImGui()
