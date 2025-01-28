@@ -8,7 +8,7 @@ Player::~Player()
 {
 }
 
-void Player::Initialize(int posZ)
+void Player::Initialize(int posX,int posZ)
 {
 	// カメラの初期化
 	//camera = new Camera();
@@ -16,7 +16,7 @@ void Player::Initialize(int posZ)
 	//CameraMaanager::GetInstance()->SetCamera(camera);
 	// プレイヤーの初期化
 	this->posZ = posZ;
-	playerData.position = Vector3(0.0f, 0.0f, 10.0f);
+	playerData.position = Vector3((float)posX, 0.0f, 10.0f);
 	playerData.rotate = Vector3(0.0f, 0.0f, 0.0f);
 	playerData.scale = Vector3(1.0f, 1.0f, 1.0f);
 	ModelManager::GetInstans()->LoadModel("cube.obj");

@@ -50,14 +50,20 @@ void GamePlayScene::Initialize()
 
 	//Playerの初期化
 	pPlayer_ = new Player();
-	pPlayer_->Initialize(0);
+	pPlayer_->Initialize(0, 0);
+	pPlayer2_ = new Player();
+	pPlayer2_->Initialize(0, 3);
+	pPlayer3_ = new Player();
+	pPlayer3_->Initialize(0, 4);
 	// プレイヤーの位置をフィールドにセット
 	pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
+	pField_->SetPlayerPos(pPlayer2_->GetPosX(), pPlayer2_->GetPosY(), pPlayer2_->GetPosZ());
+	pField_->SetPlayerPos(pPlayer3_->GetPosX(), pPlayer3_->GetPosY(), pPlayer3_->GetPosZ());
 	//エネミー
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->SetField(pField_.get());
 	enemy_->Initialize(Object3DCommon::GetInstance(), "cube.obj");
-	
+
 
 }
 
@@ -65,6 +71,11 @@ void GamePlayScene::Finalize()
 {
 	pPlayer_->Finalize();
 	delete pPlayer_;
+	pPlayer2_->Finalize();
+	delete pPlayer2_;
+	pPlayer3_->Finalize();
+	delete pPlayer3_;
+
 	delete MouseObject;
 
 
@@ -90,14 +101,14 @@ void GamePlayScene::Update()
 
 	//float cameraZ = CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.z;
 	mousePos = Input::GetInstans()->GetMouseWorldPosition(CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.y);
-	
+
 	// 現在のカメラの位置を基準にしたマウス位置取得
 
-	
+
 	MouseObject->SetTranslate(mousePos);
 	MouseObject->Update();
 
-	
+
 
 
 
@@ -107,17 +118,29 @@ void GamePlayScene::Update()
 
 	CameraManager::GetInstans()->GetActiveCamera()->SetTranslate(cameraPos_);
 	CameraManager::GetInstans()->GetActiveCamera()->SetRotate(cameraRot_);
-	
 
-	// プレイヤーの更新
-	pPlayer_->Update();
+
+	// プレイヤーの更新 / 押しながらキーを押すと移動
 	// プレイヤーの位置をフィールドにセット
-	pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
-
+	if (Input::GetInstans()->PushKey(DIK_1))
+	{
+		pPlayer_->Update();
+		pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
+	}
+	if (Input::GetInstans()->PushKey(DIK_2))
+	{
+		pPlayer2_->Update();
+		pField_->SetPlayerPos(pPlayer2_->GetPosX(), pPlayer2_->GetPosY(), pPlayer2_->GetPosZ());
+	}
+	if (Input::GetInstans()->PushKey(DIK_3))
+	{
+		pPlayer3_->Update();
+		pField_->SetPlayerPos(pPlayer3_->GetPosX(), pPlayer3_->GetPosY(), pPlayer3_->GetPosZ());
+	}
+	
+	
 	// フィールドの更新
 	pField_->Update();
-
-
 
 	// ゴール判定
 	if (pField_->IsGoal())
@@ -135,12 +158,14 @@ void GamePlayScene::Update()
 	// ------------テスト----------------
 	// プレイヤーの位置テスト
 	prePlayerPos_ = { pPlayer_->GetPrePosX(),pPlayer_->GetPrePosY(),pPlayer_->GetPrePosZ() };
+	prePlayerPos2_ = { pPlayer2_->GetPrePosX(),pPlayer2_->GetPrePosY(),pPlayer2_->GetPrePosZ() };
+	prePlayerPos3_ = { pPlayer3_->GetPrePosX(),pPlayer3_->GetPrePosY(),pPlayer3_->GetPrePosZ() };
 	pField_->SetBlockType(prePlayerPos_.x, prePlayerPos_.y, prePlayerPos_.z, 0);
-	
+
 	// ボールの位置テスト
 
 	prePos_ = pField_->GetBlockPosition(1);
-	
+
 
 	// パス
 	if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x <= WIDTH - 3)
@@ -224,7 +249,7 @@ void GamePlayScene::Update()
 #ifdef _DEBUG
 		const Vector3& cameraPos = CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate;
 		const Vector3& cameraRot = CameraManager::GetInstans()->GetActiveCamera()->GetTransform().rotate;
-	
+
 #endif
 
 
@@ -233,8 +258,11 @@ void GamePlayScene::Update()
 
 
 		pPlayer_->ImGui();
+		pPlayer2_->ImGui();
+		pPlayer3_->ImGui();
 
 		ImGui::Text("prePlayerPos %d", &prePlayerPos_.x);
+
 
 	}
 
@@ -252,6 +280,8 @@ void GamePlayScene::Draw()
 	MouseObject->Draw();
 	pField_->Draw();
 	pPlayer_->Draw();
+	pPlayer2_->Draw();
+	pPlayer3_->Draw();
 
 	//エネミーの描画
 	enemy_->Draw();
