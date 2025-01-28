@@ -3,6 +3,9 @@
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
 
+#include "CameraManager.h"
+#include "MyMath.h"
+
 Input* Input::instance = nullptr;
 
 Input* Input::GetInstans()
@@ -113,3 +116,70 @@ bool Input::TriggerMouse(int buttonNumber)
 	}
 	return false;
 }
+
+Vector3 Input::GetMouseWorldPosition(float distance) {
+	// アクティブなカメラを取得
+	Camera* activeCamera = CameraManager::GetInstans()->GetActiveCamera();
+	if (!activeCamera) {
+		return Vector3(0, 0, 0); // アクティブカメラが存在しない場合
+	}
+
+	// カメラのビュープロジェクション行列を取得
+	const Matrix4x4& viewProjectionMatrix = activeCamera->GetViewprojectionMatrix();
+	Matrix4x4 invViewProjectionMatrix = viewProjectionMatrix.Inverse();
+
+	// マウス座標を正規化デバイス座標 (NDC) に変換
+	float ndcX = (2.0f * mousePos.x) / WinApp::kClientWindth - 1.0f;
+	float ndcY = 1.0f - (2.0f * mousePos.y) / WinApp::kClientHeight; // Y座標は反転
+
+	// 視錐台の近点 (Z=0) と遠点 (Z=1) を定義
+	Vector3 clipSpaceNear(ndcX, ndcY, 0.0f);
+	Vector3 clipSpaceFar(ndcX, ndcY, 1.0f);
+
+	// クリップ空間座標をワールド空間に変換
+	Vector3 worldNear = MyMath::Transform(clipSpaceNear, invViewProjectionMatrix);
+	Vector3 worldFar = MyMath::Transform(clipSpaceFar, invViewProjectionMatrix);
+
+	// レイの方向を計算
+	Vector3 rayDirection = (worldFar - worldNear).Normalize();
+
+	// 近点を基準に一定距離進んだ位置を返す（例: 10単位進む）
+	
+	return worldNear + rayDirection * distance;
+}
+
+
+
+
+
+
+
+
+//Vector3 Input::GetMouseWorldPosition() {
+//	const Vector2& mousePos = GetMousePos();
+//
+//	// アクティブカメラを取得
+//	Camera* activeCamera = CameraManager::GetInstans()->GetActiveCamera();
+//	if (!activeCamera) {
+//		return Vector3(0, 0, 0); // カメラが存在しない場合
+//	}
+//
+//	// カメラ行列を取得
+//	const Matrix4x4& viewProjectionMatrix = activeCamera->GetViewprojectionMatrix();
+//
+//	// ウィンドウサイズを取得
+//	float windowWidth = static_cast<float>(WinApp::kClientWindth);
+//	float windowHeight = static_cast<float>(WinApp::kClientHeight);
+//
+//	// マウス位置を正規化デバイス座標 (NDC) に変換
+//	float ndcX = (2.0f * mousePos.x / windowWidth) - 1.0f;
+//	float ndcY = 1.0f - (2.0f * mousePos.y / windowHeight); // Y座標を反転
+//
+//	// クリップ空間座標をワールド空間に変換
+//	Vector3 clipSpacePos(ndcX, ndcY, 1.0f);
+//	Matrix4x4 invViewProjectionMatrix = viewProjectionMatrix.Inverse();
+//	return MyMath::Transform(clipSpacePos, invViewProjectionMatrix);
+//}
+
+
+

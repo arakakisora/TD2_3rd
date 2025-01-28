@@ -8,19 +8,19 @@ void Framework::Initialize()
 	//ポインタ
 	endRequst_ = false;
 
-	winApp = new WinApp;
-	winApp->Initialize();
+	WinApp::GetInstance()->Initialize();
+	//winApp->Initialize();
 	//DX初期化
 
 	dxCommon = new DirectXCommon();
-	dxCommon->Initialize(winApp);
+	dxCommon->Initialize(WinApp::GetInstance());
 	//srvマネージャの初期化	
 	srvManager = new SrvManager();
 	srvManager->Initialize(dxCommon);
 	//テクスチャマネージャの初期化
 	TextureManager::GetInstance()->Initialize(dxCommon, srvManager);
 	//Input初期化
-	Input::GetInstans()->Initialize(winApp);
+	Input::GetInstans()->Initialize(WinApp::GetInstance());
 	//Audio初期化
 	audio_->GetInstance()->Initialize();
 	//スプライト共通部分の初期化
@@ -42,7 +42,7 @@ void Framework::Initialize()
 	//imguiMnagerの初期化
 
 	imGuiMnager = new ImGuiManager();
-	imGuiMnager->Initialize(dxCommon, winApp);
+	imGuiMnager->Initialize(dxCommon, WinApp::GetInstance());
 
 #endif // _DEBUG
 
@@ -61,11 +61,11 @@ void Framework::Finalize()
 	//aoudio解放
 	Audio::GetInstance()->Finalize();
 	//WindowsAPI終了処理
-	winApp->Finalize();
+	WinApp::GetInstance()->Finalize();
 	//WindowsAPI解放
 	TextureManager::GetInstance()->Finalize();
 	ModelManager::GetInstans()->Finalize();
-	delete winApp;
+	//delete winApp;
 	delete dxCommon;
 	delete srvManager;
 #ifdef _DEBUG
@@ -85,7 +85,7 @@ void Framework::Update()
 {
 
 	//Windowsのメッセージ処理
-	if (winApp->ProcessMessage()) {
+	if (WinApp::GetInstance()->ProcessMessage()) {
 		//ゲームループを抜ける
 		endRequst_ = true;
 	}

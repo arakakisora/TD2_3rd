@@ -14,11 +14,22 @@ public:
 
 public:
 
+	/// <summary>
+	/// シングルトンインスタンスの取得
+	/// </summary>
+	/// <returns>シングルトンインスタンス</returns>
+	static WinApp* GetInstance();
+
+	
+
+
+
+
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 	//初期化
 	void Initialize();
-	
+
 	//終了処理
 	void Finalize();
 
@@ -27,6 +38,13 @@ public:
 	HINSTANCE GetHInstance()const { return wc.hInstance; }
 
 	bool ProcessMessage();
+
+private:
+	WinApp() = default;
+	~WinApp() = default;
+	WinApp(const WinApp&) = default;
+	WinApp& operator=(WinApp&) = delete;
+	static WinApp* instance;
 
 private:
 	//ウィンドウ生成

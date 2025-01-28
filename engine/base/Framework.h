@@ -47,8 +47,8 @@ public:
 	//ゲーム終了フラグ	
 	bool endRequst_ = false;
 
-	//WinAppのポインタ
-	WinApp* winApp = nullptr;
+	////WinAppのポインタ
+	//WinApp* winApp = nullptr;
 	//DirectXCommonのポインタ
 	DirectXCommon* dxCommon = nullptr;
 	//SrvManagerのポインタ

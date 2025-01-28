@@ -27,6 +27,9 @@ namespace MyMath {
 	Matrix4x4 MakeRotateYMatrix(float radian);
 	//回転Z
 	Matrix4x4 MakeRotateZMatrix(float radian);
+	//回転行列
+	Matrix4x4 MakeRotateMatrix(const Vector3& rotate);
+
 
 	Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 
@@ -39,6 +42,8 @@ namespace MyMath {
 	Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottm, float nearCip, float farCip);
 	//ビューポート変換行列
 	Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth);
+
+	Matrix4x4 Inverse(const Matrix4x4& matrix);
 }
 
 

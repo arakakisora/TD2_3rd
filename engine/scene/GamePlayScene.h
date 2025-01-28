@@ -35,11 +35,11 @@ public:
 
 private:	
 	// Player
-	Player* player;
+	Player* pPlayer_;
 
 	//カメラのポインタ
 	Camera* pCamera_ = nullptr;
-	Vector3 cameraPos_ = Vector3(0.0f, -20.0f, 0.0f);
+	Vector3 cameraPos_ = Vector3(3.0f, -20.0f, 0.0f);
 	Vector3 cameraRot_ = Vector3(-1.5f, 0.0f, 0.0f);
 
 
@@ -55,6 +55,10 @@ private:
 
 	// テスト用
 	Vector3 prePos_{};
+	Field::Pos prePlayerPos_{};
 
+
+	Vector3 mousePos = Vector3(0, 0, 0);
+	Object3D* MouseObject = nullptr;
 };
 
