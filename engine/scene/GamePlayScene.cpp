@@ -377,12 +377,18 @@ void GamePlayScene::SetclickPlayerPos()
 						mousePos.z >= blockPos.z - blockScale.z / 2 &&
 						mousePos.z <= blockPos.z + blockScale.z / 2) {
 
-						// 左クリックでプレイヤーをブロックに移動
-						if (Input::GetInstans()->TriggerMouse(0)) {
-							selectedPlayer_->SetPlayerPos(x, z);
-							selectedPlayer_ = nullptr; // 移動後、選択解除
-							ImGui::Text("Player Moved to: %d, %d", x, z);
-							return; // 1回のクリックで1つだけ処理
+						int currentX = selectedPlayer_->GetPosX();
+						int currentZ = selectedPlayer_->GetPosZ();
+
+						// **隣接1マスのみ移動を許可**
+						if (abs(x - currentX) + abs(z - currentZ) == 1) {
+							// 左クリックでプレイヤーをブロックに移動
+							if (Input::GetInstans()->TriggerMouse(0)) {
+								selectedPlayer_->SetPlayerPos(x, z);
+								selectedPlayer_ = nullptr; // 移動後、選択解除
+								ImGui::Text("Player Moved to: %d, %d", x, z);
+								return; // 1回のクリックで1つだけ処理
+							}
 						}
 					}
 				}
@@ -390,5 +396,6 @@ void GamePlayScene::SetclickPlayerPos()
 		}
 	}
 }
+
 
 
