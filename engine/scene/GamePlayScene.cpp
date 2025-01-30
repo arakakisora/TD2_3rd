@@ -334,11 +334,9 @@ void GamePlayScene::Draw()
 
 void GamePlayScene::SetclickPlayerPos()
 {
-
 	// クリックでプレイヤーを選択する処理
 	if (selectedPlayer_ == nullptr) {  // まだプレイヤーを選択していない場合
-		Player* players[] = { pPlayer_, pPlayer2_, pPlayer3_ };
-		for (auto player : players) {
+		for (const auto& player : pPlayer_) {  // ベクターでループ
 			Vector3 playerPos = pField_->GetBlockPositionAt(player->GetPosX(), 0, player->GetPosZ());
 			Vector3 playerSize = Vector3(1.0f, 1.0f, 1.0f); // プレイヤーのサイズ
 
@@ -350,7 +348,7 @@ void GamePlayScene::SetclickPlayerPos()
 
 				// 左クリックでプレイヤーを選択
 				if (Input::GetInstans()->TriggerMouse(0)) {
-					selectedPlayer_ = player;
+					selectedPlayer_ = player.get(); // unique_ptr から生ポインタ取得
 					ImGui::Text("Player Selected at: %d, %d", player->GetPosX(), player->GetPosZ());
 					return; // プレイヤー選択後は移動処理をしない
 				}
@@ -386,8 +384,6 @@ void GamePlayScene::SetclickPlayerPos()
 							ImGui::Text("Player Moved to: %d, %d", x, z);
 							return; // 1回のクリックで1つだけ処理
 						}
-
-
 					}
 				}
 			}
