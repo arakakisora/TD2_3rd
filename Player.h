@@ -4,8 +4,6 @@
 #include "Input.h"
 #include "Object3D.h"
 #include "Object3DCommon.h"
-#include "Camera.h"
-#include "input.h"
 
 class Player
 {
@@ -13,7 +11,7 @@ public:
 	Player();
 	~Player();
 	// 初期化
-	void Initialize(int posX,int posZ);
+	void Initialize(int posZ);
 	// 更新
 	void Update();
 	// 描画
