@@ -138,8 +138,7 @@ void GamePlayScene::Update()
 
 	// プレイヤーの位置をフィールドにセット
 	if (Input::GetInstans()->PushKey(DIK_1))
-	{
-		];
+	{;
 		pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
 	}
 	if (Input::GetInstans()->PushKey(DIK_2))
