@@ -46,6 +46,17 @@ public: // ゲッター  追加
 	int GetPrePosX() { return prePosX; }
 	int GetPrePosY() { return prePosY; }
 	int GetPrePosZ() { return prePosZ; }
+
+
+	//セッター
+	
+	//プレイヤーの座標セッター
+	void SetPlayerPos(int x,int z){
+		posX = static_cast<int>(x);
+		posZ = static_cast<int>(z);
+	}
+
+
 private:
 	Model* model;
 	Object3D* object3D_;

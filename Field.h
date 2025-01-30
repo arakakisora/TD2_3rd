@@ -90,6 +90,16 @@ public: // ゲッター
 		return Vector3(0, 0, 0);
 	};
 
+	Vector3 GetBlockPositionAt(int x, int y, int z) {
+		if (z >= 0 && z < DEPTH && y >= 0 && y < HEIGHT && x >= 0 && x < WIDTH) {
+			return pBlocks_[z][y][x].object3D.GetTransform().translate;
+		}
+		return Vector3(0, 0, 0); // 無効な場合のデフォルト
+	}
+
+
+
+
 	// ゲームオーバーフラグ
 	bool IsGameOver() const { return isGameOver_; }
 

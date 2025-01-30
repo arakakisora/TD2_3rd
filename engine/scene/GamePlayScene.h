@@ -33,6 +33,11 @@ public:
 	/// </summary>
 	void Draw()override;
 
+
+	void  SetclickPlayerPos();
+
+private:	
+
 private:
 	//ターン
 	enum class TurnState

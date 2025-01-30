@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Field.h"
+#include "CameraManager.h"
 Player::Player()
 {
 }
@@ -84,6 +85,16 @@ void Player::Move(int WIDTH, int DEPTH)
 		posX += 1;
 	}
 
+	////マウスでクリックした位置に移動
+	//if (Input::GetInstans()->TriggerMouse(0))
+	//{
+	//	// マウス座標を取得
+	//	Vector3 mousePos = Input::GetInstans()->GetMouseWorldPosition(CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.y);
+	//	// マウス座標をマス座標に変換
+	//	posX = static_cast<int>(mousePos.x);
+	//	posZ = static_cast<int>(mousePos.z);
+	//}
+
 	// プレイヤーの位置を更新
 	playerData.position = Vector3(static_cast<float>(posX), 8.0f, static_cast<float>(posZ));
 }
@@ -102,6 +113,12 @@ void Player::ImGui()
 	ImGui::Text("posX : %d", posX);
 	ImGui::Text("posY : %d", posY);
 	ImGui::Text("posZ : %d", posZ);
+
+	Vector3 mousePos = Input::GetInstans()->GetMouseWorldPosition(CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.y);
+	//マウス座標の取得
+	ImGui::Text("mousePos : %f %f %f", mousePos.x, mousePos.y, mousePos.z);
+
+
 }
 
 

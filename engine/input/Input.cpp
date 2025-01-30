@@ -143,7 +143,7 @@ Vector3 Input::GetMouseWorldPosition(float distance) {
 	// レイの方向を計算
 	Vector3 rayDirection = (worldFar - worldNear).Normalize();
 
-	// 近点を基準に一定距離進んだ位置を返す（例: 10単位進む）
+	
 	
 	return worldNear + rayDirection * distance;
 }
