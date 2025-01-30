@@ -30,7 +30,6 @@ void Player::Initialize(int posZ)
 void Player::Update()
 {
 	playerData.rotate.z += 0.01f;
-	playerData.rotate.y += 0.01f;
 	ImGui::Begin("player");
 	ImGui::DragFloat3("position", &playerData.position.x, 0.1f);
 	ImGui::End();
