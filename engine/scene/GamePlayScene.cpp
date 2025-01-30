@@ -41,7 +41,7 @@ void GamePlayScene::Initialize()
 	MouseObject->SetModel("cube.obj");
 
 	//Playerの初期化
-	std::vector<int> initPosZ = { 0, 3, 5 };
+	std::vector<int> initPosZ = { 0, 3, 4 };
 	for (int i = 0; i < initPosZ.size(); ++i) {
 		auto player = std::make_unique<Player>();
 		player->Initialize(initPosZ[i]);
