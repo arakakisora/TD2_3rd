@@ -8,7 +8,7 @@
 #include "BaseScene.h"
 #include"Player.h"
 #include "SceneManager.h"
-
+#include "vector"
 #include "Field.h"
 #include "application/characters/enemy/Enemy.h"
 
@@ -49,11 +49,12 @@ private:
 	TurnState turnState_ = TurnState::PLAYER;
 
 	// Player
-	Player* pPlayer_;
-	Player* pPlayer2_;
-	Player* pPlayer3_;
-	// 選択中のプレイヤー
+
+
 	Player* selectedPlayer_ = nullptr;
+
+
+	std::vector<std::unique_ptr<Player>> pPlayer_;
 
 
 	//カメラのポインタ
@@ -67,12 +68,11 @@ private:
 	//エネミー
 	std::unique_ptr<Enemy> enemy_ = nullptr;
 	// テスト用
-	Vector3 prePos_{};
-	Vector3 prePos2_{};
-	Vector3 prePos3_{};
-	Field::Pos prePlayerPos_{};
-	Field::Pos prePlayerPos2_{};
-	Field::Pos prePlayerPos3_{};
+	std::vector<Vector3> prePos_ = {};
+
+	// プレイヤーの位置
+	std::vector<Field::Pos> playerPosList_ = {};
+
 
 
 	Vector3 mousePos = Vector3(0, 0, 0);

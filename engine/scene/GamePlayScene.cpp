@@ -41,35 +41,35 @@ void GamePlayScene::Initialize()
 	MouseObject->SetModel("cube.obj");
 
 	//Playerの初期化
-	pPlayer_ = new Player();
-	pPlayer_->Initialize(0, 0);
-	pPlayer2_ = new Player();
-	pPlayer2_->Initialize(0, 3);
-	pPlayer3_ = new Player();
-	pPlayer3_->Initialize(0, 4);
+	std::vector<int> initPosZ = { 0, 3, 5 };
+	for (int i = 0; i < initPosZ.size(); ++i) {
+		auto player = std::make_unique<Player>();
+		player->Initialize(initPosZ[i]);
+		pPlayer_.push_back(std::move(player));
+	}
+
+	
 	// プレイヤーの位置をフィールドにセット
-	pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
-	pField_->SetPlayerPos(pPlayer2_->GetPosX(), pPlayer2_->GetPosY(), pPlayer2_->GetPosZ());
-	pField_->SetPlayerPos(pPlayer3_->GetPosX(), pPlayer3_->GetPosY(), pPlayer3_->GetPosZ());
+	for (const auto& player : pPlayer_) {
+		pField_->SetPlayerPos(player->GetPosX(), player->GetPosY(), player->GetPosZ());
+	}
 	//エネミー
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->SetField(pField_.get());
 	enemy_->Initialize(Object3DCommon::GetInstance(), "cube.obj");
 
 
-	enemy_->SetPlayer(pPlayer_);
+	enemy_->SetPlayer(pPlayer_.front().get());
 
 
 }
 
 void GamePlayScene::Finalize()
 {
-	pPlayer_->Finalize();
-	delete pPlayer_;
-	pPlayer2_->Finalize();
-	delete pPlayer2_;
-	pPlayer3_->Finalize();
-	delete pPlayer3_;
+	// プレイヤーの終了処理
+	for (auto& player : pPlayer_) {
+		player->Finalize();
+	}
 
 	delete MouseObject;
 
@@ -109,12 +109,12 @@ void GamePlayScene::Update()
 	case TurnState::NONE:
 		break;
 	case TurnState::PLAYER:
-		// プレイヤーの更新
-		pPlayer_->Update();
-		pPlayer2_->Update();
-		pPlayer3_->Update();
-		// プレイヤーの位置をフィールドにセット
-		pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
+
+		for (auto& player : pPlayer_) {
+			player->Update();
+			// プレイヤーの位置をフィールドにセット
+			pField_->SetPlayerPos(player->GetPosX(), player->GetPosY(), player->GetPosZ());
+		}
 
 		// ターン終了
 		//NOTE:今はエンターキーでターンを切り替える
@@ -138,21 +138,23 @@ void GamePlayScene::Update()
 	}
 
 
-	// プレイヤーの位置をフィールドにセット
-	if (Input::GetInstans()->PushKey(DIK_1))
-	{;
-		pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
-	}
-	if (Input::GetInstans()->PushKey(DIK_2))
-	{
-	
-		pField_->SetPlayerPos(pPlayer2_->GetPosX(), pPlayer2_->GetPosY(), pPlayer2_->GetPosZ());
-	}
-	if (Input::GetInstans()->PushKey(DIK_3))
-	{
-		
-		pField_->SetPlayerPos(pPlayer3_->GetPosX(), pPlayer3_->GetPosY(), pPlayer3_->GetPosZ());
-	}
+
+	//// プレイヤーの位置をフィールドにセット
+	//if (Input::GetInstans()->PushKey(DIK_1))
+	//{;
+	//	pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
+	//}
+	//if (Input::GetInstans()->PushKey(DIK_2))
+	//{
+	//	pPlayer2_->Update();
+	//	pField_->SetPlayerPos(pPlayer2_->GetPosX(), pPlayer2_->GetPosY(), pPlayer2_->GetPosZ());
+	//}
+	//if (Input::GetInstans()->PushKey(DIK_3))
+	//{
+	//	pPlayer3_->Update();
+	//	pField_->SetPlayerPos(pPlayer3_->GetPosX(), pPlayer3_->GetPosY(), pPlayer3_->GetPosZ());
+	//}
+
 	
 	
 	// フィールドの更新
@@ -160,9 +162,10 @@ void GamePlayScene::Update()
 
 
 	//プレイヤーの３Dオブジェクトを更新
-	pPlayer_->UpdateTransform();
-	pPlayer2_->UpdateTransform();
-	pPlayer3_->UpdateTransform();
+
+	for (auto& player : pPlayer_) {
+		player->UpdateTransform();
+	}
 
 	//エネミーの３Dオブジェクトを更新
 	enemy_->UpdateTransform();
@@ -182,59 +185,58 @@ void GamePlayScene::Update()
 
 	// ------------テスト----------------
 	// プレイヤーの位置テスト
-	prePlayerPos_ = { pPlayer_->GetPrePosX(),pPlayer_->GetPrePosY(),pPlayer_->GetPrePosZ() };
-	prePlayerPos2_ = { pPlayer2_->GetPrePosX(),pPlayer2_->GetPrePosY(),pPlayer2_->GetPrePosZ() };
-	prePlayerPos3_ = { pPlayer3_->GetPrePosX(),pPlayer3_->GetPrePosY(),pPlayer3_->GetPrePosZ() };
-	pField_->SetBlockType(prePlayerPos_.x, prePlayerPos_.y, prePlayerPos_.z, 0);
-
+	for (const auto& player : pPlayer_) {
+		Field::Pos prePlayerPos = { player->GetPrePosX(), player->GetPrePosY(), player->GetPrePosZ() };
+		pField_->SetBlockType(prePlayerPos.x, prePlayerPos.y, prePlayerPos.z, 0);
+	}
 	// ボールの位置テスト
 
-	prePos_ = pField_->GetBlockPosition(1);
+	//prePos_ = pField_->GetBlockPosition(1);
 
 
-	// パス
-	if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x <= WIDTH - 3)
-	{
-		pField_->SetBlockType((int)prePos_.x + 2, (int)prePos_.y, (int)prePos_.z, 1);
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	}
-	else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 2)
-	{
-		pField_->SetBlockType((int)prePos_.x - 2, (int)prePos_.y, (int)prePos_.z, 1);
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	}
-	else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.z >= 2)
-	{
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z - 2, 1);
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	}
-	else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.z <= DEPTH - 3)
-	{
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z + 2, 1);
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	}
+	//// パス
+	//if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x <= WIDTH - 3)
+	//{
+	//	pField_->SetBlockType((int)prePos_.x + 2, (int)prePos_.y, (int)prePos_.z, 1);
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	//}
+	//else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 2)
+	//{
+	//	pField_->SetBlockType((int)prePos_.x - 2, (int)prePos_.y, (int)prePos_.z, 1);
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	//}
+	//else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.z >= 2)
+	//{
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z - 2, 1);
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	//}
+	//else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.z <= DEPTH - 3)
+	//{
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z + 2, 1);
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	//}
 
-	// ドリブル
-	else if (Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x >= 0 && (int)prePos_.x <= WIDTH - 2)
-	{
-		pField_->SetBlockType((int)prePos_.x + 1, (int)prePos_.y, (int)prePos_.z, 1);
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	}
-	else if (Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 1 && (int)prePos_.x <= WIDTH - 1)
-	{
-		pField_->SetBlockType((int)prePos_.x - 1, (int)prePos_.y, (int)prePos_.z, 1);
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	}
-	else if (Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.z >= 1 && (int)prePos_.z <= DEPTH - 1)
-	{
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z - 1, 1);
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	}
-	else if (Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.z >= 0 && (int)prePos_.z <= DEPTH - 2)
-	{
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z + 1, 1);
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	}
+	//// ドリブル
+	//else if (Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x >= 0 && (int)prePos_.x <= WIDTH - 2)
+	//{
+	//	pField_->SetBlockType((int)prePos_.x + 1, (int)prePos_.y, (int)prePos_.z, 1);
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	//}
+	//else if (Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 1 && (int)prePos_.x <= WIDTH - 1)
+	//{
+	//	pField_->SetBlockType((int)prePos_.x - 1, (int)prePos_.y, (int)prePos_.z, 1);
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	//}
+	//else if (Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.z >= 1 && (int)prePos_.z <= DEPTH - 1)
+	//{
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z - 1, 1);
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	//}
+	//else if (Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.z >= 0 && (int)prePos_.z <= DEPTH - 2)
+	//{
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z + 1, 1);
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	//}
 
 
 
@@ -279,12 +281,10 @@ void GamePlayScene::Update()
 
 
 #endif
-
-		pPlayer_->ImGui();
-		pPlayer2_->ImGui();
-		pPlayer3_->ImGui();
-
-		ImGui::Text("prePlayerPos %d", &prePlayerPos_.x);
+		for (const auto& player : pPlayer_) {
+			player->ImGui();
+		}
+		//ImGui::Text("prePlayerPos %d", &prePlayerPos_.x);
 
 
 		if(ImGui::Button("Turn Player"))
@@ -314,10 +314,9 @@ void GamePlayScene::Draw()
 	//3Dオブジェクトの描画
 	MouseObject->Draw();
 	pField_->Draw();
-	pPlayer_->Draw();
-	pPlayer2_->Draw();
-	pPlayer3_->Draw();
-
+	for (const auto& player : pPlayer_) {
+		player->Draw();
+	}
 	//エネミーの描画
 	enemy_->Draw();
 
@@ -335,6 +334,7 @@ void GamePlayScene::Draw()
 
 void GamePlayScene::SetclickPlayerPos()
 {
+
 	// クリックでプレイヤーを選択する処理
 	if (selectedPlayer_ == nullptr) {  // まだプレイヤーを選択していない場合
 		Player* players[] = { pPlayer_, pPlayer2_, pPlayer3_ };
@@ -386,6 +386,8 @@ void GamePlayScene::SetclickPlayerPos()
 							ImGui::Text("Player Moved to: %d, %d", x, z);
 							return; // 1回のクリックで1つだけ処理
 						}
+
+
 					}
 				}
 			}
