@@ -57,7 +57,7 @@ void GamePlayScene::Initialize()
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->SetField(pField_.get());
 	enemy_->Initialize(Object3DCommon::GetInstance(), "cube.obj");
-	
+
 
 }
 
@@ -89,14 +89,17 @@ void GamePlayScene::Update()
 
 	//float cameraZ = CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.z;
 	mousePos = Input::GetInstans()->GetMouseWorldPosition(CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.y);
-	
+
 	// 現在のカメラの位置を基準にしたマウス位置取得
 
-	
+
 	MouseObject->SetTranslate(mousePos);
 	MouseObject->Update();
 
-	
+
+
+	SetclickPlayerPos();
+
 
 
 
@@ -106,7 +109,7 @@ void GamePlayScene::Update()
 
 	CameraManager::GetInstans()->GetActiveCamera()->SetTranslate(cameraPos_);
 	CameraManager::GetInstans()->GetActiveCamera()->SetRotate(cameraRot_);
-	
+
 
 	// プレイヤーの更新
 	pPlayer_->Update();
@@ -135,11 +138,11 @@ void GamePlayScene::Update()
 	// プレイヤーの位置テスト
 	prePlayerPos_ = { pPlayer_->GetPrePosX(),pPlayer_->GetPrePosY(),pPlayer_->GetPrePosZ() };
 	pField_->SetBlockType(prePlayerPos_.x, prePlayerPos_.y, prePlayerPos_.z, 0);
-	
+
 	// ボールの位置テスト
 
 	prePos_ = pField_->GetBlockPosition(1);
-	
+
 
 	// パス
 	if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x <= WIDTH - 3)
@@ -185,7 +188,7 @@ void GamePlayScene::Update()
 		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
 	}
 
-	
+
 
 
 	// フィールド毎フレーム更新するやつ
@@ -225,7 +228,7 @@ void GamePlayScene::Update()
 #ifdef _DEBUG
 		const Vector3& cameraPos = CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate;
 		const Vector3& cameraRot = CameraManager::GetInstans()->GetActiveCamera()->GetTransform().rotate;
-	
+
 #endif
 
 
@@ -266,5 +269,44 @@ void GamePlayScene::Draw()
 	SpriteCommon::GetInstance()->CommonDraw();
 
 #pragma endregion
+
+}
+
+void  GamePlayScene::SetclickPlayerPos()
+{
+	// マウス位置とフィールドブロックの判定
+	for (int z = 0; z < DEPTH; z++) {
+		for (int y = 0; y < HEIGHT; y++) {
+			for (int x = 0; x < WIDTH; x++) {
+				// ブロックの位置とスケールを取得
+				const Vector3& blockPos = pField_->GetBlockPositionAt(x, y, z);
+				Vector3 blockScale = Vector3(1.0f, 1.0f, 1.0f); // 既定値
+
+				// ブロックのタイプに応じたスケール変更
+				uint32_t blockType = pField_->GetBlockType(x, y, z);
+				if (blockType == 1) blockScale = Vector3(0.15f, 0.15f, 0.15f);
+				else if (blockType == 2) blockScale = Vector3(0.8f, 0.8f, 0.8f);
+				else if (blockType == 5) blockScale = Vector3(0.5f, 0.5f, 0.5f);
+
+				// マウス位置との簡易的なAABB判定
+				if (mousePos.x >= blockPos.x - blockScale.x / 2 &&
+					mousePos.x <= blockPos.x + blockScale.x / 2 &&
+					mousePos.z >= blockPos.z - blockScale.z / 2 &&
+					mousePos.z <= blockPos.z + blockScale.z / 2) {
+					if (Input::GetInstans()->TriggerMouse(0)) {
+
+						pPlayer_->SetPlayerPos(x, z);
+
+					}
+
+					// 当たったブロックの座標をログ出力（または他の処理）
+					ImGui::Text("Hit Block: %d, %d, %d", x, y, z);
+
+
+				}
+			}
+		}
+	}
+
 
 }

@@ -33,6 +33,8 @@ public:
 	/// </summary>
 	void Draw()override;
 
+	void  SetclickPlayerPos();
+
 private:	
 	// Player
 	Player* pPlayer_;
