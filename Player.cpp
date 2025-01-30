@@ -103,6 +103,36 @@ void Player::UpdateTransform()
 	object3D_->Update();
 }
 
+
+void Player::HandleMouseClick(const Vector3& mousePos, Field* field)
+{
+	for (int z = 0; z < DEPTH; z++) {
+		for (int x = 0; x < WIDTH; x++) {
+			Vector3 blockPos = field->GetBlockPositionAt(x, 0, z);
+
+			// **マウスがブロックの範囲内にあるか判定**
+			if (mousePos.x >= blockPos.x - 0.5f &&
+				mousePos.x <= blockPos.x + 0.5f &&
+				mousePos.z >= blockPos.z - 0.5f &&
+				mousePos.z <= blockPos.z + 0.5f) {
+
+				// **隣接1マスのみ移動を許可**
+				if (CanMoveTo(x, z)) {
+					SetPlayerPos(x, z);
+					return;
+				}
+			}
+		}
+	}
+}
+
+// **指定した座標に移動可能かを判定**
+bool Player::CanMoveTo(int x, int z)
+{
+	return (abs(x - posX) + abs(z - posZ) == 1); // 1マスのみ移動許可
+}
+
+
 void Player::ImGui()
 {
 	ImGui::Text("Player");

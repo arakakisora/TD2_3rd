@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "Object3D.h"
 #include "Object3DCommon.h"
+#include "Field.h"
 
 class Player
 {
@@ -22,6 +23,11 @@ public:
 	void Move(int WIDTH, int DEPTH);
 	//3Dオブジェクトの更新
 	void UpdateTransform();
+
+	void HandleMouseClick(const Vector3& mousePos, Field* field);
+	bool CanMoveTo(int x, int z);
+
+
 public: //アクセッサ
 	Vector3 GetPosition() { return playerData.position; }
 	void SetPosition(Vector3 pos) { playerData.position = pos; }
@@ -58,6 +64,7 @@ public: // ゲッター  追加
 private:
 	Model* model;
 	Object3D* object3D_;
+	bool isSelected = false; // 追加
 
 	struct PlayerData
 	{

@@ -334,68 +334,35 @@ void GamePlayScene::Draw()
 
 void GamePlayScene::SetclickPlayerPos()
 {
-	// クリックでプレイヤーを選択する処理
-	if (selectedPlayer_ == nullptr) {  // まだプレイヤーを選択していない場合
-		for (const auto& player : pPlayer_) {  // ベクターでループ
-			Vector3 playerPos = pField_->GetBlockPositionAt(player->GetPosX(), 0, player->GetPosZ());
-			Vector3 playerSize = Vector3(1.0f, 1.0f, 1.0f); // プレイヤーのサイズ
+	// **プレイヤーの選択処理**
+	for (const auto& player : pPlayer_) {
+		Vector3 playerPos = pField_->GetBlockPositionAt(player->GetPosX(), 0, player->GetPosZ());
+		Vector3 playerSize = Vector3(1.0f, 1.0f, 1.0f);
 
-			// マウスがプレイヤーの範囲内にあるか判定
-			if (mousePos.x >= playerPos.x - playerSize.x / 2 &&
-				mousePos.x <= playerPos.x + playerSize.x / 2 &&
-				mousePos.z >= playerPos.z - playerSize.z / 2 &&
-				mousePos.z <= playerPos.z + playerSize.z / 2) {
+		// **マウスがプレイヤーの範囲内にあるか判定**
+		if (mousePos.x >= playerPos.x - playerSize.x / 2 &&
+			mousePos.x <= playerPos.x + playerSize.x / 2 &&
+			mousePos.z >= playerPos.z - playerSize.z / 2 &&
+			mousePos.z <= playerPos.z + playerSize.z / 2) {
 
-				// 左クリックでプレイヤーを選択
-				if (Input::GetInstans()->TriggerMouse(0)) {
-					selectedPlayer_ = player.get(); // unique_ptr から生ポインタ取得
-					ImGui::Text("Player Selected at: %d, %d", player->GetPosX(), player->GetPosZ());
-					return; // プレイヤー選択後は移動処理をしない
-				}
+			// **左クリックでプレイヤーを選択**
+			if (Input::GetInstans()->TriggerMouse(0)) {
+				selectedPlayer_ = player.get(); // `unique_ptr` からポインタ取得
+				ImGui::Text("Player Selected at: %d, %d", player->GetPosX(), player->GetPosZ());
+				return;
 			}
 		}
 	}
 
-	// プレイヤーが選択されている場合にブロックへ移動
+	// **プレイヤーが選択されている場合に移動を実行**
 	if (selectedPlayer_ != nullptr) {
-		for (int z = 0; z < DEPTH; z++) {
-			for (int y = 0; y < HEIGHT; y++) {
-				for (int x = 0; x < WIDTH; x++) {
-					// ブロックの位置を取得
-					const Vector3& blockPos = pField_->GetBlockPositionAt(x, y, z);
-					Vector3 blockScale = Vector3(1.0f, 1.0f, 1.0f); // 既定値
-
-					// ブロックの種類に応じたスケール
-					uint32_t blockType = pField_->GetBlockType(x, y, z);
-					if (blockType == 1) blockScale = Vector3(0.15f, 0.15f, 0.15f);
-					else if (blockType == 2) blockScale = Vector3(0.8f, 0.8f, 0.8f);
-					else if (blockType == 5) blockScale = Vector3(0.5f, 0.5f, 0.5f);
-
-					// マウスがブロックの範囲内にあるか判定
-					if (mousePos.x >= blockPos.x - blockScale.x / 2 &&
-						mousePos.x <= blockPos.x + blockScale.x / 2 &&
-						mousePos.z >= blockPos.z - blockScale.z / 2 &&
-						mousePos.z <= blockPos.z + blockScale.z / 2) {
-
-						int currentX = selectedPlayer_->GetPosX();
-						int currentZ = selectedPlayer_->GetPosZ();
-
-						// **隣接1マスのみ移動を許可**
-						if (abs(x - currentX) + abs(z - currentZ) == 1) {
-							// 左クリックでプレイヤーをブロックに移動
-							if (Input::GetInstans()->TriggerMouse(0)) {
-								selectedPlayer_->SetPlayerPos(x, z);
-								selectedPlayer_ = nullptr; // 移動後、選択解除
-								ImGui::Text("Player Moved to: %d, %d", x, z);
-								return; // 1回のクリックで1つだけ処理
-							}
-						}
-					}
-				}
-			}
+		if (Input::GetInstans()->TriggerMouse(0)) {
+			selectedPlayer_->HandleMouseClick(mousePos, pField_.get());
 		}
 	}
 }
+
+
 
 
 
