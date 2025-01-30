@@ -19,7 +19,7 @@ void Player::Initialize(int posX,int posZ)
 	this->posZ = posZ;
 	playerData.position = Vector3((float)posX, 0.0f, 10.0f);
 	playerData.rotate = Vector3(0.0f, 0.0f, 0.0f);
-	playerData.scale = Vector3(1.0f, 1.0f, 1.0f);
+	playerData.scale = Vector3(0.5f, 0.5f, 0.5f);
 	ModelManager::GetInstans()->LoadModel("cube.obj");
 	// モデルの生成
 	object3D_ = new Object3D;
@@ -96,7 +96,7 @@ void Player::Move(int WIDTH, int DEPTH)
 	//}
 
 	// プレイヤーの位置を更新
-	playerData.position = Vector3(static_cast<float>(posX), 8.0f, static_cast<float>(posZ));
+	playerData.position = Vector3(static_cast<float>(posX), 0.0f, static_cast<float>(posZ));
 }
 
 void Player::UpdateTransform()
