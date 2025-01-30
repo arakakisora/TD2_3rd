@@ -49,7 +49,13 @@ private:
 	TurnState turnState_ = TurnState::PLAYER;
 
 	// Player
+
+
+	Player* selectedPlayer_ = nullptr;
+
+
 	std::vector<std::unique_ptr<Player>> pPlayer_;
+
 
 	//カメラのポインタ
 	Camera* pCamera_ = nullptr;
