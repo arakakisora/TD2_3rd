@@ -9,7 +9,7 @@ Player::~Player()
 {
 }
 
-void Player::Initialize(int posZ)
+void Player::Initialize(int posX,int posZ)
 {
 	// カメラの初期化
 	//camera = new Camera();
@@ -17,7 +17,7 @@ void Player::Initialize(int posZ)
 	//CameraMaanager::GetInstance()->SetCamera(camera);
 	// プレイヤーの初期化
 	this->posZ = posZ;
-	playerData.position = Vector3(0.0f, 0.0f, 10.0f);
+	playerData.position = Vector3((float)posX, 0.0f, 10.0f);
 	playerData.rotate = Vector3(0.0f, 0.0f, 0.0f);
 	playerData.scale = Vector3(1.0f, 1.0f, 1.0f);
 	ModelManager::GetInstans()->LoadModel("cube.obj");
@@ -35,6 +35,10 @@ void Player::Update()
 {
 	//playerData.rotate.z += 0.01f;
 	//playerData.rotate.y += 0.01f;
+	ImGui::Begin("player");
+	ImGui::DragFloat3("position", &playerData.position.x, 0.1f);
+	ImGui::End();
+
 	Move(WIDTH, DEPTH);
 	object3D_->SetTranslate(playerData.position);
 	object3D_->SetRotate(playerData.rotate);
@@ -92,7 +96,15 @@ void Player::Move(int WIDTH, int DEPTH)
 	//}
 
 	// プレイヤーの位置を更新
-	playerData.position = Vector3(static_cast<float>(posX) * 1.0f, 0.0f, static_cast<float>(posZ) * 1.0f);
+	playerData.position = Vector3(static_cast<float>(posX), 8.0f, static_cast<float>(posZ));
+}
+
+void Player::UpdateTransform()
+{
+	object3D_->SetTranslate(playerData.position);
+	object3D_->SetRotate(playerData.rotate);
+	object3D_->SetScale(playerData.scale);
+	object3D_->Update();
 }
 
 void Player::ImGui()
