@@ -9,12 +9,8 @@ Player::~Player()
 {
 }
 
-void Player::Initialize(int posX,int posZ)
+void Player::Initialize(int posZ)
 {
-	// カメラの初期化
-	//camera = new Camera();
-	//camera->SetTranslate(Vector3(0.0f, 0.0f, -5.0f));
-	//CameraMaanager::GetInstance()->SetCamera(camera);
 	// プレイヤーの初期化
 	this->posZ = posZ;
 	playerData.position = Vector3((float)posX, 0.0f, 10.0f);
@@ -33,8 +29,8 @@ void Player::Initialize(int posX,int posZ)
 
 void Player::Update()
 {
-	//playerData.rotate.z += 0.01f;
-	//playerData.rotate.y += 0.01f;
+	playerData.rotate.z += 0.01f;
+	playerData.rotate.y += 0.01f;
 	ImGui::Begin("player");
 	ImGui::DragFloat3("position", &playerData.position.x, 0.1f);
 	ImGui::End();
