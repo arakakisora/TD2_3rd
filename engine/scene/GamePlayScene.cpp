@@ -48,7 +48,7 @@ void GamePlayScene::Initialize()
 		pPlayer_.push_back(std::move(player));
 	}
 
-	
+
 	// プレイヤーの位置をフィールドにセット
 	for (const auto& player : pPlayer_) {
 		pField_->SetPlayerPos(player->GetPosX(), player->GetPosY(), player->GetPosZ());
@@ -116,13 +116,18 @@ void GamePlayScene::Update()
 			pField_->SetPlayerPos(player->GetPosX(), player->GetPosY(), player->GetPosZ());
 		}
 
-		// ターン終了
-		//NOTE:今はエンターキーでターンを切り替える
-		if (Input::GetInstans()->TriggerKey(DIK_RETURN))
-		{
-			turnState_ = TurnState::ENEMY;
-			// エネミーのターン開始
-			enemy_->SetTurnEnd(false);
+		for (auto& player : pPlayer_) {
+
+			// ターン終了
+			//NOTE:今はエンターキーでターンを切り替える
+			if (player->GetHasMoved())
+			{
+				turnState_ = TurnState::ENEMY;
+				// エネミーのターン開始
+				enemy_->SetTurnEnd(false);
+				player->ResetMoveFlag();
+			}
+
 		}
 
 		break;
@@ -155,8 +160,8 @@ void GamePlayScene::Update()
 	//	pField_->SetPlayerPos(pPlayer3_->GetPosX(), pPlayer3_->GetPosY(), pPlayer3_->GetPosZ());
 	//}
 
-	
-	
+
+
 	// フィールドの更新
 	pField_->Update();
 
@@ -287,7 +292,7 @@ void GamePlayScene::Update()
 		//ImGui::Text("prePlayerPos %d", &prePlayerPos_.x);
 
 
-		if(ImGui::Button("Turn Player"))
+		if (ImGui::Button("Turn Player"))
 		{
 			turnState_ = TurnState::PLAYER;
 		}
@@ -357,10 +362,11 @@ void GamePlayScene::SetclickPlayerPos()
 	// **プレイヤーが選択されている場合に移動を実行**
 	if (selectedPlayer_ != nullptr) {
 		if (Input::GetInstans()->TriggerMouse(0)) {
-			selectedPlayer_->HandleMouseClick(mousePos, pField_.get());
+			selectedPlayer_->HandleMouseClick(mousePos, pField_.get(), selectedPlayer_);
 		}
 	}
 }
+
 
 
 

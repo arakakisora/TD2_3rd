@@ -24,8 +24,10 @@ public:
 	//3Dオブジェクトの更新
 	void UpdateTransform();
 
-	void HandleMouseClick(const Vector3& mousePos, Field* field);
+	void HandleMouseClick(const Vector3& mousePos, Field* field, Player*& selectedPlayer);
+
 	bool CanMoveTo(int x, int z);
+	
 
 
 public: //アクセッサ
@@ -40,6 +42,9 @@ public: //アクセッサ
 	void ImGui();
 
 public: // ゲッター  追加
+
+	bool GetHasMoved() { return isMoved; }
+	void ResetMoveFlag() { isMoved = false; }
 
 	// プレイヤーの位置(マス) 追加
 	int GetPosX() { return posX; }
@@ -64,7 +69,8 @@ public: // ゲッター  追加
 private:
 	Model* model;
 	Object3D* object3D_;
-	bool isSelected = false; // 追加
+	bool isMoved = false; // 1ターン内での移動を制限
+
 
 	struct PlayerData
 	{

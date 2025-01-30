@@ -104,7 +104,7 @@ void Player::UpdateTransform()
 }
 
 
-void Player::HandleMouseClick(const Vector3& mousePos, Field* field)
+void Player::HandleMouseClick(const Vector3& mousePos, Field* field, Player*& selectedPlayer)
 {
 	for (int z = 0; z < DEPTH; z++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -119,12 +119,15 @@ void Player::HandleMouseClick(const Vector3& mousePos, Field* field)
 				// **隣接1マスのみ移動を許可**
 				if (CanMoveTo(x, z)) {
 					SetPlayerPos(x, z);
+					isMoved = true;  // **移動フラグを立てる**
+					selectedPlayer = nullptr;  // **移動後に選択解除**
 					return;
 				}
 			}
 		}
 	}
 }
+
 
 // **指定した座標に移動可能かを判定**
 bool Player::CanMoveTo(int x, int z)
