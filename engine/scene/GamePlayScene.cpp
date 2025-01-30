@@ -111,6 +111,8 @@ void GamePlayScene::Update()
 	case TurnState::PLAYER:
 		// プレイヤーの更新
 		pPlayer_->Update();
+		pPlayer2_->Update();
+		pPlayer3_->Update();
 		// プレイヤーの位置をフィールドにセット
 		pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
 
@@ -143,12 +145,12 @@ void GamePlayScene::Update()
 	}
 	if (Input::GetInstans()->PushKey(DIK_2))
 	{
-		pPlayer2_->Update();
+	
 		pField_->SetPlayerPos(pPlayer2_->GetPosX(), pPlayer2_->GetPosY(), pPlayer2_->GetPosZ());
 	}
 	if (Input::GetInstans()->PushKey(DIK_3))
 	{
-		pPlayer3_->Update();
+		
 		pField_->SetPlayerPos(pPlayer3_->GetPosX(), pPlayer3_->GetPosY(), pPlayer3_->GetPosZ());
 	}
 	
@@ -159,6 +161,8 @@ void GamePlayScene::Update()
 
 	//プレイヤーの３Dオブジェクトを更新
 	pPlayer_->UpdateTransform();
+	pPlayer2_->UpdateTransform();
+	pPlayer3_->UpdateTransform();
 
 	//エネミーの３Dオブジェクトを更新
 	enemy_->UpdateTransform();
@@ -329,41 +333,64 @@ void GamePlayScene::Draw()
 
 }
 
-void  GamePlayScene::SetclickPlayerPos()
+void GamePlayScene::SetclickPlayerPos()
 {
-	// マウス位置とフィールドブロックの判定
-	for (int z = 0; z < DEPTH; z++) {
-		for (int y = 0; y < HEIGHT; y++) {
-			for (int x = 0; x < WIDTH; x++) {
-				// ブロックの位置とスケールを取得
-				const Vector3& blockPos = pField_->GetBlockPositionAt(x, y, z);
-				Vector3 blockScale = Vector3(1.0f, 1.0f, 1.0f); // 既定値
+	// クリックでプレイヤーを選択する処理
+	if (selectedPlayer_ == nullptr) {  // まだプレイヤーを選択していない場合
+		Player* players[] = { pPlayer_, pPlayer2_, pPlayer3_ };
+		for (auto player : players) {
+			Vector3 playerPos = pField_->GetBlockPositionAt(player->GetPosX(), 0, player->GetPosZ());
+			Vector3 playerSize = Vector3(1.0f, 1.0f, 1.0f); // プレイヤーのサイズ
 
-				// ブロックのタイプに応じたスケール変更
-				uint32_t blockType = pField_->GetBlockType(x, y, z);
-				if (blockType == 1) blockScale = Vector3(0.15f, 0.15f, 0.15f);
-				else if (blockType == 2) blockScale = Vector3(0.8f, 0.8f, 0.8f);
-				else if (blockType == 5) blockScale = Vector3(0.5f, 0.5f, 0.5f);
+			// マウスがプレイヤーの範囲内にあるか判定
+			if (mousePos.x >= playerPos.x - playerSize.x / 2 &&
+				mousePos.x <= playerPos.x + playerSize.x / 2 &&
+				mousePos.z >= playerPos.z - playerSize.z / 2 &&
+				mousePos.z <= playerPos.z + playerSize.z / 2) {
 
-				// マウス位置との簡易的なAABB判定
-				if (mousePos.x >= blockPos.x - blockScale.x / 2 &&
-					mousePos.x <= blockPos.x + blockScale.x / 2 &&
-					mousePos.z >= blockPos.z - blockScale.z / 2 &&
-					mousePos.z <= blockPos.z + blockScale.z / 2) {
-					if (Input::GetInstans()->TriggerMouse(0)) {
-
-						pPlayer_->SetPlayerPos(x, z);
-
-					}
-
-					// 当たったブロックの座標をログ出力（または他の処理）
-					ImGui::Text("Hit Block: %d, %d, %d", x, y, z);
-
-
+				// 左クリックでプレイヤーを選択
+				if (Input::GetInstans()->TriggerMouse(0)) {
+					selectedPlayer_ = player;
+					ImGui::Text("Player Selected at: %d, %d", player->GetPosX(), player->GetPosZ());
+					return; // プレイヤー選択後は移動処理をしない
 				}
 			}
 		}
 	}
 
+	// プレイヤーが選択されている場合にブロックへ移動
+	if (selectedPlayer_ != nullptr) {
+		for (int z = 0; z < DEPTH; z++) {
+			for (int y = 0; y < HEIGHT; y++) {
+				for (int x = 0; x < WIDTH; x++) {
+					// ブロックの位置を取得
+					const Vector3& blockPos = pField_->GetBlockPositionAt(x, y, z);
+					Vector3 blockScale = Vector3(1.0f, 1.0f, 1.0f); // 既定値
 
+					// ブロックの種類に応じたスケール
+					uint32_t blockType = pField_->GetBlockType(x, y, z);
+					if (blockType == 1) blockScale = Vector3(0.15f, 0.15f, 0.15f);
+					else if (blockType == 2) blockScale = Vector3(0.8f, 0.8f, 0.8f);
+					else if (blockType == 5) blockScale = Vector3(0.5f, 0.5f, 0.5f);
+
+					// マウスがブロックの範囲内にあるか判定
+					if (mousePos.x >= blockPos.x - blockScale.x / 2 &&
+						mousePos.x <= blockPos.x + blockScale.x / 2 &&
+						mousePos.z >= blockPos.z - blockScale.z / 2 &&
+						mousePos.z <= blockPos.z + blockScale.z / 2) {
+
+						// 左クリックでプレイヤーをブロックに移動
+						if (Input::GetInstans()->TriggerMouse(0)) {
+							selectedPlayer_->SetPlayerPos(x, z);
+							selectedPlayer_ = nullptr; // 移動後、選択解除
+							ImGui::Text("Player Moved to: %d, %d", x, z);
+							return; // 1回のクリックで1つだけ処理
+						}
+					}
+				}
+			}
+		}
+	}
 }
+
+

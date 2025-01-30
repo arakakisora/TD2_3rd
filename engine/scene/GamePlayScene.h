@@ -52,6 +52,9 @@ private:
 	Player* pPlayer_;
 	Player* pPlayer2_;
 	Player* pPlayer3_;
+	// 選択中のプレイヤー
+	Player* selectedPlayer_ = nullptr;
+
 
 	//カメラのポインタ
 	Camera* pCamera_ = nullptr;
