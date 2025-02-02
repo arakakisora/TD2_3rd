@@ -40,11 +40,14 @@ void GamePlayScene::Initialize()
 	MouseObject->Initialize(Object3DCommon::GetInstance());
 	MouseObject->SetModel("cube.obj");
 
+	ball = new Ball();
+	ball->Initialize();
+
 	//Playerの初期化
-	std::vector<int> initPosZ = { 0, 3, 4 };
+	std::vector<int> initPosZ = { 0, 2, 4 };
 	for (int i = 0; i < initPosZ.size(); ++i) {
 		auto player = std::make_unique<Player>();
-		player->Initialize(initPosZ[i]);
+		player->Initialize(initPosZ[i],ball);
 		pPlayer_.push_back(std::move(player));
 	}
 
@@ -58,14 +61,17 @@ void GamePlayScene::Initialize()
 	enemy_->SetField(pField_.get());
 	enemy_->Initialize(Object3DCommon::GetInstance(), "cube.obj");
 
-
 	enemy_->SetPlayer(pPlayer_.front().get());
 
+	
 
 }
 
 void GamePlayScene::Finalize()
 {
+	// ボールの終了処理
+	ball->Finalize();
+	delete ball;
 	// プレイヤーの終了処理
 	for (auto& player : pPlayer_) {
 		player->Finalize();
@@ -155,7 +161,8 @@ void GamePlayScene::Update()
 	//	pField_->SetPlayerPos(pPlayer3_->GetPosX(), pPlayer3_->GetPosY(), pPlayer3_->GetPosZ());
 	//}
 
-	
+	// ボールの更新
+	ball->Update();
 	
 	// フィールドの更新
 	pField_->Update();
@@ -317,6 +324,9 @@ void GamePlayScene::Draw()
 	for (const auto& player : pPlayer_) {
 		player->Draw();
 	}
+	// ボールの描画
+	ball->Draw();
+	
 	//エネミーの描画
 	enemy_->Draw();
 
