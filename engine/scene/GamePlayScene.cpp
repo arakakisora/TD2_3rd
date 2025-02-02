@@ -30,7 +30,7 @@ void GamePlayScene::Initialize()
 		{
 			Object3D* pFieldObject = new Object3D();
 			pFieldObject->Initialize(Object3DCommon::GetInstance());
-			pFieldObject->SetModel("cube.obj");
+			pFieldObject->SetModel("Field0.obj");
 			pFieldObject_.push_back(pFieldObject);
 		}
 	}
@@ -61,7 +61,7 @@ void GamePlayScene::Initialize()
 	//エネミー
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->SetField(pField_.get());
-	enemy_->Initialize(Object3DCommon::GetInstance(), "cube.obj");
+	enemy_->Initialize(Object3DCommon::GetInstance(), "Enemy.obj");
 
 	enemy_->SetPlayer(pPlayer_.front().get());
 

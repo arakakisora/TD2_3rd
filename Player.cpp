@@ -22,10 +22,10 @@ void Player::Initialize(int posZ, Ball* ball)
 	playerData.position = Vector3((float)posX, 0.0f, 10.0f);
 	playerData.rotate = Vector3(0.0f, 0.0f, 0.0f);
 	playerData.scale = Vector3(0.5f, 0.5f, 0.5f);
-	ModelManager::GetInstans()->LoadModel("cube.obj");
+	ModelManager::GetInstans()->LoadModel("Player.obj");
 	// モデルの生成
 	object3D_ = new Object3D;
-	object3D_->SetModel("cube.obj");
+	object3D_->SetModel("Player.obj");
 	object3D_->Initialize(Object3DCommon::GetInstance());
 	object3D_->SetTranslate(playerData.position);
 	object3D_->SetRotate(playerData.rotate);
