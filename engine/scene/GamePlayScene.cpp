@@ -21,6 +21,7 @@ void GamePlayScene::Initialize()
 
 
 	// 3Dオブジェクト
+	ModelManager::GetInstans()->LoadModel("cube.obj");
 	ModelManager::GetInstans()->LoadModel("Field0.obj");
 	ModelManager::GetInstans()->LoadModel("Enemy.obj");
 
