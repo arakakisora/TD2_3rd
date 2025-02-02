@@ -47,29 +47,9 @@ void Enemy::Move(Vector3 distance)
 		//プレイヤーがいる場所には移動しない
         if (newPosition.x == player_->GetPosition().x && newPosition.z == player_->GetPosition().z)
         {
-			//斜め移動処理のためのフラグ
-            bool isPlayerMove = false;
-            //移動方向がもし斜めだったらどちらかの成分を０にする
-            if (distance.x != 0.0f && distance.z != 0.0f)
-            {
-                if (rand() % 2 == 0)
-                {
-					newPosition.z -= distance.z;
-                    distance.x = 0.0f;
-                } else
-                {
-					newPosition.x -= distance.x;
-                    distance.z = 0.0f;
-                }
-                isPlayerMove = true;
-            }
-			//プレイヤーがいる場所には移動しない
-            if (isPlayerMove)
-            {
-                //ターン終了
-                isTurnEnd_ = true;
-                return;
-            }
+            //ターン終了
+            isTurnEnd_ = true;
+            return;
         }
 
         // 現在の位置を記録
@@ -108,14 +88,14 @@ void Enemy::HandleAI()
         if (enemyManager_->IsAdjacent(pos, playerPos)) {
             Vector3 direction = pos - playerPos;
             // 反対側の方向を設定
-            if (direction.x == 1.0f) {
-                moveDir = { playerPos.x - 1.0f, 0.0f, playerPos.z }; // 敵がプレイヤーの右側にいる場合、左に移動
-            } else if (direction.x == -1.0f) {
-                moveDir = { playerPos.x + 1.0f, 0.0f, playerPos.z }; // 敵がプレイヤーの左側にいる場合、右に移動
-            } else if (direction.z == -1.0f) {
-                moveDir = { playerPos.x, 0.0f, playerPos.z - 1.0f }; // 敵がプレイヤーの上側にいる場合、下に移動
-            } else if (direction.z == 1.0f) {
-                moveDir = { playerPos.x, 0.0f, playerPos.z + 1.0f }; // 敵がプレイヤーの下側にいる場合、上に移動
+            if (direction.x == 1.0f && direction.z == 0.0f) {
+                moveDir = { playerPos.x - 1.0f, 0.0f, playerPos.z -1 }; // 敵がプレイヤーの右側にいる場合、左に移動
+            } else if (direction.x == -1.0f && direction.z == 0.0f) {
+                moveDir = { playerPos.x + 1.0f, 0.0f, playerPos.z -1 }; // 敵がプレイヤーの左側にいる場合、右に移動
+            } else if (direction.z == 1.0f && direction.x == 0.0f) {
+                moveDir = { playerPos.x, 0.0f, playerPos.z + 1.0f }; // 敵がプレイヤーの上側にいる場合、下に移動
+            } else if (direction.z == -1.0f && direction.x == 0.0f) {
+                moveDir = { playerPos.x, 0.0f, playerPos.z - 1.0f }; // 敵がプレイヤーの下側にいる場合、上に移動
             }
 			//もしフィールドの範囲外だったら範囲内に収める
 			if (moveDir.x < 0) moveDir.x = 0;
