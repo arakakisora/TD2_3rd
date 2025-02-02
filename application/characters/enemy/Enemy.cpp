@@ -1,5 +1,8 @@
 #include "Enemy.h"
 #include <algorithm>
+#include <queue>
+#include <set>
+
 #include "EnemyManager.h"
 
 float EaseInSine(float x) { return 1.0f - std::cos((x * std::numbers::pi_v<float>) / 2.0f); }
@@ -83,8 +86,7 @@ void Enemy::Move(int dx, int dz)
     }
 }
 
-void Enemy::HandleAI()
-{
+void Enemy::HandleAI() {
     if (!player_) return; // プレイヤー情報がない場合はスキップ
     if (isEaseStart_) return; // 移動中はスキップ
 
@@ -94,101 +96,92 @@ void Enemy::HandleAI()
     int playerX = static_cast<int>(player_->GetPosition().x);
     int playerZ = static_cast<int>(player_->GetPosition().z);
 
-    // 隣接している敵がいるか確認
-    bool adjacentEnemyFound = false;
-    int dx = 0, dz = 0;
-
+    // 他の敵の位置を取得（自分以外）
+    std::set<std::pair<int, int>> occupiedPositions;
     for (const auto& otherEnemy : enemyManager_->GetEnemies()) {
-        if (otherEnemy.get() != this) {
-            int otherX = static_cast<int>(otherEnemy->GetPosition().x);
-            int otherZ = static_cast<int>(otherEnemy->GetPosition().z);
+        // 自分自身の位置も占有済みとして扱う場合は、このままでよい
+        int otherX = static_cast<int>(otherEnemy->GetPosition().x);
+        int otherZ = static_cast<int>(otherEnemy->GetPosition().z);
+        occupiedPositions.emplace(otherX, otherZ);
+    }
+    // ※プレイヤーの位置は占有済みリストに追加しない
+    //     もしくは、BFS探索時にプレイヤーの位置は特例扱いするようにする
 
-            // プレイヤーに隣接している敵を探す
-            if (abs(otherX - playerX) + abs(otherZ - playerZ) == 1) {
-                // その反対側に移動する
-                dx = playerX - otherX;
-                dz = playerZ - otherZ;
+    // 幅優先探索(BFS)の初期化
+    std::queue<std::pair<int, int>> queue;
+    std::map<std::pair<int, int>, std::pair<int, int>> cameFrom;
+    std::pair<int, int> startPos = { enemyX, enemyZ };
+    std::pair<int, int> targetPos = { playerX, playerZ };
 
-                // 反対側の位置を計算
-                int targetX = playerX + dx;
-                int targetZ = playerZ + dz;
+    queue.push(startPos);
+    cameFrom[startPos] = { -1, -1 }; // 始点
 
-                // マップの範囲内か確認
-                if (targetX >= 0 && targetX < WIDTH && targetZ >= 0 && targetZ < DEPTH) {
-                    // 他の敵やプレイヤーがいないか確認
-                    bool blocked = false;
+    bool pathFound = false;
 
-                    // プレイヤーの位置と比較
-                    if (targetX == playerX && targetZ == playerZ) {
-                        blocked = true;
-                    }
+    while (!queue.empty()) {
+        auto current = queue.front();
+        queue.pop();
 
-                    // 他の敵の位置と比較
-                    for (const auto& checkEnemy : enemyManager_->GetEnemies()) {
-                        if (checkEnemy.get() != this) {
-                            int checkX = static_cast<int>(checkEnemy->GetPosition().x);
-                            int checkZ = static_cast<int>(checkEnemy->GetPosition().z);
-                            if (targetX == checkX && targetZ == checkZ) {
-                                blocked = true;
-                                break;
-                            }
-                        }
-                    }
+        // 目標地点に到達した場合
+        if (current == targetPos) {
+            pathFound = true;
+            break;
+        }
 
-                    if (!blocked) {
-                        // 移動を試みる
-                        Move(targetX - enemyX, targetZ - enemyZ);
-                        adjacentEnemyFound = true;
-                        break;
-                    }
+        // 移動可能な方向（右、左、下、上）
+        std::vector<std::pair<int, int>> directions = {
+            { 1, 0 },
+            { -1, 0 },
+            { 0, 1 },
+            { 0, -1 }
+        };
+
+        for (const auto& dir : directions) {
+            int nextX = current.first + dir.first;
+            int nextZ = current.second + dir.second;
+            std::pair<int, int> nextPos = { nextX, nextZ };
+
+            // マップ範囲内か確認
+            if (nextX >= 0 && nextX < WIDTH && nextZ >= 0 && nextZ < DEPTH) {
+                // すでに訪問済みでないことを確認し、
+                // 次の位置がプレイヤーの位置ならば占有判定をスキップ、それ以外なら occupiedPositions に入っていないかも確認
+                if (cameFrom.find(nextPos) == cameFrom.end() &&
+                    (nextPos == targetPos || occupiedPositions.find(nextPos) == occupiedPositions.end())) {
+                    queue.push(nextPos);
+                    cameFrom[nextPos] = current;
                 }
             }
         }
     }
 
-    if (!adjacentEnemyFound) {
-        // プレイヤーに向かうための方向ベクトルを計算
-        dx = 0;
-        dz = 0;
-
-        if (enemyX < playerX) {
-            dx = 1;
-        } else if (enemyX > playerX) {
-            dx = -1;
+    if (pathFound) {
+        // 経路を復元
+        std::vector<std::pair<int, int>> path;
+        auto current = targetPos;
+        while (current != startPos) {
+            path.push_back(current);
+            current = cameFrom[current];
         }
+        std::reverse(path.begin(), path.end());
 
-        if (enemyZ < playerZ) {
-            dz = 1;
-        } else if (enemyZ > playerZ) {
-            dz = -1;
-        }
+        if (!path.empty()) {
+            // 次に移動する位置を取得
+            int nextX = path.front().first;
+            int nextZ = path.front().second;
+            int dx = nextX - enemyX;
+            int dz = nextZ - enemyZ;
 
-        // 優先的に移動する軸を決定
-        bool moved = false;
-
-        // X軸方向に移動を試みる
-        if (dx != 0) {
-            Move(dx, 0);
-            if (isEaseStart_) {
-                moved = true;
-            }
-        }
-
-        // X軸で移動できなかった場合、Z軸方向に移動を試みる
-        if (!moved && dz != 0) {
-            Move(0, dz);
-            if (isEaseStart_) {
-                moved = true;
-            }
-        }
-
-        // 移動できなかった場合、ターン終了
-        if (!moved) {
+            // 移動を試みる
+            Move(dx, dz);
+        } else {
+            // 経路が存在するが移動できない場合はターン終了
             isTurnEnd_ = true;
         }
+    } else {
+        // 経路が見つからない場合はターン終了
+        isTurnEnd_ = true;
     }
 }
-
 
 void Enemy::UpdateEasingMovement()
 {
