@@ -107,6 +107,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application\characters\enemy\Enemy.cpp" />
+    <ClCompile Include="Ball.cpp" />
     <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="application\characters\enemy\EnemyManager.cpp" />
     <ClCompile Include="engine\scene\AbstractSceneFactory.cpp" />
@@ -155,6 +156,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\characters\enemy\Enemy.h" />
+    <ClInclude Include="Ball.h" />
     <ClInclude Include="CameraManager.h" />
     <ClInclude Include="application\characters\enemy\EnemyManager.h" />
     <ClInclude Include="engine\scene\AbstractSceneFactory.h" />

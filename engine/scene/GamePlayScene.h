@@ -11,7 +11,7 @@
 #include "vector"
 #include "Field.h"
 #include "application/characters/enemy/Enemy.h"
-
+#include "Ball.h"
 class GamePlayScene :public BaseScene
 {
 public:
@@ -34,7 +34,7 @@ public:
 	void Draw()override;
 
 
-	void  SetclickPlayerPos();
+	void SetclickPlayerPos();
 
 private:	
 
@@ -73,7 +73,7 @@ private:
 	// プレイヤーの位置
 	std::vector<Field::Pos> playerPosList_ = {};
 
-
+	Ball* ball = nullptr;
 
 	Vector3 mousePos = Vector3(0, 0, 0);
 	Object3D* MouseObject = nullptr;
