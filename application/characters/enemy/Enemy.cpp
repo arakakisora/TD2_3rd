@@ -29,37 +29,57 @@ void Enemy::Update()
 
 void Enemy::Draw()
 {
-	// 3Dオブジェクトの描画
 	object3D_->Draw();
 }
 
-void Enemy::Move(Vector3 distance)
+void Enemy::Move(int dx, int dz)
 {
-	// 移動中またはターン終了中は移動しない
+    // 移動中またはターン終了中は移動しない
     if (isEaseStart_ || isTurnEnd_) { return; }
 
-    //移動先
-	Vector3 newPosition = transform_.translate + distance;
+    // 移動先の座標を計算
+    int newX = static_cast<int>(transform_.translate.x) + dx;
+    int newZ = static_cast<int>(transform_.translate.z) + dz;
 
-    // マップの範囲内か確認
-    if ((newPosition.x >= 0 && newPosition.x < WIDTH) && (newPosition.z>= 0 && newPosition.z < DEPTH))
-    {
-		//プレイヤーがいる場所には移動しない
-        if (newPosition.x == player_->GetPosition().x && newPosition.z == player_->GetPosition().z)
-        {
-            //ターン終了
-            isTurnEnd_ = true;
-            return;
+    // マップの範囲内か確認（WIDTHとDEPTHはフィールドのサイズ）
+    if (newX >= 0 && newX < WIDTH && newZ >= 0 && newZ < DEPTH) {
+        // 他の敵やプレイヤーがいないか確認
+        bool blocked = false;
+
+        // プレイヤーの位置と比較
+        int playerX = static_cast<int>(player_->GetPosition().x);
+        int playerZ = static_cast<int>(player_->GetPosition().z);
+        if (newX == playerX && newZ == playerZ) {
+            blocked = true;
         }
 
-        // 現在の位置を記録
-        moveStartPosition_ = transform_.translate;
-		// 目標位置を設定
-        moveTargetPosition_ = newPosition;
-		// 移動開始
-        moveProgress_ = 0.0f;
-		// 移動開始フラグを立てる
-		isEaseStart_ = true;
+        // 他の敵の位置と比較
+        for (const auto& otherEnemy : enemyManager_->GetEnemies()) {
+            if (otherEnemy.get() != this) {
+                int enemyX = static_cast<int>(otherEnemy->GetPosition().x);
+                int enemyZ = static_cast<int>(otherEnemy->GetPosition().z);
+                if (newX == enemyX && newZ == enemyZ) {
+                    blocked = true;
+                    break;
+                }
+            }
+        }
+
+        if (!blocked) {
+            // 移動開始位置と目標位置を設定
+            moveStartPosition_ = transform_.translate;
+            moveTargetPosition_ = { static_cast<float>(newX), 0.0f, static_cast<float>(newZ) };
+
+            // 移動開始
+            moveProgress_ = 0.0f;
+            isEaseStart_ = true;
+        } else {
+            // 移動できない場合はターン終了
+            isTurnEnd_ = true;
+        }
+    } else {
+        // マップ外の場合はターン終了
+        isTurnEnd_ = true;
     }
 }
 
@@ -68,64 +88,104 @@ void Enemy::HandleAI()
     if (!player_) return; // プレイヤー情報がない場合はスキップ
     if (isEaseStart_) return; // 移動中はスキップ
 
-    // プレイヤーと自分の位置を取得
-    Vector3 playerPos = player_->GetPosition();
-    Vector3 enemyPos = GetPosition();
+    // 敵とプレイヤーの整数座標を取得
+    int enemyX = static_cast<int>(transform_.translate.x);
+    int enemyZ = static_cast<int>(transform_.translate.z);
+    int playerX = static_cast<int>(player_->GetPosition().x);
+    int playerZ = static_cast<int>(player_->GetPosition().z);
 
-    // 他の敵の位置を取得（自分以外）
-    std::vector<Vector3> otherEnemyPositions;
-    for (auto& otherEnemy : enemyManager_->GetEnemies()) {
+    // 隣接している敵がいるか確認
+    bool adjacentEnemyFound = false;
+    int dx = 0, dz = 0;
+
+    for (const auto& otherEnemy : enemyManager_->GetEnemies()) {
         if (otherEnemy.get() != this) {
-            otherEnemyPositions.push_back(otherEnemy->GetPosition());
-        }
-    }
+            int otherX = static_cast<int>(otherEnemy->GetPosition().x);
+            int otherZ = static_cast<int>(otherEnemy->GetPosition().z);
 
-    // プレイヤーの隣接マスにいる敵の方向を調べる
-    Vector3 moveDir = { 0.0f, 0.0f, 0.0f };
-    bool foundAdjacentEnemy = false;
+            // プレイヤーに隣接している敵を探す
+            if (abs(otherX - playerX) + abs(otherZ - playerZ) == 1) {
+                // その反対側に移動する
+                dx = playerX - otherX;
+                dz = playerZ - otherZ;
 
-    for (const auto& pos : otherEnemyPositions) {
-        if (enemyManager_->IsAdjacent(pos, playerPos)) {
-            Vector3 direction = pos - playerPos;
-            // 反対側の方向を設定
-            if (direction.x == 1.0f && direction.z == 0.0f) {
-                moveDir = { playerPos.x - 1.0f, 0.0f, playerPos.z -1 }; // 敵がプレイヤーの右側にいる場合、左に移動
-            } else if (direction.x == -1.0f && direction.z == 0.0f) {
-                moveDir = { playerPos.x + 1.0f, 0.0f, playerPos.z -1 }; // 敵がプレイヤーの左側にいる場合、右に移動
-            } else if (direction.z == 1.0f && direction.x == 0.0f) {
-                moveDir = { playerPos.x, 0.0f, playerPos.z + 1.0f }; // 敵がプレイヤーの上側にいる場合、下に移動
-            } else if (direction.z == -1.0f && direction.x == 0.0f) {
-                moveDir = { playerPos.x, 0.0f, playerPos.z - 1.0f }; // 敵がプレイヤーの下側にいる場合、上に移動
+                // 反対側の位置を計算
+                int targetX = playerX + dx;
+                int targetZ = playerZ + dz;
+
+                // マップの範囲内か確認
+                if (targetX >= 0 && targetX < WIDTH && targetZ >= 0 && targetZ < DEPTH) {
+                    // 他の敵やプレイヤーがいないか確認
+                    bool blocked = false;
+
+                    // プレイヤーの位置と比較
+                    if (targetX == playerX && targetZ == playerZ) {
+                        blocked = true;
+                    }
+
+                    // 他の敵の位置と比較
+                    for (const auto& checkEnemy : enemyManager_->GetEnemies()) {
+                        if (checkEnemy.get() != this) {
+                            int checkX = static_cast<int>(checkEnemy->GetPosition().x);
+                            int checkZ = static_cast<int>(checkEnemy->GetPosition().z);
+                            if (targetX == checkX && targetZ == checkZ) {
+                                blocked = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!blocked) {
+                        // 移動を試みる
+                        Move(targetX - enemyX, targetZ - enemyZ);
+                        adjacentEnemyFound = true;
+                        break;
+                    }
+                }
             }
-			//もしフィールドの範囲外だったら範囲内に収める
-			if (moveDir.x < 0) moveDir.x = 0;
-			if (moveDir.x >= WIDTH - 1) moveDir.x = WIDTH - 1;
-			if (moveDir.z < 0) moveDir.z = 0;
-			if (moveDir.z >= DEPTH - 1) moveDir.z = DEPTH - 1;
-
-            foundAdjacentEnemy = true;
-            break; // 最初の隣接する敵のみを考慮
         }
     }
 
-    if (!foundAdjacentEnemy) {
-        // 隣接する敵がいない場合、プレイヤーに近づく
-        Vector3 direction = playerPos - enemyPos;
+    if (!adjacentEnemyFound) {
+        // プレイヤーに向かうための方向ベクトルを計算
+        dx = 0;
+        dz = 0;
 
-        // 縦または横の移動を優先
-        if (std::abs(direction.x) > std::abs(direction.z)) {
-            moveDir.x = (direction.x > 0) ? 1.0f : -1.0f;
-        } else {
-            moveDir.z = (direction.z > 0) ? 1.0f : -1.0f;
+        if (enemyX < playerX) {
+            dx = 1;
+        } else if (enemyX > playerX) {
+            dx = -1;
         }
-    }
 
-    // 移動指示
-    if (moveDir.x != 0.0f || moveDir.z != 0.0f)
-    {
-        Move(moveDir);
-    } else {
-        isTurnEnd_ = true;
+        if (enemyZ < playerZ) {
+            dz = 1;
+        } else if (enemyZ > playerZ) {
+            dz = -1;
+        }
+
+        // 優先的に移動する軸を決定
+        bool moved = false;
+
+        // X軸方向に移動を試みる
+        if (dx != 0) {
+            Move(dx, 0);
+            if (isEaseStart_) {
+                moved = true;
+            }
+        }
+
+        // X軸で移動できなかった場合、Z軸方向に移動を試みる
+        if (!moved && dz != 0) {
+            Move(0, dz);
+            if (isEaseStart_) {
+                moved = true;
+            }
+        }
+
+        // 移動できなかった場合、ターン終了
+        if (!moved) {
+            isTurnEnd_ = true;
+        }
     }
 }
 

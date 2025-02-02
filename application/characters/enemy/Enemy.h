@@ -21,7 +21,7 @@ public:
 	void Draw();
 
 	//移動
-	void Move(Vector3 distance);
+	void Move(int dx, int dz);
 	void ImGui();
 
 public: //アクセッサ
