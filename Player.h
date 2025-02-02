@@ -94,8 +94,6 @@ private:
 		Vector3 scale;
 	};
 
-	Object3D* object3D_;
-
 	Ball* ball = nullptr;
 	bool hasBall = false;
 	PlayerData playerData;

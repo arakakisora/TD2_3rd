@@ -60,7 +60,7 @@ void GamePlayScene::Initialize()
   //エネミーマネージャー
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->SetField(pField_.get());
-	enemyManager_->SetPlayer({ pPlayer_,pPlayer2_,pPlayer3_ });
+	enemyManager_->SetPlayer(pPlayer_);
 	enemyManager_->Initialize("cube.obj", 3);
 
 }
