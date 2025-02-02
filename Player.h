@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "Object3D.h"
 #include "Object3DCommon.h"
+#include "Field.h"
 
 class Ball;
 class Player
@@ -25,12 +26,20 @@ public:
 	void Move(int WIDTH, int DEPTH);
 	//3Dオブジェクトの更新
 	void UpdateTransform();
+
 	// ImGui 描画
 	void ImGui();
 	// ドリブル
 	void Dribble();
 	// パス
 	void Pass();
+
+
+	void HandleMouseClick(const Vector3& mousePos, Field* field, Player*& selectedPlayer);
+
+	bool CanMoveTo(int x, int z);
+	
+
 
 public: //アクセッサ
 	Vector3 GetPosition() { return playerData.position; }
@@ -48,6 +57,9 @@ public: //アクセッサ
 
 
 public: // ゲッター  追加
+
+	bool GetHasMoved() { return isMoved; }
+	void ResetMoveFlag() { isMoved = false; }
 
 	// プレイヤーの位置(マス) 追加
 	int GetPosX() { return posX; }
@@ -70,7 +82,11 @@ public: // ゲッター  追加
 
 
 private:
-	// プレイヤーデータ
+
+	Model* model;
+	Object3D* object3D_;
+	bool isMoved = false; // 1ターン内での移動を制限
+
 	struct PlayerData
 	{
 		Vector3 position;
