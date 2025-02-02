@@ -3,6 +3,8 @@
 #include "Object3D.h"
 #include "Player.h"
 
+class EnemyManager;
+
 class Enemy
 {
 public:
@@ -19,7 +21,8 @@ public:
 	void Draw();
 
 	//移動
-	void Move(Vector3 distance);
+	void Move(int dx, int dz);
+	void ImGui();
 
 public: //アクセッサ
 	// 位置、回転、拡大率の取得
@@ -38,6 +41,8 @@ public: //アクセッサ
 	// プレイヤーのポインタをセット
 	void SetPlayer(Player* player) { player_ = player; }
 
+	void SetEnemyManager(EnemyManager* enemyManager) { enemyManager_ = enemyManager; }
+
 	// ターン終了フラグの取得、設定
 	bool IsTurnEnd() const { return isTurnEnd_; }
 	void SetTurnEnd(bool isTurnEnd) { isTurnEnd_ = isTurnEnd; }
@@ -49,8 +54,6 @@ private:
 	// イージングによる移動更新
 	void UpdateEasingMovement();
 
-	void ImGui();
-
 private:
 	//フィールド
 	Field* field_ = nullptr;
@@ -60,6 +63,9 @@ private:
 
 	//プレイヤー
 	Player* player_ = nullptr;
+
+	//エネミーマネージャー
+	EnemyManager* enemyManager_ = nullptr;
 
 	// 3Dオブジェクト
 	std::unique_ptr<Object3D> object3D_;

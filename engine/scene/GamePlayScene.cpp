@@ -56,14 +56,12 @@ void GamePlayScene::Initialize()
 	for (const auto& player : pPlayer_) {
 		pField_->SetPlayerPos(player->GetPosX(), player->GetPosY(), player->GetPosZ());
 	}
-	//エネミー
-	enemy_ = std::make_unique<Enemy>();
-	enemy_->SetField(pField_.get());
-	enemy_->Initialize(Object3DCommon::GetInstance(), "cube.obj");
-
-	enemy_->SetPlayer(pPlayer_.front().get());
-
 	
+  //エネミーマネージャー
+	enemyManager_ = std::make_unique<EnemyManager>();
+	enemyManager_->SetField(pField_.get());
+	enemyManager_->SetPlayer({ pPlayer_,pPlayer2_,pPlayer3_ });
+	enemyManager_->Initialize("cube.obj", 3);
 
 }
 
@@ -115,7 +113,6 @@ void GamePlayScene::Update()
 	case TurnState::NONE:
 		break;
 	case TurnState::PLAYER:
-
 		for (auto& player : pPlayer_) {
 			player->Update();
 			// プレイヤーの位置をフィールドにセット
@@ -129,19 +126,21 @@ void GamePlayScene::Update()
 			if (player->GetHasMoved())
 			{
 				turnState_ = TurnState::ENEMY;
-				// エネミーのターン開始
-				enemy_->SetTurnEnd(false);
+				
+        // エネミーのターン開始
+			enemyManager_->SetEnemyTurn(true);
 				player->ResetMoveFlag();
 			}
+
 
 		}
 
 		break;
 	case TurnState::ENEMY:
 		//エネミーの更新
-		enemy_->Update();
+		enemyManager_->Update();
 		// ターン終了
-		if (enemy_->IsTurnEnd())
+		if (!enemyManager_->IsEnemyTurn())
 		{
 			turnState_ = TurnState::PLAYER;
 		}
@@ -181,7 +180,7 @@ void GamePlayScene::Update()
 	}
 
 	//エネミーの３Dオブジェクトを更新
-	enemy_->UpdateTransform();
+	enemyManager_->UpdateTransform();
 
 	// ゴール判定
 	if (pField_->IsGoal())
@@ -308,7 +307,6 @@ void GamePlayScene::Update()
 		if (ImGui::Button("Turn Enemy"))
 		{
 			turnState_ = TurnState::ENEMY;
-			enemy_->SetTurnEnd(false);
 		}
 
 
@@ -334,7 +332,7 @@ void GamePlayScene::Draw()
 	ball->Draw();
 	
 	//エネミーの描画
-	enemy_->Draw();
+	enemyManager_->Draw();
 
 #pragma endregion
 

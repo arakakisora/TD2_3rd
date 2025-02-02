@@ -11,7 +11,9 @@
 #include "vector"
 #include "Field.h"
 #include "application/characters/enemy/Enemy.h"
+#include "application/characters/enemy/EnemyManager.h"
 #include "Ball.h"
+
 class GamePlayScene :public BaseScene
 {
 public:
@@ -65,8 +67,8 @@ private:
 	std::vector<Object3D*> pFieldObject_ = {};
 	// Field
 	std::unique_ptr<Field> pField_ = nullptr;
-	//エネミー
-	std::unique_ptr<Enemy> enemy_ = nullptr;
+	//エネミーマネージャー
+	std::unique_ptr<EnemyManager> enemyManager_ = nullptr;
 	// テスト用
 	std::vector<Vector3> prePos_ = {};
 
