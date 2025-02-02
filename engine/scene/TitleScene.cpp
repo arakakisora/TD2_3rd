@@ -9,6 +9,9 @@
 
 void TitleScene::Initialize()
 {
+	//スプライトの生成
+	titleSprite_ = new Sprite();
+	titleSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/test.png");
 	
 	
 	
@@ -16,10 +19,14 @@ void TitleScene::Initialize()
 
 void TitleScene::Finalize()
 {
+	delete titleSprite_;
 }
 
 void TitleScene::Update()
 {
+	//スプライトの更新
+	titleSprite_->Update();
+
 	if (Input::GetInstans()->TriggerKey(DIK_SPACE)) {
 
 		
@@ -48,5 +55,8 @@ void TitleScene::Draw()
 
 	//Spriteの描画準備。spriteの描画に共通のグラフィックスコマンドを積む
 	SpriteCommon::GetInstance()->CommonDraw();
+
+	//スプライトの描画
+	titleSprite_->Draw();
 
 }
