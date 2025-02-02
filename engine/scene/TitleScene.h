@@ -30,7 +30,7 @@ public:
 
 public:
 
-	
+	Sprite* titleSprite = nullptr;
 
 
 };
