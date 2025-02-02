@@ -8,10 +8,11 @@
 #include "BaseScene.h"
 #include"Player.h"
 #include "SceneManager.h"
-
+#include "vector"
 #include "Field.h"
 #include "application/characters/enemy/Enemy.h"
 #include "application/characters/enemy/EnemyManager.h"
+#include "Ball.h"
 
 class GamePlayScene :public BaseScene
 {
@@ -35,7 +36,7 @@ public:
 	void Draw()override;
 
 
-	void  SetclickPlayerPos();
+	void SetclickPlayerPos();
 
 private:	
 
@@ -50,9 +51,13 @@ private:
 	TurnState turnState_ = TurnState::PLAYER;
 
 	// Player
-	Player* pPlayer_;
-	Player* pPlayer2_;
-	Player* pPlayer3_;
+
+
+	Player* selectedPlayer_ = nullptr;
+
+
+	std::vector<std::unique_ptr<Player>> pPlayer_;
+
 
 	//カメラのポインタ
 	Camera* pCamera_ = nullptr;
@@ -65,13 +70,12 @@ private:
 	//エネミーマネージャー
 	std::unique_ptr<EnemyManager> enemyManager_ = nullptr;
 	// テスト用
-	Vector3 prePos_{};
-	Vector3 prePos2_{};
-	Vector3 prePos3_{};
-	Field::Pos prePlayerPos_{};
-	Field::Pos prePlayerPos2_{};
-	Field::Pos prePlayerPos3_{};
+	std::vector<Vector3> prePos_ = {};
 
+	// プレイヤーの位置
+	std::vector<Field::Pos> playerPosList_ = {};
+
+	Ball* ball = nullptr;
 
 	Vector3 mousePos = Vector3(0, 0, 0);
 	Object3D* MouseObject = nullptr;

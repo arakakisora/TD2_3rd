@@ -40,33 +40,40 @@ void GamePlayScene::Initialize()
 	MouseObject->Initialize(Object3DCommon::GetInstance());
 	MouseObject->SetModel("cube.obj");
 
+	ball = new Ball();
+	ball->Initialize();
+
 	//Playerの初期化
-	pPlayer_ = new Player();
-	pPlayer_->Initialize(0, 0);
-	pPlayer2_ = new Player();
-	pPlayer2_->Initialize(0, 3);
-	pPlayer3_ = new Player();
-	pPlayer3_->Initialize(0, 4);
+	std::vector<int> initPosZ = { 0, 2, 4 };
+	for (int i = 0; i < initPosZ.size(); ++i) {
+		auto player = std::make_unique<Player>();
+		player->Initialize(initPosZ[i],ball);
+		pPlayer_.push_back(std::move(player));
+	}
+
+
 	// プレイヤーの位置をフィールドにセット
-	pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
-	pField_->SetPlayerPos(pPlayer2_->GetPosX(), pPlayer2_->GetPosY(), pPlayer2_->GetPosZ());
-	pField_->SetPlayerPos(pPlayer3_->GetPosX(), pPlayer3_->GetPosY(), pPlayer3_->GetPosZ());
-	//エネミーマネージャー
+	for (const auto& player : pPlayer_) {
+		pField_->SetPlayerPos(player->GetPosX(), player->GetPosY(), player->GetPosZ());
+	}
+	
+  //エネミーマネージャー
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->SetField(pField_.get());
 	enemyManager_->SetPlayer({ pPlayer_,pPlayer2_,pPlayer3_ });
 	enemyManager_->Initialize("cube.obj", 3);
-	
+
 }
 
 void GamePlayScene::Finalize()
 {
-	pPlayer_->Finalize();
-	delete pPlayer_;
-	pPlayer2_->Finalize();
-	delete pPlayer2_;
-	pPlayer3_->Finalize();
-	delete pPlayer3_;
+	// ボールの終了処理
+	ball->Finalize();
+	delete ball;
+	// プレイヤーの終了処理
+	for (auto& player : pPlayer_) {
+		player->Finalize();
+	}
 
 	delete MouseObject;
 
@@ -106,18 +113,26 @@ void GamePlayScene::Update()
 	case TurnState::NONE:
 		break;
 	case TurnState::PLAYER:
-		// プレイヤーの更新
-		pPlayer_->Update();
-		// プレイヤーの位置をフィールドにセット
-		pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
+		for (auto& player : pPlayer_) {
+			player->Update();
+			// プレイヤーの位置をフィールドにセット
+			pField_->SetPlayerPos(player->GetPosX(), player->GetPosY(), player->GetPosZ());
+		}
 
-		// ターン終了
-		//NOTE:今はエンターキーでターンを切り替える
-		if (Input::GetInstans()->TriggerKey(DIK_RETURN))
-		{
-			turnState_ = TurnState::ENEMY;
-			// エネミーのターン開始
+		for (auto& player : pPlayer_) {
+
+			// ターン終了
+			//NOTE:今はエンターキーでターンを切り替える
+			if (player->GetHasMoved())
+			{
+				turnState_ = TurnState::ENEMY;
+				
+        // エネミーのターン開始
 			enemyManager_->SetEnemyTurn(true);
+				player->ResetMoveFlag();
+			}
+
+
 		}
 
 		break;
@@ -133,29 +148,36 @@ void GamePlayScene::Update()
 	}
 
 
-	// プレイヤーの位置をフィールドにセット
-	if (Input::GetInstans()->PushKey(DIK_1))
-	{;
-		pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
-	}
-	if (Input::GetInstans()->PushKey(DIK_2))
-	{
-		pPlayer2_->Update();
-		pField_->SetPlayerPos(pPlayer2_->GetPosX(), pPlayer2_->GetPosY(), pPlayer2_->GetPosZ());
-	}
-	if (Input::GetInstans()->PushKey(DIK_3))
-	{
-		pPlayer3_->Update();
-		pField_->SetPlayerPos(pPlayer3_->GetPosX(), pPlayer3_->GetPosY(), pPlayer3_->GetPosZ());
-	}
-	
-	
+
+	//// プレイヤーの位置をフィールドにセット
+	//if (Input::GetInstans()->PushKey(DIK_1))
+	//{;
+	//	pField_->SetPlayerPos(pPlayer_->GetPosX(), pPlayer_->GetPosY(), pPlayer_->GetPosZ());
+	//}
+	//if (Input::GetInstans()->PushKey(DIK_2))
+	//{
+	//	pPlayer2_->Update();
+	//	pField_->SetPlayerPos(pPlayer2_->GetPosX(), pPlayer2_->GetPosY(), pPlayer2_->GetPosZ());
+	//}
+	//if (Input::GetInstans()->PushKey(DIK_3))
+	//{
+	//	pPlayer3_->Update();
+	//	pField_->SetPlayerPos(pPlayer3_->GetPosX(), pPlayer3_->GetPosY(), pPlayer3_->GetPosZ());
+	//}
+
+
+	// ボールの更新
+	ball->Update();
+
 	// フィールドの更新
 	pField_->Update();
 
 
 	//プレイヤーの３Dオブジェクトを更新
-	pPlayer_->UpdateTransform();
+
+	for (auto& player : pPlayer_) {
+		player->UpdateTransform();
+	}
 
 	//エネミーの３Dオブジェクトを更新
 	enemyManager_->UpdateTransform();
@@ -175,59 +197,58 @@ void GamePlayScene::Update()
 
 	// ------------テスト----------------
 	// プレイヤーの位置テスト
-	prePlayerPos_ = { pPlayer_->GetPrePosX(),pPlayer_->GetPrePosY(),pPlayer_->GetPrePosZ() };
-	prePlayerPos2_ = { pPlayer2_->GetPrePosX(),pPlayer2_->GetPrePosY(),pPlayer2_->GetPrePosZ() };
-	prePlayerPos3_ = { pPlayer3_->GetPrePosX(),pPlayer3_->GetPrePosY(),pPlayer3_->GetPrePosZ() };
-	pField_->SetBlockType(prePlayerPos_.x, prePlayerPos_.y, prePlayerPos_.z, 0);
-
+	for (const auto& player : pPlayer_) {
+		Field::Pos prePlayerPos = { player->GetPrePosX(), player->GetPrePosY(), player->GetPrePosZ() };
+		pField_->SetBlockType(prePlayerPos.x, prePlayerPos.y, prePlayerPos.z, 0);
+	}
 	// ボールの位置テスト
 
-	prePos_ = pField_->GetBlockPosition(1);
+	//prePos_ = pField_->GetBlockPosition(1);
 
 
-	// パス
-	if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x <= WIDTH - 3)
-	{
-		pField_->SetBlockType((int)prePos_.x + 2, (int)prePos_.y, (int)prePos_.z, 1);
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	}
-	else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 2)
-	{
-		pField_->SetBlockType((int)prePos_.x - 2, (int)prePos_.y, (int)prePos_.z, 1);
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	}
-	else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.z >= 2)
-	{
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z - 2, 1);
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	}
-	else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.z <= DEPTH - 3)
-	{
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z + 2, 1);
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	}
+	//// パス
+	//if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x <= WIDTH - 3)
+	//{
+	//	pField_->SetBlockType((int)prePos_.x + 2, (int)prePos_.y, (int)prePos_.z, 1);
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	//}
+	//else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 2)
+	//{
+	//	pField_->SetBlockType((int)prePos_.x - 2, (int)prePos_.y, (int)prePos_.z, 1);
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	//}
+	//else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.z >= 2)
+	//{
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z - 2, 1);
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	//}
+	//else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.z <= DEPTH - 3)
+	//{
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z + 2, 1);
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	//}
 
-	// ドリブル
-	else if (Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x >= 0 && (int)prePos_.x <= WIDTH - 2)
-	{
-		pField_->SetBlockType((int)prePos_.x + 1, (int)prePos_.y, (int)prePos_.z, 1);
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	}
-	else if (Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 1 && (int)prePos_.x <= WIDTH - 1)
-	{
-		pField_->SetBlockType((int)prePos_.x - 1, (int)prePos_.y, (int)prePos_.z, 1);
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	}
-	else if (Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.z >= 1 && (int)prePos_.z <= DEPTH - 1)
-	{
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z - 1, 1);
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	}
-	else if (Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.z >= 0 && (int)prePos_.z <= DEPTH - 2)
-	{
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z + 1, 1);
-		pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	}
+	//// ドリブル
+	//else if (Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x >= 0 && (int)prePos_.x <= WIDTH - 2)
+	//{
+	//	pField_->SetBlockType((int)prePos_.x + 1, (int)prePos_.y, (int)prePos_.z, 1);
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	//}
+	//else if (Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 1 && (int)prePos_.x <= WIDTH - 1)
+	//{
+	//	pField_->SetBlockType((int)prePos_.x - 1, (int)prePos_.y, (int)prePos_.z, 1);
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	//}
+	//else if (Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.z >= 1 && (int)prePos_.z <= DEPTH - 1)
+	//{
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z - 1, 1);
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	//}
+	//else if (Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.z >= 0 && (int)prePos_.z <= DEPTH - 2)
+	//{
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z + 1, 1);
+	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
+	//}
 
 
 
@@ -272,15 +293,13 @@ void GamePlayScene::Update()
 
 
 #endif
-
-		pPlayer_->ImGui();
-		pPlayer2_->ImGui();
-		pPlayer3_->ImGui();
-
-		ImGui::Text("prePlayerPos %d", &prePlayerPos_.x);
+		for (const auto& player : pPlayer_) {
+			player->ImGui();
+		}
+		//ImGui::Text("prePlayerPos %d", &prePlayerPos_.x);
 
 
-		if(ImGui::Button("Turn Player"))
+		if (ImGui::Button("Turn Player"))
 		{
 			turnState_ = TurnState::PLAYER;
 		}
@@ -306,10 +325,12 @@ void GamePlayScene::Draw()
 	//3Dオブジェクトの描画
 	MouseObject->Draw();
 	pField_->Draw();
-	pPlayer_->Draw();
-	pPlayer2_->Draw();
-	pPlayer3_->Draw();
-
+	for (const auto& player : pPlayer_) {
+		player->Draw();
+	}
+	// ボールの描画
+	ball->Draw();
+	
 	//エネミーの描画
 	enemyManager_->Draw();
 
@@ -325,41 +346,38 @@ void GamePlayScene::Draw()
 
 }
 
-void  GamePlayScene::SetclickPlayerPos()
+void GamePlayScene::SetclickPlayerPos()
 {
-	// マウス位置とフィールドブロックの判定
-	for (int z = 0; z < DEPTH; z++) {
-		for (int y = 0; y < HEIGHT; y++) {
-			for (int x = 0; x < WIDTH; x++) {
-				// ブロックの位置とスケールを取得
-				const Vector3& blockPos = pField_->GetBlockPositionAt(x, y, z);
-				Vector3 blockScale = Vector3(1.0f, 1.0f, 1.0f); // 既定値
+	// **プレイヤーの選択処理**
+	for (const auto& player : pPlayer_) {
+		Vector3 playerPos = pField_->GetBlockPositionAt(player->GetPosX(), 0, player->GetPosZ());
+		Vector3 playerSize = Vector3(1.0f, 1.0f, 1.0f);
 
-				// ブロックのタイプに応じたスケール変更
-				uint32_t blockType = pField_->GetBlockType(x, y, z);
-				if (blockType == 1) blockScale = Vector3(0.15f, 0.15f, 0.15f);
-				else if (blockType == 2) blockScale = Vector3(0.8f, 0.8f, 0.8f);
-				else if (blockType == 5) blockScale = Vector3(0.5f, 0.5f, 0.5f);
+		// **マウスがプレイヤーの範囲内にあるか判定**
+		if (mousePos.x >= playerPos.x - playerSize.x / 2 &&
+			mousePos.x <= playerPos.x + playerSize.x / 2 &&
+			mousePos.z >= playerPos.z - playerSize.z / 2 &&
+			mousePos.z <= playerPos.z + playerSize.z / 2) {
 
-				// マウス位置との簡易的なAABB判定
-				if (mousePos.x >= blockPos.x - blockScale.x / 2 &&
-					mousePos.x <= blockPos.x + blockScale.x / 2 &&
-					mousePos.z >= blockPos.z - blockScale.z / 2 &&
-					mousePos.z <= blockPos.z + blockScale.z / 2) {
-					if (Input::GetInstans()->TriggerMouse(0)) {
-
-						pPlayer_->SetPlayerPos(x, z);
-
-					}
-
-					// 当たったブロックの座標をログ出力（または他の処理）
-					ImGui::Text("Hit Block: %d, %d, %d", x, y, z);
-
-
-				}
+			// **左クリックでプレイヤーを選択**
+			if (Input::GetInstans()->TriggerMouse(0)) {
+				selectedPlayer_ = player.get(); // `unique_ptr` からポインタ取得
+				ImGui::Text("Player Selected at: %d, %d", player->GetPosX(), player->GetPosZ());
+				return;
 			}
 		}
 	}
 
-
+	// **プレイヤーが選択されている場合に移動を実行**
+	if (selectedPlayer_ != nullptr) {
+		if (Input::GetInstans()->TriggerMouse(0)) {
+			selectedPlayer_->HandleMouseClick(mousePos, pField_.get(), selectedPlayer_);
+		}
+	}
 }
+
+
+
+
+
+
