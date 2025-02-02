@@ -7,13 +7,10 @@
 #include "Audio.h"
 #include "BaseScene.h"
 #include "SceneManager.h"
-
-#include "application/turn/BaseTurnState.h"
-
-#include "application/objects/Field.h"
-#include "application/characters/Enemy.h"
-#include "application/characters/Player.h"
-
+#include "vector"
+#include "Field.h"
+#include "application/characters/enemy/Enemy.h"
+#include "Ball.h"
 class GamePlayScene :public BaseScene
 {
 public:
@@ -35,46 +32,49 @@ public:
 	/// </summary>
 	void Draw()override;
 
-	// ターンステート
-	void ChangeState(std::unique_ptr<BaseTurnState> _pState);
 
-public: // ゲッター
-
-	// プレイヤー (ターンステートで使いたい)
-	std::shared_ptr<Player> GetPlayer() { return pPlayer_; }
-	
-	// エネミー (ターンステートで使いたい)
-	std::shared_ptr<Enemy> GetEnemy() { return enemy_; }
-
-	// フィールド (ターンステートで使いたい)
-	std::shared_ptr<Field> GetField() { return pField_; }
+	void SetclickPlayerPos();
 
 private:	
 
+private:
+	//ターン
+	enum class TurnState
+	{
+		NONE,
+		PLAYER,
+		ENEMY,
+	};
+	TurnState turnState_ = TurnState::PLAYER;
+
 	// Player
-	std::shared_ptr<Player> pPlayer_;
+
+
+	Player* selectedPlayer_ = nullptr;
+
+
+	std::vector<std::unique_ptr<Player>> pPlayer_;
+
 
 	//カメラのポインタ
 	Camera* pCamera_ = nullptr;
 	Vector3 cameraPos_ = Vector3(3.0f, -20.0f, 0.0f);
 	Vector3 cameraRot_ = Vector3(-1.5f, 0.0f, 0.0f);
-
-
 	// 3Dオブジェクト
 	std::vector<Object3D*> pFieldObject_ = {};
-
 	// Field
-	std::shared_ptr<Field> pField_ = nullptr;
-
+	std::unique_ptr<Field> pField_ = nullptr;
 	//エネミー
-	std::shared_ptr<Enemy> enemy_ = nullptr;
-	
-	// ターンステート
-	std::unique_ptr<BaseTurnState> pState_ = nullptr;
-
+	std::unique_ptr<Enemy> enemy_ = nullptr;
 	// テスト用
-	Vector3 prePos_{};
-	Field::Pos prePlayerPos_{};
+	std::vector<Vector3> prePos_ = {};
 
+	// プレイヤーの位置
+	std::vector<Field::Pos> playerPosList_ = {};
+
+	Ball* ball = nullptr;
+
+	Vector3 mousePos = Vector3(0, 0, 0);
+	Object3D* MouseObject = nullptr;
 };
 

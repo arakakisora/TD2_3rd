@@ -5,8 +5,9 @@
     <FxCompile Include="Resources\Shaders\Object3d.VS.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="application\characters\Enemy.cpp" />
+    <ClCompile Include="application\characters\enemy\Enemy.cpp" />
     <ClCompile Include="CameraManager.cpp" />
+    <ClCompile Include="application\characters\enemy\EnemyManager.cpp" />
     <ClCompile Include="engine\scene\AbstractSceneFactory.cpp" />
     <ClCompile Include="engine\scene\BaseScene.cpp" />
     <ClCompile Include="engine\camera\Camera.cpp" />
@@ -21,7 +22,7 @@
     <ClCompile Include="engine\scene\GamePlayScene.cpp" />
     <ClCompile Include="engine\scene\GameClearScene.cpp" />
     <ClCompile Include="engine\scene\GameOverScene.cpp" />
-    <ClCompile Include="application\objects\Field.cpp" />
+    <ClCompile Include="Field.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\3d\Model.cpp" />
     <ClCompile Include="engine\3d\ModelCommon.cpp" />
@@ -39,14 +40,13 @@
     <ClCompile Include="engine\scene\SceneManager.cpp" />
     <ClCompile Include="engine\base\SrvManager.cpp" />
     <ClCompile Include="engine\scene\TitleScene.cpp" />
-    <ClCompile Include="application\characters\Player.cpp" />
-    <ClCompile Include="application\turn\BaseTurnState.cpp" />
-    <ClCompile Include="application\turn\PlayerTurn.cpp" />
-    <ClCompile Include="application\turn\EnemyTurn.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Ball.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="application\characters\Enemy.h" />
+    <ClInclude Include="application\characters\enemy\Enemy.h" />
     <ClInclude Include="CameraManager.h" />
+    <ClInclude Include="application\characters\enemy\EnemyManager.h" />
     <ClInclude Include="engine\scene\AbstractSceneFactory.h" />
     <ClInclude Include="engine\scene\BaseScene.h" />
     <ClInclude Include="engine\camera\Camera.h" />
@@ -83,11 +83,9 @@
     <ClInclude Include="engine\scene\TitleScene.h" />
     <ClInclude Include="engine\scene\GameClearScene.h" />
     <ClInclude Include="engine\scene\GameOverScene.h" />
-    <ClInclude Include="application\characters\Player.h" />
-    <ClInclude Include="application\objects\Field.h" />
-    <ClInclude Include="application\turn\BaseTurnState.h" />
-    <ClInclude Include="application\turn\PlayerTurn.h" />
-    <ClInclude Include="application\turn\EnemyTurn.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Field.h" />
+    <ClInclude Include="Ball.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Object3d.hlsli" />
