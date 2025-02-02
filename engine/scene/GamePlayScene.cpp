@@ -21,7 +21,8 @@ void GamePlayScene::Initialize()
 
 
 	// 3Dオブジェクト
-	ModelManager::GetInstans()->LoadModel("cube.obj");
+	ModelManager::GetInstans()->LoadModel("Field0.obj");
+	ModelManager::GetInstans()->LoadModel("Enemy.obj");
 
 	// フィールド
 	for (int z = 0; z < DEPTH; z++)
@@ -30,7 +31,7 @@ void GamePlayScene::Initialize()
 		{
 			Object3D* pFieldObject = new Object3D();
 			pFieldObject->Initialize(Object3DCommon::GetInstance());
-			pFieldObject->SetModel("cube.obj");
+			pFieldObject->SetModel("Field0.obj");
 			pFieldObject_.push_back(pFieldObject);
 		}
 	}
@@ -48,7 +49,7 @@ void GamePlayScene::Initialize()
 	//エネミー
 	enemy_ = std::make_shared<Enemy>();
 	enemy_->SetField(pField_.get());
-	enemy_->Initialize(Object3DCommon::GetInstance(), "cube.obj");
+	enemy_->Initialize(Object3DCommon::GetInstance(), "Enemy.obj");
 
 	// ステート
 	ChangeState(std::make_unique<PlayerTurn>(this));
