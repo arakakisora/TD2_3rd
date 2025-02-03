@@ -14,7 +14,7 @@ void EnemyManager::Initialize(const std::string& filename, int enemyCount)
 		enemies_[index]->Initialize(Object3DCommon::GetInstance(), filename);
 		enemies_[index]->SetField(field_);
 		//NOTE:今は仮にプレイヤーの0番目をセット
-		enemies_[index]->SetPlayer(playerList_[0]);
+		enemies_[index]->SetPlayer(playerList_);
 		enemies_[index]->SetEnemyManager(this);
 		//座標をずらして配置
 		enemies_[index]->SetPosition({ 5.0f , 0.0f, static_cast<float>(index) });

@@ -50,10 +50,13 @@ void Enemy::Move(int dx, int dz)
         bool blocked = false;
 
         // プレイヤーの位置と比較
-        int playerX = static_cast<int>(player_->GetPosition().x);
-        int playerZ = static_cast<int>(player_->GetPosition().z);
-        if (newX == playerX && newZ == playerZ) {
-            blocked = true;
+        for (const auto& player : playerList_) {
+            int playerX = static_cast<int>(player->GetPosition().x);
+            int playerZ = static_cast<int>(player->GetPosition().z);
+            if (newX == playerX && newZ == playerZ) {
+                blocked = true;
+                break;
+            }
         }
 
         // 他の敵の位置と比較
@@ -76,25 +79,41 @@ void Enemy::Move(int dx, int dz)
             // 移動開始
             moveProgress_ = 0.0f;
             isEaseStart_ = true;
-        } else {
+        }
+        else {
             // 移動できない場合はターン終了
             isTurnEnd_ = true;
         }
-    } else {
+    }
+    else {
         // マップ外の場合はターン終了
         isTurnEnd_ = true;
     }
 }
 
 void Enemy::HandleAI() {
-    if (!player_) return; // プレイヤー情報がない場合はスキップ
     if (isEaseStart_) return; // 移動中はスキップ
 
-    // 敵とプレイヤーの整数座標を取得
+    // 敵の整数座標を取得
     int enemyX = static_cast<int>(transform_.translate.x);
     int enemyZ = static_cast<int>(transform_.translate.z);
-    int playerX = static_cast<int>(player_->GetPosition().x);
-    int playerZ = static_cast<int>(player_->GetPosition().z);
+
+    // 最も近いプレイヤーを探す
+    Player* targetPlayer = nullptr;
+    float minDistance = (std::numeric_limits<float>::max)();
+    for (const auto& player : playerList_) {
+        float distance = std::sqrtf(std::powf(player->GetPosition().x - enemyX, 2.0f) + std::powf(player->GetPosition().z - enemyZ, 2.0f));
+        if (distance < minDistance) {
+            minDistance = distance;
+            targetPlayer = player;
+        }
+    }
+
+    if (!targetPlayer) return; // プレイヤーが見つからない場合はスキップ
+
+    // プレイヤーの整数座標を取得
+    int playerX = static_cast<int>(targetPlayer->GetPosition().x);
+    int playerZ = static_cast<int>(targetPlayer->GetPosition().z);
 
     // 他の敵の位置を取得（自分以外）
     std::set<std::pair<int, int>> occupiedPositions;
@@ -173,11 +192,13 @@ void Enemy::HandleAI() {
 
             // 移動を試みる
             Move(dx, dz);
-        } else {
+        }
+        else {
             // 経路が存在するが移動できない場合はターン終了
             isTurnEnd_ = true;
         }
-    } else {
+    }
+    else {
         // 経路が見つからない場合はターン終了
         isTurnEnd_ = true;
     }
