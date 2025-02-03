@@ -16,7 +16,7 @@ void EnemyManager::Initialize(const std::string& filename, int enemyCount)
 		enemies_[index]->SetPlayer(playerList_[0]);
 		enemies_[index]->SetEnemyManager(this);
 		//座標をずらして配置
-		enemies_[index]->SetPosition({ 0.0f , 0.0f, static_cast<float>(index) });
+		enemies_[index]->SetPosition({ 5.0f , 0.0f, static_cast<float>(index) });
 	}
 }
 
@@ -98,8 +98,19 @@ void EnemyManager::SetEnemyTurn(bool isEnemyTurn)
 
 Enemy* EnemyManager::SelectEnemyToMove()
 {
+	//ボールを持っているプレイヤーの位置を取得
+	int playerIndex = 0;
+	for (int index = 0; index < playerList_.size(); index++)
+	{
+		if(playerList_[index]->HasBall())
+		{
+			playerIndex = index;
+			break;
+		}
+	}
+
 	// プレイヤーの位置を取得
-	Vector3 playerPos = playerList_[0]->GetPosition();
+	Vector3 playerPos = playerList_[playerIndex]->GetPosition();
 
 	// 挟み込みに最適な敵を選択
 	Enemy* selectedEnemy = nullptr;
