@@ -21,6 +21,7 @@ void GamePlayScene::Initialize()
 	ModelManager::GetInstans()->LoadModel("cube.obj");
 	ModelManager::GetInstans()->LoadModel("Field0.obj");
 	ModelManager::GetInstans()->LoadModel("Enemy.obj");
+	ModelManager::GetInstans()->LoadModel("skydome.obj");
 
 	// フィールド
 
@@ -65,7 +66,9 @@ void GamePlayScene::Initialize()
 
 	enemy_->SetPlayer(pPlayer_.front().get());
 
-	
+	// 天球
+	pSkydome_ = new skydome();
+	pSkydome_->Initialize(Object3DCommon::GetInstance(), "skydome.obj");
 
 }
 
@@ -87,6 +90,9 @@ void GamePlayScene::Finalize()
 	{
 		delete pFieldObject_;
 	}
+
+	pSkydome_->Finalize();
+	delete pSkydome_;
 
 	CameraManager::GetInstans()->RemoveCamera("main");
 	delete pCamera_;
@@ -175,6 +181,8 @@ void GamePlayScene::Update()
 	// フィールドの更新
 	pField_->Update();
 
+	// 天球の更新
+	pSkydome_->Update();
 
 	//プレイヤーの３Dオブジェクトを更新
 
@@ -337,6 +345,9 @@ void GamePlayScene::Draw()
 	
 	//エネミーの描画
 	enemy_->Draw();
+
+	// 天球の描画
+	pSkydome_->Draw();
 
 #pragma endregion
 

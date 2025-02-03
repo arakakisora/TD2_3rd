@@ -65,7 +65,7 @@ private:
 	std::unique_ptr<Object3D> object3D_;
 
 	//トランスフォーム
-	Transform transform_ = { { 0.5f,0.5f,0.5f }, { 0.0f,0.0f,0.0f }, {} };
+	Transform transform_ = { { 0.5f,0.5f,0.5f }, { 0.0f,0.0f,0.0f }, {0.0f,-0.5f,0.0f} };
 
 	//移動経過時間
 	float moveTimer_ = 0.0f;

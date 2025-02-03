@@ -3,9 +3,9 @@
 void Ball::Initialize()
 {
 	// ボールの初期化
-	ballData.position = Vector3(float(posX), 0.0f, 10.0f);
+	ballData.position = Vector3(float(posX), -0.8f, 1.0f);
 	ballData.rotate = Vector3(0.0f, 0.0f, 0.0f);
-	ballData.scale = Vector3(0.5f, 0.5f, 0.5f);
+	ballData.scale = Vector3(0.3f, 0.3f, 0.3f);
 	ModelManager::GetInstans()->LoadModel("ball.obj");
 	// モデルの生成
 	object3D_ = new Object3D;

@@ -79,13 +79,13 @@ void Field::Update()
 				// ボールの大きさ変更
 				if (pBlocks_[z][y][x].type == 1)
 				{
-					pBlocks_[z][y][x].object3D.SetScale(Vector3(0.15f, 0.15f, 0.15f));
+					//pBlocks_[z][y][x].object3D.SetScale(Vector3(0.15f, 0.15f, 0.15f));
 				}				
 
 				// ゴール位置(とりあえずでっかくしてる)
 				if (pBlocks_[z][y][x].type == 2)
 				{
-					pBlocks_[z][y][x].object3D.SetScale(Vector3(0.8f, 0.8f, 0.8f));
+					//pBlocks_[z][y][x].object3D.SetScale(Vector3(0.8f, 0.8f, 0.8f));
 				}
 
 				// ボール持ち
