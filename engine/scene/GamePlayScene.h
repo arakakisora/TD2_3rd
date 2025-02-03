@@ -13,6 +13,7 @@
 #include "application/characters/enemy/Enemy.h"
 #include "application/characters/enemy/EnemyManager.h"
 #include "Ball.h"
+#include "PlayerManeger.h"
 
 class GamePlayScene :public BaseScene
 {
@@ -75,9 +76,11 @@ private:
 	// プレイヤーの位置
 	std::vector<Field::Pos> playerPosList_ = {};
 
-	Ball* ball = nullptr;
+	std::unique_ptr<Ball> ball_ = nullptr;
 
 	Vector3 mousePos = Vector3(0, 0, 0);
 	Object3D* MouseObject = nullptr;
+
+	std::unique_ptr<PlayerManeger> playerManeger_ = nullptr;
 };
 

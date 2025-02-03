@@ -83,8 +83,7 @@ public: // ゲッター  追加
 
 private:
 
-	Model* model;
-	Object3D* object3D_;
+	std::unique_ptr<Object3D> object3D_;
 	bool isMoved = false; // 1ターン内での移動を制限
 
 	struct PlayerData

@@ -4,6 +4,7 @@
 
 #include "Object3D.h"
 
+#include "Ball.h"
 // 定数としてマップサイズを定義
 constexpr int WIDTH = 7;  // x軸方向のサイズ
 constexpr int HEIGHT = 1; // y軸方向のサイズ
@@ -97,7 +98,7 @@ public: // ゲッター
 		return Vector3(0, 0, 0); // 無効な場合のデフォルト
 	}
 
-
+	
 
 
 	// ゲームオーバーフラグ

@@ -39,11 +39,8 @@ private:
 		Vector3 rotate;
 		Vector3 scale;
 	};
-
-	// モデル / スマートポインタ
-	Model* model;
 	// 3Dオブジェクト / スマートポインタ
-	Object3D* object3D_;
+	std::unique_ptr<Object3D> object3D_;
 	// ボールデータ
 	BallData ballData;
 

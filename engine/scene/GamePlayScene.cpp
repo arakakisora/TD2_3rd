@@ -42,10 +42,24 @@ void GamePlayScene::Initialize()
 
 	ball_ = std::make_unique<Ball>();
 	ball_->Initialize();
+	//Playerの初期化
+	std::vector<int> initPosZ = { 0, 2, 4 };
+	for (int i = 0; i < initPosZ.size(); ++i) {
+		auto player = std::make_unique<Player>();
+		if(i ==0)
+		{
+			//１番目にボールを持たせる
+			player->Initialize(initPosZ[i],ball_.get());
+		} else
+		{
+			player->Initialize(initPosZ[i]);
+		}
+		pPlayer_.push_back(std::move(player));
+	}
 
-	// プレイヤーマネージャーの生成
 	playerManeger_ = std::make_unique<PlayerManeger>();
 	playerManeger_->Initialize(ball_.get());
+
 
 	// プレイヤーの位置をフィールドにセット
 	for (const auto& player : pPlayer_) {
@@ -64,6 +78,12 @@ void GamePlayScene::Initialize()
 
 void GamePlayScene::Finalize()
 {
+	// プレイヤーの終了処理
+	for (auto& player : pPlayer_) {
+		player->Finalize();
+
+	}
+	// プレイヤーマネージャーの終了処理
 	playerManeger_->Finalize();
 
 	delete MouseObject;
@@ -114,9 +134,6 @@ void GamePlayScene::Update()
 
 			// ターン終了
 			//NOTE:今はエンターキーでターンを切り替える
-			// ここはよくわからないので一旦置いておくことにする
-			playerManeger_->Update();
-
 			if (player->GetHasMoved())
 			{
 				turnState_ = TurnState::ENEMY;
@@ -128,6 +145,8 @@ void GamePlayScene::Update()
 
 
 		}
+		// プレイヤーマネージャーの更新
+		playerManeger_->Update();
 
 		break;
 	case TurnState::ENEMY:
@@ -318,10 +337,12 @@ void GamePlayScene::Draw()
 	//3Dオブジェクトの描画
 	MouseObject->Draw();
 	pField_->Draw();
-	
-	//プレイヤーの描画
+	for (const auto& player : pPlayer_) {
+		//player->Draw();
+	}
+	// プレイヤーマネージャーの描画
 	playerManeger_->Draw();
-	
+
 	//エネミーの描画
 	enemyManager_->Draw();
 

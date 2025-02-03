@@ -8,13 +8,12 @@ void Ball::Initialize()
 	ballData.scale = Vector3(0.5f, 0.5f, 0.5f);
 	ModelManager::GetInstans()->LoadModel("ball.obj");
 	// モデルの生成
-	object3D_ = new Object3D;
+	object3D_ = std::make_unique<Object3D>();
 	object3D_->SetModel("ball.obj");
 	object3D_->Initialize(Object3DCommon::GetInstance());
 	object3D_->SetTranslate(ballData.position);
 	object3D_->SetRotate(ballData.rotate);
 	object3D_->SetScale(ballData.scale);
-
 }
 
 void Ball::Update()
@@ -35,8 +34,7 @@ void Ball::Draw()
 
 void Ball::Finalize()
 {
-	delete object3D_;
-	delete model;
+	
 }
 
 void Ball::ImGui()

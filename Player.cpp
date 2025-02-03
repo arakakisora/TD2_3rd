@@ -14,8 +14,7 @@ void Player::Initialize(int posZ, Ball* ball)
 {
 	// ボールの設定
 	SetBall(ball);
-	//Vector3 ballPos = Vector3(2.0f, 0.0f, 10.0f);
-	//ball->SetPosition(ballPos);
+	
 
 	// プレイヤーの初期化
 	this->posZ = posZ;
@@ -24,23 +23,27 @@ void Player::Initialize(int posZ, Ball* ball)
 	playerData.scale = Vector3(0.5f, 0.5f, 0.5f);
 	ModelManager::GetInstans()->LoadModel("Player.obj");
 	// モデルの生成
-	object3D_ = new Object3D;
+	object3D_ = std::make_unique<Object3D>();
 	object3D_->SetModel("Player.obj");
 	object3D_->Initialize(Object3DCommon::GetInstance());
 	object3D_->SetTranslate(playerData.position);
 	object3D_->SetRotate(playerData.rotate);
 	object3D_->SetScale(playerData.scale);
 
-	if (HasBall())
-	{
-		ball->SetPosition(playerData.position);
+	if (ball != nullptr) {
+		 
+		Vector3 ballPos = ball->GetPosition();
+
+		ball->SetPosition(ballPos);
 	}
 }
 
 void Player::Update()
 {
-	playerData.rotate.z += 0.01f;
+	// プレイヤーの回転
 	playerData.rotate.y += 0.01f;
+	playerData.rotate.x += 0.01f;
+	playerData.rotate.z += 0.01f;
 
 	UpdateTransform();
 	Move(WIDTH, DEPTH);
@@ -55,57 +58,87 @@ void Player::Draw()
 
 void Player::Finalize()
 {
-	delete object3D_;
+	
 }
 
 void Player::Move(int WIDTH, int DEPTH)
 {
-	// キー入力に応じてプレイヤーの位置を更新
-	if (Input::GetInstans()->TriggerKey(DIK_S) && posZ < DEPTH - 1)
+	// 移動前の座標同士で一致していたらボールを持っている
+	if (ball != nullptr)
 	{
-		prePosX = posX;
-		prePosZ = posZ;
-		posZ += 1;
-	}
-	if (Input::GetInstans()->TriggerKey(DIK_W) && posZ > 0)
-	{
-		prePosX = posX;
-		prePosZ = posZ;
-		posZ -= 1;
-	}
-	if (Input::GetInstans()->TriggerKey(DIK_A) && posX > 0)
-	{
-		prePosX = posX;
-		prePosZ = posZ;
-		posX -= 1;
-	}
-	if (Input::GetInstans()->TriggerKey(DIK_D) && posX < WIDTH - 1)
-	{
-		prePosX = posX;
-		prePosZ = posZ;
-		posX += 1;
-	}
+		Vector3 ballpos = ball->GetPosition();
+		if (playerData.position.x == ballpos.x && 
+			playerData.position.z == ballpos.z)
+		{
+			hasBall = true;
+		}
+		else
+		{
+			hasBall = false;
+		}
+
+		// キー入力に応じてプレイヤーの位置を更新
+		if (Input::GetInstans()->TriggerKey(DIK_S) && posZ < DEPTH - 1)
+		{
+			prePosX = posX;
+			prePosZ = posZ;
+			posZ += 1;
+		}
+		if (Input::GetInstans()->TriggerKey(DIK_W) && posZ > 0)
+		{
+			prePosX = posX;
+			prePosZ = posZ;
+			posZ -= 1;
+		}
+		if (Input::GetInstans()->TriggerKey(DIK_A) && posX > 0)
+		{
+			prePosX = posX;
+			prePosZ = posZ;
+			posX -= 1;
+		}
+		if (Input::GetInstans()->TriggerKey(DIK_D) && posX < WIDTH - 1)
+		{
+			prePosX = posX;
+			prePosZ = posZ;
+			posX += 1;
+		}
 
 
-	////マウスでクリックした位置に移動
-	//if (Input::GetInstans()->TriggerMouse(0))
-	//{
-	//	// マウス座標を取得
-	//	Vector3 mousePos = Input::GetInstans()->GetMouseWorldPosition(CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.y);
-	//	// マウス座標をマス座標に変換
-	//	posX = static_cast<int>(mousePos.x);
-	//	posZ = static_cast<int>(mousePos.z);
-	//}
+		// プレイヤーの位置を更新
+		playerData.position = Vector3(static_cast<float>(posX), 0.0f, static_cast<float>(posZ));
+		// ボールの位置をプレイヤーの位置に設定
 
-	// プレイヤーの位置を更新
-	playerData.position = Vector3(static_cast<float>(posX), 0.0f, static_cast<float>(posZ));
+		// ボールの位置を更新 / ドリブル処理 / パス処理
+		if (ball != nullptr) {
+			//Dribble();
 
-	// ボールの位置を更新 / ドリブル処理 / パス処理
-	// 空へここの二つのドリブルとパスを分岐できるように頼んだ
-	Dribble();
+			//Pass();
+
+		}
+
+	}
+}
+
+
+void Player::Dribble()
+{
+	// ドリブル処理
 	
+		// ボールの位置をプレイヤーの位置に設定
+		ball->SetPosition(playerData.position);
 
-	//Pass();
+}
+
+void Player::Pass()
+{
+	// パス処理
+	if (ball != nullptr)
+	{
+		// ボールの位置をプレイヤーの位置に設定
+		ball->SetPosition(playerData.position);
+		// ボールの所持を解除
+		SetBall(nullptr);
+	}
 }
 
 void Player::UpdateTransform()
@@ -162,28 +195,3 @@ void Player::ImGui()
 
 	ImGui::Text("HasBall : %d", ball);
 }
-
-void Player::Dribble()
-{
-	// ドリブル処理
-	if (hasBall)
-	{
-		// ボールの位置をプレイヤーの位置に設定
-		ball->SetPosition(playerData.position);
-	}
-}
-
-void Player::Pass()
-{
-	// パス処理
-	if (ball != nullptr)
-	{
-		// ボールの位置をプレイヤーの位置に設定
-		ball->SetPosition(playerData.position);
-		// ボールの所持を解除
-		SetBall(nullptr);
-	}
-}
-
-
-

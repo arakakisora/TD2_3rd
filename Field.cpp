@@ -31,10 +31,12 @@ void Field::Initialize(std::vector<Object3D*> object3D)
 			}
 		}
 	}
+	
 }
 
 void Field::Finalize()
 {
+	
 }
 
 void Field::Update()
@@ -97,6 +99,7 @@ void Field::Update()
 			}
 		}
 	}
+
 }
 
 void Field::Draw()
@@ -112,6 +115,7 @@ void Field::Draw()
 			}
 		}
 	}
+	
 }
 
 void Field::ImGui()
