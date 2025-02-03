@@ -1,5 +1,6 @@
 #include "EnemyManager.h"
 #include <limits>
+#include <random>
 
 void EnemyManager::Initialize(const std::string& filename, int enemyCount)
 {
@@ -96,13 +97,14 @@ void EnemyManager::SetEnemyTurn(bool isEnemyTurn)
 	currentEnemy_ = nullptr;
 }
 
+
 Enemy* EnemyManager::SelectEnemyToMove()
 {
 	//ボールを持っているプレイヤーの位置を取得
 	int playerIndex = 0;
 	for (int index = 0; index < playerList_.size(); index++)
 	{
-		if(playerList_[index]->HasBall())
+		if (playerList_[index]->HasBall())
 		{
 			playerIndex = index;
 			break;
@@ -112,10 +114,8 @@ Enemy* EnemyManager::SelectEnemyToMove()
 	// プレイヤーの位置を取得
 	Vector3 playerPos = playerList_[playerIndex]->GetPosition();
 
-	// 挟み込みに最適な敵を選択
-	Enemy* selectedEnemy = nullptr;
-	float minDistance = (std::numeric_limits<float>::max)();
-
+	// ランダムに敵を選択
+	std::vector<Enemy*> candidates;
 	for (auto& enemy : enemies_) {
 		// 敵の位置を取得
 		Vector3 enemyPos = enemy->GetPosition();
@@ -125,27 +125,27 @@ Enemy* EnemyManager::SelectEnemyToMove()
 			continue;
 		}
 
-		// プレイヤーとの距離を計算
-		Vector2 playerPosVec2 = Vector2(playerPos.x, playerPos.z);
-		Vector2 enemyPosVec2 = Vector2(enemyPos.x, enemyPos.z);
-		float distance = Vector2(playerPosVec2 - enemyPosVec2).Length();
-
-		if (distance < minDistance) {
-			minDistance = distance;
-			selectedEnemy = enemy.get();
-			// 選択した敵のターン終了フラグをリセット
-			selectedEnemy->SetTurnEnd(false);
-		}
+		candidates.push_back(enemy.get());
 	}
-	
 
-	// すべての敵が隣接している場合は、ターンを終了
-	if (!selectedEnemy) {
+	if (candidates.empty()) {
+		// すべての敵が隣接している場合は、ターンを終了
 		isEnemyTurn_ = false;
+		return nullptr;
 	}
+
+	// ランダムに選択
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<size_t> dis(0, candidates.size() - 1);
+	Enemy* selectedEnemy = candidates[dis(gen)];
+
+	// 選択した敵のターン終了フラグをリセット
+	selectedEnemy->SetTurnEnd(false);
 
 	return selectedEnemy;
 }
+
 
 bool EnemyManager::IsAdjacent(const Vector3& pos1, const Vector3& pos2)
 {
