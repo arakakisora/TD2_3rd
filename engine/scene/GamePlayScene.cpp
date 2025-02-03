@@ -47,7 +47,14 @@ void GamePlayScene::Initialize()
 	std::vector<int> initPosZ = { 0, 2, 4 };
 	for (int i = 0; i < initPosZ.size(); ++i) {
 		auto player = std::make_unique<Player>();
-		player->Initialize(initPosZ[i],ball);
+		if(i ==0)
+		{
+			//１番目にボールを持たせる
+			player->Initialize(initPosZ[i], ball);
+		} else
+		{
+			player->Initialize(initPosZ[i]);
+		}
 		pPlayer_.push_back(std::move(player));
 	}
 
