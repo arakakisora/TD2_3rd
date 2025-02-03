@@ -18,7 +18,7 @@ void GamePlayScene::Initialize()
 
 
 	// 3Dオブジェクト
-	ModelManager::GetInstans()->LoadModel("cube.obj");
+	ModelManager::GetInstans()->LoadModel("Field0.obj");
 
 	// フィールド
 
@@ -28,7 +28,7 @@ void GamePlayScene::Initialize()
 		{
 			Object3D* pFieldObject = new Object3D();
 			pFieldObject->Initialize(Object3DCommon::GetInstance());
-			pFieldObject->SetModel("cube.obj");
+			pFieldObject->SetModel("Field0.obj");
 			pFieldObject_.push_back(pFieldObject);
 		}
 	}
@@ -56,13 +56,15 @@ void GamePlayScene::Initialize()
 	for (const auto& player : pPlayer_) {
 		pField_->SetPlayerPos(player->GetPosX(), player->GetPosY(), player->GetPosZ());
 	}
-	
-  //エネミーマネージャー
+
+	//敵のモデル読み込み
+	ModelManager::GetInstans()->LoadModel("Enemy.obj");
+
+	//エネミーマネージャー
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->SetField(pField_.get());
 	enemyManager_->SetPlayer(pPlayer_);
-	enemyManager_->Initialize("cube.obj", 3);
-
+	enemyManager_->Initialize("Enemy.obj", 3);
 }
 
 void GamePlayScene::Finalize()
