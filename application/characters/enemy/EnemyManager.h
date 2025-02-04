@@ -29,8 +29,8 @@ public:
 
 public: //アクセッサ
 	void SetField(Field* field) { field_ = field; }
-	void SetPlayer(const std::vector<std::unique_ptr<Player>>& player);
-	void SetPlayer(std::vector<Player*> player) { playerList_ = player; }
+	void SetPlayer(const std::vector<std::unique_ptr<Player>>& players);
+	//void SetPlayer(std::vector<Player*> player) { playerList_ = player; }
 	void SetEnemyTurn(bool isEnemyTurn);
 	bool IsEnemyTurn() const { return isEnemyTurn_; }
 	const std::vector<std::unique_ptr<Enemy>>& GetEnemies() { return enemies_; }

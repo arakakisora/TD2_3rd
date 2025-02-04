@@ -63,6 +63,12 @@ void Player::Update()
 	UpdateTransform();
 	Move(WIDTH, DEPTH);
 
+	// ボールの追従処理
+	if (HasBall() && ball)
+	{
+		ball->SetPosition(playerData.position);
+	}
+
 	object3D_->SetTranslate(playerData.position);
 	object3D_->SetRotate(playerData.rotate);
 	object3D_->SetScale(playerData.scale);
@@ -260,56 +266,11 @@ bool Player::CanMoveTo(int x, int z)
 	return (abs(x - posX) + abs(z - posZ) == 1); // 1マスのみ移動許可
 }
 
-bool Player::IsValidPassPosition(const Vector3& mousePos, Field* field)
-{
-	// マウス位置をグリッド座標に変換
-	int targetX = static_cast<int>(std::round(mousePos.x));
-	int targetZ = static_cast<int>(std::round(mousePos.z));
 
-	// 現在位置からの相対位置を計算
-	int deltaX = targetX - posX;
-	int deltaZ = targetZ - posZ;
-
-	// パス可能な位置の条件：
-	// 十字の2マス先のみ（上下左右のいずれか）
-	bool isValidPass = (
-		(std::abs(deltaX) == 2 && deltaZ == 0) ||  // 左右2マス
-		(deltaX == 0 && std::abs(deltaZ) == 2)     // 上下2マス
-		);
-
-	// フィールドの範囲内かチェック
-	bool isWithinField = (
-		targetX >= 0 &&
-		targetX < WIDTH &&
-		targetZ >= 0 &&
-		targetZ < DEPTH
-		);
-
-	return isValidPass && isWithinField;
-}
 
 void Player::PlayerPass(const Vector3& mousePos, Field* field, Player*& selectedPlayer)
 {
-	// 有効なパス位置でない場合は処理を行わない
-	if (!IsValidPassPosition(mousePos, field)) {
-		return;
-	}
-
-	// マウス位置をグリッド座標に変換
-	int targetX = static_cast<int>(std::round(mousePos.x));
-	int targetZ = static_cast<int>(std::round(mousePos.z));
-
-	// ボールの位置を更新
-	if (ball)
-	{
-		Vector3 newBallPos = Vector3(
-			static_cast<float>(targetX),
-			0.0f,
-			static_cast<float>(targetZ)
-		);
-		ball->SetPosition(newBallPos);
-		hasBall = false;  // ボールの所持を解除
-	}
+	
 
 	isPassing = false;
 	isPassDribbleVisible = false;
@@ -344,17 +305,7 @@ void Player::Dribble()
 	}
 }
 
-void Player::Pass()
-{
-	// パス処理
-	if (ball != nullptr)
-	{
-		// ボールの位置をプレイヤーの位置に設定
-		ball->SetPosition(playerData.position);
-		// ボールの所持を解除
-		SetBall(nullptr);
-	}
-}
+
 
 
 

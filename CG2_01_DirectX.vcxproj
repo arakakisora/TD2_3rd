@@ -146,6 +146,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="ParticleEmitter.cpp" />
     <ClCompile Include="ParticleMnager.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerManager.cpp" />
     <ClCompile Include="skydome.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -221,6 +222,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="ParticleMnager.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Field.h" />
+    <ClInclude Include="PlayerManager.h" />
     <ClInclude Include="skydome.h" />
   </ItemGroup>
   <ItemGroup>

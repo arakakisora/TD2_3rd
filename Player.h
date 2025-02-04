@@ -51,7 +51,7 @@ public:
 	
 	void PlayerPass(const Vector3& mousePos, Field* field, Player*& selectedPlayer);
 	void playerDribble(const Vector3& mousePos, Field* field, Player*& selectedPlayer, EnemyManager* enemyManager);
-	void playerPass(Player*& selectedPlayer);
+	
 
 
 public: //アクセッサ

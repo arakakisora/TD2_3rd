@@ -80,12 +80,13 @@ void EnemyManager::Draw()
 	}
 }
 
-void EnemyManager::SetPlayer(const std::vector<std::unique_ptr<Player>>& player)
+void EnemyManager::SetPlayer(const std::vector<std::unique_ptr<Player>>& players)
 {
-	//プレイヤーリストをクリア
+	// プレイヤーリストをクリア
 	playerList_.clear();
-	//プレイヤーのポインタをセット
-	for (auto& player : player)
+
+	// `unique_ptr` から `Player*` を取得してリストに格納
+	for (const auto& player : players)
 	{
 		playerList_.push_back(player.get());
 	}

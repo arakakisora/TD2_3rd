@@ -53,6 +53,7 @@ void Enemy::Move(int dx, int dz)
         // プレイヤーの位置と比較
         for (const auto& player : playerList_)
         {
+            
             int playerX = static_cast<int>(player->GetPosition().x);
             int playerZ = static_cast<int>(player->GetPosition().z);
             if (newX == playerX && newZ == playerZ) 
