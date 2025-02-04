@@ -50,10 +50,13 @@ void Enemy::Move(int dx, int dz)
         bool blocked = false;
 
         // プレイヤーの位置と比較
-        int playerX = static_cast<int>(player_->GetPosition().x);
-        int playerZ = static_cast<int>(player_->GetPosition().z);
-        if (newX == playerX && newZ == playerZ) {
-            blocked = true;
+        for (const auto& player : playerList_) {
+            int playerX = static_cast<int>(player->GetPosition().x);
+            int playerZ = static_cast<int>(player->GetPosition().z);
+            if (newX == playerX && newZ == playerZ) {
+                blocked = true;
+                break;
+            }
         }
 
         // 他の敵の位置と比較
@@ -76,36 +79,58 @@ void Enemy::Move(int dx, int dz)
             // 移動開始
             moveProgress_ = 0.0f;
             isEaseStart_ = true;
-        } else {
+        }
+        else {
             // 移動できない場合はターン終了
             isTurnEnd_ = true;
         }
-    } else {
+    }
+    else {
         // マップ外の場合はターン終了
         isTurnEnd_ = true;
     }
 }
 
 void Enemy::HandleAI() {
-    if (!player_) return; // プレイヤー情報がない場合はスキップ
     if (isEaseStart_) return; // 移動中はスキップ
 
-    // 敵とプレイヤーの整数座標を取得
+    // 敵の整数座標を取得
     int enemyX = static_cast<int>(transform_.translate.x);
     int enemyZ = static_cast<int>(transform_.translate.z);
-    int playerX = static_cast<int>(player_->GetPosition().x);
-    int playerZ = static_cast<int>(player_->GetPosition().z);
+
+	// ボールを持っているプレイヤーを取得
+    Player* targetPlayer = nullptr;
+    float minDistance = (std::numeric_limits<float>::max)();
+    for (const auto& player : playerList_) {
+        if (player->HasBall()) {
+            targetPlayer = player;
+        }
+    }
+
+    if (!targetPlayer) return; // プレイヤーが見つからない場合はスキップ
+
+    // プレイヤーの整数座標を取得
+    int playerX = static_cast<int>(targetPlayer->GetPosition().x);
+    int playerZ = static_cast<int>(targetPlayer->GetPosition().z);
+
+    // 他のプレイヤーの位置を取得（ターゲットプレイヤーを除く）
+    std::set<std::pair<int, int>> occupiedPositions;
+    for (const auto& player : playerList_) {
+        if (player != targetPlayer) {
+            int otherX = static_cast<int>(player->GetPosition().x);
+            int otherZ = static_cast<int>(player->GetPosition().z);
+            occupiedPositions.emplace(otherX, otherZ);
+        }
+    }
 
     // 他の敵の位置を取得（自分以外）
-    std::set<std::pair<int, int>> occupiedPositions;
     for (const auto& otherEnemy : enemyManager_->GetEnemies()) {
-        // 自分自身の位置も占有済みとして扱う場合は、このままでよい
-        int otherX = static_cast<int>(otherEnemy->GetPosition().x);
-        int otherZ = static_cast<int>(otherEnemy->GetPosition().z);
-        occupiedPositions.emplace(otherX, otherZ);
+        if (otherEnemy.get() != this) {
+            int otherX = static_cast<int>(otherEnemy->GetPosition().x);
+            int otherZ = static_cast<int>(otherEnemy->GetPosition().z);
+            occupiedPositions.emplace(otherX, otherZ);
+        }
     }
-    // ※プレイヤーの位置は占有済みリストに追加しない
-    //     もしくは、BFS探索時にプレイヤーの位置は特例扱いするようにする
 
     // 幅優先探索(BFS)の初期化
     std::queue<std::pair<int, int>> queue;
@@ -143,12 +168,13 @@ void Enemy::HandleAI() {
 
             // マップ範囲内か確認
             if (nextX >= 0 && nextX < WIDTH && nextZ >= 0 && nextZ < DEPTH) {
-                // すでに訪問済みでないことを確認し、
-                // 次の位置がプレイヤーの位置ならば占有判定をスキップ、それ以外なら occupiedPositions に入っていないかも確認
-                if (cameFrom.find(nextPos) == cameFrom.end() &&
-                    (nextPos == targetPos || occupiedPositions.find(nextPos) == occupiedPositions.end())) {
-                    queue.push(nextPos);
-                    cameFrom[nextPos] = current;
+                // すでに訪問済みでないことを確認
+                if (cameFrom.find(nextPos) == cameFrom.end()) {
+                    // 次の位置がターゲットの位置か、占有されていないかを確認
+                    if (nextPos == targetPos || occupiedPositions.find(nextPos) == occupiedPositions.end()) {
+                        queue.push(nextPos);
+                        cameFrom[nextPos] = current;
+                    }
                 }
             }
         }
@@ -173,16 +199,17 @@ void Enemy::HandleAI() {
 
             // 移動を試みる
             Move(dx, dz);
-        } else {
+        }
+        else {
             // 経路が存在するが移動できない場合はターン終了
             isTurnEnd_ = true;
         }
-    } else {
+    }
+    else {
         // 経路が見つからない場合はターン終了
         isTurnEnd_ = true;
     }
 }
-
 void Enemy::UpdateEasingMovement()
 {
     if (isEaseStart_) {
