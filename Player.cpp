@@ -247,6 +247,8 @@ void Player::playerDribble(const Vector3& mousePos, Field* field, Player*& selec
 					isMoved = true;  // **移動フラグを立てる**
 					isDribbling = false; // **移動後にドリブル解除**
 					selectedPlayer = nullptr;  // **移動後に選択解除**
+
+					UpdateTransform();
 					return;
 				}
 			}

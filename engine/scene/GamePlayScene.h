@@ -13,6 +13,8 @@
 #include "application/characters/enemy/Enemy.h"
 #include "application/characters/enemy/EnemyManager.h"
 #include "Ball.h"
+#include "PlayerManager.h"  // 追加
+
 
 class GamePlayScene :public BaseScene
 {
@@ -56,7 +58,8 @@ private:
 	Player* selectedPlayer_ = nullptr;
 
 
-	std::vector<std::unique_ptr<Player>> pPlayer_;
+	
+	std::unique_ptr<PlayerManager> playerManager_;  // 追加
 
 
 	//カメラのポインタ
