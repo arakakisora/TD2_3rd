@@ -50,6 +50,7 @@
     <ClCompile Include="ParticleEmitter.cpp" />
     <ClCompile Include="ParticleMnager.cpp" />
     <ClCompile Include="engine\base\GraphicsPipeline.cpp" />
+    <ClCompile Include="PlayerManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\characters\enemy\Enemy.h" />
@@ -99,6 +100,7 @@
     <ClInclude Include="ParticleEmitter.h" />
     <ClInclude Include="ParticleMnager.h" />
     <ClInclude Include="engine\base\GraphicsPipeline.h" />
+    <ClInclude Include="PlayerManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Object3d.hlsli" />
