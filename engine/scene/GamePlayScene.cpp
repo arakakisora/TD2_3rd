@@ -12,8 +12,8 @@ void GamePlayScene::Initialize()
 {
 	//カメラの生成	
 	pCamera_ = new Camera();
-	pCamera_->SetRotate({ 0,0,0, });
-	pCamera_->SetTranslate({ 0,0,0 });
+	pCamera_->SetRotate({ -2.015f,0.0f,0.0f, });
+	pCamera_->SetTranslate({ 3.0f,-14.285f,8.334f });
 	CameraManager::GetInstans()->AddCamera("main", pCamera_);
 
 

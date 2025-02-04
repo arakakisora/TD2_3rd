@@ -8,22 +8,42 @@
 
 void GameClearScene::Initialize()
 {
+	//スプライトの生成
+	clearSprite_ = new Sprite();
+	clearSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/title.png");
 
+	blackSprite_ = new Sprite();
+	blackSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/black.png");
+	blackSprite_->setColor({ 1.0f,1.0f,1.0f,0.0f });
+
+	isFadeStart_ = false;
+	isChangeScene_ = false;
 
 }
 
 void GameClearScene::Finalize()
 {
+	delete clearSprite_;
+	delete blackSprite_;
 }
 
 void GameClearScene::Update()
 {
+	//スプライトの更新
+	clearSprite_->Update();
+	blackSprite_->Update();
 
+	Fade();
 
+	if (Input::GetInstans()->TriggerKey(DIK_SPACE))
+	{
+		isFadeStart_ = true;
+	}
 
-
-
-
+	if (isChangeScene_)
+	{
+		SceneManager::GetInstance()->ChangeScene("TITELE");
+	}
 
 
 
@@ -36,9 +56,6 @@ void GameClearScene::Update()
 		{
 			SceneManager::GetInstance()->ChangeScene("TITELE");
 		}
-		
-
-
 
 	}
 
@@ -62,6 +79,24 @@ void GameClearScene::Draw()
 	//Spriteの描画準備。spriteの描画に共通のグラフィックスコマンドを積む
 	SpriteCommon::GetInstance()->CommonDraw();
 
+	clearSprite_->Draw();
+	blackSprite_->Draw();
+
 #pragma endregion
 
+}
+
+void GameClearScene::Fade()
+{
+	blackSprite_->setColor({ 1.0f,1.0f,1.0f,alpha_ });
+
+	if (isFadeStart_)
+	{
+		alpha_ += 0.01f;
+	}
+
+	if (alpha_ >= 1.0f)
+	{
+		isChangeScene_ = true;
+	}
 }

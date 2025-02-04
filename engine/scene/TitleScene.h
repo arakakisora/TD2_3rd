@@ -28,10 +28,18 @@ public:
 	/// </summary>
 	void Draw()override;
 
+	// 切り替え演出
+	void Fade();
+
 public:
 
-	
+	Sprite* titleSprite_ = nullptr;
+	Sprite* blackSprite_ = nullptr;
 
+	bool isFadeStart_ = false;
+	bool isChangeScene_ = false;
 
+	// 透明度
+	float alpha_ = 0.0f;
 };
 
