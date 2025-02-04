@@ -6,13 +6,16 @@
 #include "Object3DCommon.h"
 #include "Field.h"
 
+class Ball;
 class Player
 {
 public:
+	// コンストラクタ
 	Player();
+	// デストラクタ
 	~Player();
 	// 初期化
-	void Initialize(int posZ);
+	void Initialize(int posZ, Ball* ball = nullptr);
 	// 更新
 	void Update();
 	// 描画
@@ -23,7 +26,18 @@ public:
 	void Move(int WIDTH, int DEPTH);
 	//3Dオブジェクトの更新
 	void UpdateTransform();
-	// マウスクリック時の処理
+
+
+	// ImGui 描画
+	void ImGui();
+	// ドリブル
+	void Dribble();
+	// パス
+	void Pass();
+  
+  
+  
+
 	void HandleMouseClick(const Vector3& mousePos, Field* field, Player*& selectedPlayer);
 	
 	bool CanMoveTo(int x, int z);
@@ -43,9 +57,13 @@ public: //アクセッサ
 	void SetRotate(Vector3 rot) { playerData.rotate = rot; }
 	Vector3 GetScale() { return playerData.scale; }
 	void SetScale(Vector3 scale) { playerData.scale = scale; }
+	
 
-	// ImGui  追加
-	void ImGui();
+	// ボール所持
+	bool HasBall() { return ball; }
+	void SetBall(Ball* ball) { this->ball = ball; }
+
+
 
 public: // ゲッター  追加
 
@@ -68,15 +86,16 @@ public: // ゲッター  追加
 
 
 	//セッター
-	
+
 	//プレイヤーの座標セッター
-	void SetPlayerPos(int x,int z){
+	void SetPlayerPos(int x, int z) {
 		posX = static_cast<int>(x);
 		posZ = static_cast<int>(z);
 	}
 
 
 private:
+
 	Model* model;
 	Object3D* object3D_;
 	Object3D* passObject3D_;
@@ -90,18 +109,20 @@ private:
 
 
 
-
 	struct PlayerData
 	{
 		Vector3 position;
 		Vector3 rotate;
 		Vector3 scale;
 	};
+
+	Ball* ball = nullptr;
+	bool hasBall = false;
 	PlayerData playerData;
-	//Camera* camera;
+	
 	int posX = 0;
 	int posY = 0;
-	int posZ ;
+	int posZ;
 
 	// プレイヤーの前の位置　追加
 	int prePosX = 0;

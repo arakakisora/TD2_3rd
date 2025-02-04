@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Field.h"
 #include "CameraManager.h"
+#include "Ball.h"
 Player::Player()
 {
 }
@@ -9,21 +10,27 @@ Player::~Player()
 {
 }
 
-void Player::Initialize(int posZ)
+void Player::Initialize(int posZ, Ball* ball)
 {
+	// ボールの設定
+	SetBall(ball);
+	//Vector3 ballPos = Vector3(2.0f, 0.0f, 10.0f);
+	//ball->SetPosition(ballPos);
+
 	// プレイヤーの初期化
 	this->posZ = posZ;
 	playerData.position = Vector3((float)posX, 0.0f, 10.0f);
 	playerData.rotate = Vector3(0.0f, 0.0f, 0.0f);
 	playerData.scale = Vector3(0.5f, 0.5f, 0.5f);
-	ModelManager::GetInstans()->LoadModel("cube.obj");
+	ModelManager::GetInstans()->LoadModel("Player.obj");
 	// モデルの生成
 	object3D_ = new Object3D;
-	object3D_->SetModel("cube.obj");
+	object3D_->SetModel("Player.obj");
 	object3D_->Initialize(Object3DCommon::GetInstance());
 	object3D_->SetTranslate(playerData.position);
 	object3D_->SetRotate(playerData.rotate);
 	object3D_->SetScale(playerData.scale);
+
 
 	//パスモデルの初期化
 	passObject3D_ = new Object3D;
@@ -41,17 +48,22 @@ void Player::Initialize(int posZ)
 	dribbleObject3D_->SetRotate(playerData.rotate);
 	dribbleObject3D_->SetScale({ 1.0f,1.0f,1.0f });
 
+
+	if (HasBall())
+	{
+		ball->SetPosition(playerData.position);
+	}
+
 }
 
 void Player::Update()
 {
 	playerData.rotate.z += 0.01f;
 	playerData.rotate.y += 0.01f;
-	ImGui::Begin("player");
-	ImGui::DragFloat3("position", &playerData.position.x, 0.1f);
-	ImGui::End();
 
+	UpdateTransform();
 	Move(WIDTH, DEPTH);
+
 	object3D_->SetTranslate(playerData.position);
 	object3D_->SetRotate(playerData.rotate);
 	object3D_->SetScale(playerData.scale);
@@ -65,6 +77,9 @@ void Player::Update()
 	dribbleObject3D_->SetTranslate(playerData.position + Vector3(0.0f, 0.0f, 1.0f));
 	dribbleObject3D_->Update();
 
+
+
+	ImGui();
 
 }
 
@@ -84,9 +99,11 @@ void Player::Draw()
 void Player::Finalize()
 {
 	delete object3D_;
+
 	delete model;
 	delete passObject3D_;
 	delete dribbleObject3D_;
+
 }
 
 void Player::Move(int WIDTH, int DEPTH)
@@ -119,8 +136,16 @@ void Player::Move(int WIDTH, int DEPTH)
 
 
 
+
 	// プレイヤーの位置を更新
 	playerData.position = Vector3(static_cast<float>(posX), 0.0f, static_cast<float>(posZ));
+
+	// ボールの位置を更新 / ドリブル処理 / パス処理
+	// 空へここの二つのドリブルとパスを分岐できるように頼んだ
+	Dribble();
+	
+
+	//Pass();
 }
 
 
@@ -252,11 +277,33 @@ void Player::ImGui()
 	ImGui::Text("posY : %d", posY);
 	ImGui::Text("posZ : %d", posZ);
 
-	Vector3 mousePos = Input::GetInstans()->GetMouseWorldPosition(CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.y);
 	//マウス座標の取得
-	ImGui::Text("mousePos : %f %f %f", mousePos.x, mousePos.y, mousePos.z);
+	//Vector3 mousePos = Input::GetInstans()->GetMouseWorldPosition(CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.y);
+	//ImGui::Text("mousePos : %f %f %f", mousePos.x, mousePos.y, mousePos.z);
 
+	ImGui::Text("HasBall : %d", ball);
+}
 
+void Player::Dribble()
+{
+	// ドリブル処理
+	if (hasBall)
+	{
+		// ボールの位置をプレイヤーの位置に設定
+		ball->SetPosition(playerData.position);
+	}
+}
+
+void Player::Pass()
+{
+	// パス処理
+	if (ball != nullptr)
+	{
+		// ボールの位置をプレイヤーの位置に設定
+		ball->SetPosition(playerData.position);
+		// ボールの所持を解除
+		SetBall(nullptr);
+	}
 }
 
 

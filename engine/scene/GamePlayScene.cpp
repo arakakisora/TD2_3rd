@@ -18,8 +18,12 @@ void GamePlayScene::Initialize()
 
 
 	// 3Dオブジェクト
+
 	ModelManager::GetInstans()->LoadModel("cube.obj");
 	ModelManager::GetInstans()->LoadModel("cube2.obj");
+
+	ModelManager::GetInstans()->LoadModel("Field0.obj");
+
 
 	// フィールド
 
@@ -29,7 +33,7 @@ void GamePlayScene::Initialize()
 		{
 			Object3D* pFieldObject = new Object3D();
 			pFieldObject->Initialize(Object3DCommon::GetInstance());
-			pFieldObject->SetModel("cube.obj");
+			pFieldObject->SetModel("Field0.obj");
 			pFieldObject_.push_back(pFieldObject);
 		}
 	}
@@ -41,11 +45,21 @@ void GamePlayScene::Initialize()
 	MouseObject->Initialize(Object3DCommon::GetInstance());
 	MouseObject->SetModel("cube.obj");
 
+	ball = new Ball();
+	ball->Initialize();
+
 	//Playerの初期化
-	std::vector<int> initPosZ = { 0, 3, 4 };
+	std::vector<int> initPosZ = { 0, 2, 4 };
 	for (int i = 0; i < initPosZ.size(); ++i) {
 		auto player = std::make_unique<Player>();
-		player->Initialize(initPosZ[i]);
+		if(i ==0)
+		{
+			//１番目にボールを持たせる
+			player->Initialize(initPosZ[i], ball);
+		} else
+		{
+			player->Initialize(initPosZ[i]);
+		}
 		pPlayer_.push_back(std::move(player));
 	}
 
@@ -54,19 +68,22 @@ void GamePlayScene::Initialize()
 	for (const auto& player : pPlayer_) {
 		pField_->SetPlayerPos(player->GetPosX(), player->GetPosY(), player->GetPosZ());
 	}
-	//エネミー
-	enemy_ = std::make_unique<Enemy>();
-	enemy_->SetField(pField_.get());
-	enemy_->Initialize(Object3DCommon::GetInstance(), "cube.obj");
 
+	//敵のモデル読み込み
+	ModelManager::GetInstans()->LoadModel("Enemy.obj");
 
-	enemy_->SetPlayer(pPlayer_.front().get());
-
-
+	//エネミーマネージャー
+	enemyManager_ = std::make_unique<EnemyManager>();
+	enemyManager_->SetField(pField_.get());
+	enemyManager_->SetPlayer(pPlayer_);
+	enemyManager_->Initialize("Enemy.obj", 3);
 }
 
 void GamePlayScene::Finalize()
 {
+	// ボールの終了処理
+	ball->Finalize();
+	delete ball;
 	// プレイヤーの終了処理
 	for (auto& player : pPlayer_) {
 		player->Finalize();
@@ -115,7 +132,6 @@ void GamePlayScene::Update()
 	case TurnState::NONE:
 		break;
 	case TurnState::PLAYER:
-
 		for (auto& player : pPlayer_) {
 			player->Update();
 			// プレイヤーの位置をフィールドにセット
@@ -129,20 +145,22 @@ void GamePlayScene::Update()
 			if (player->GetHasMoved()||player->IsPassing())
 			{
 				turnState_ = TurnState::ENEMY;
-				// エネミーのターン開始
-				enemy_->SetTurnEnd(false);
+				
+        // エネミーのターン開始
+			enemyManager_->SetEnemyTurn(true);
 				player->ResetMoveFlag();
 				player->ResetPassFlag();
 			}
+
 
 		}
 
 		break;
 	case TurnState::ENEMY:
 		//エネミーの更新
-		enemy_->Update();
+		enemyManager_->Update();
 		// ターン終了
-		if (enemy_->IsTurnEnd())
+		if (!enemyManager_->IsEnemyTurn())
 		{
 			turnState_ = TurnState::PLAYER;
 		}
@@ -168,6 +186,8 @@ void GamePlayScene::Update()
 	//}
 
 
+	// ボールの更新
+	ball->Update();
 
 	// フィールドの更新
 	pField_->Update();
@@ -180,7 +200,7 @@ void GamePlayScene::Update()
 	}
 
 	//エネミーの３Dオブジェクトを更新
-	enemy_->UpdateTransform();
+	enemyManager_->UpdateTransform();
 
 	// ゴール判定
 	if (pField_->IsGoal())
@@ -193,7 +213,10 @@ void GamePlayScene::Update()
 	{
 		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
 	}
-
+	if (enemyManager_->IsSandwiching() && turnState_ == TurnState::PLAYER)
+	{
+		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
+	}
 
 	// ------------テスト----------------
 	// プレイヤーの位置テスト
@@ -201,57 +224,6 @@ void GamePlayScene::Update()
 		Field::Pos prePlayerPos = { player->GetPrePosX(), player->GetPrePosY(), player->GetPrePosZ() };
 		pField_->SetBlockType(prePlayerPos.x, prePlayerPos.y, prePlayerPos.z, 0);
 	}
-	// ボールの位置テスト
-
-	//prePos_ = pField_->GetBlockPosition(1);
-
-
-	//// パス
-	//if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x <= WIDTH - 3)
-	//{
-	//	pField_->SetBlockType((int)prePos_.x + 2, (int)prePos_.y, (int)prePos_.z, 1);
-	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	//}
-	//else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 2)
-	//{
-	//	pField_->SetBlockType((int)prePos_.x - 2, (int)prePos_.y, (int)prePos_.z, 1);
-	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	//}
-	//else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.z >= 2)
-	//{
-	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z - 2, 1);
-	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	//}
-	//else if (Input::GetInstans()->PushKey(DIK_P) && Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.z <= DEPTH - 3)
-	//{
-	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z + 2, 1);
-	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	//}
-
-	//// ドリブル
-	//else if (Input::GetInstans()->TriggerKey(DIK_RIGHT) && (int)prePos_.x >= 0 && (int)prePos_.x <= WIDTH - 2)
-	//{
-	//	pField_->SetBlockType((int)prePos_.x + 1, (int)prePos_.y, (int)prePos_.z, 1);
-	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	//}
-	//else if (Input::GetInstans()->TriggerKey(DIK_LEFT) && (int)prePos_.x >= 1 && (int)prePos_.x <= WIDTH - 1)
-	//{
-	//	pField_->SetBlockType((int)prePos_.x - 1, (int)prePos_.y, (int)prePos_.z, 1);
-	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	//}
-	//else if (Input::GetInstans()->TriggerKey(DIK_UP) && (int)prePos_.z >= 1 && (int)prePos_.z <= DEPTH - 1)
-	//{
-	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z - 1, 1);
-	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	//}
-	//else if (Input::GetInstans()->TriggerKey(DIK_DOWN) && (int)prePos_.z >= 0 && (int)prePos_.z <= DEPTH - 2)
-	//{
-	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z + 1, 1);
-	//	pField_->SetBlockType((int)prePos_.x, (int)prePos_.y, (int)prePos_.z, 0);
-	//}
-
-
-
 
 	// フィールド毎フレーム更新するやつ
 	for (int z = 0; z < DEPTH; z++)
@@ -307,7 +279,6 @@ void GamePlayScene::Update()
 		if (ImGui::Button("Turn Enemy"))
 		{
 			turnState_ = TurnState::ENEMY;
-			enemy_->SetTurnEnd(false);
 		}
 
 
@@ -329,8 +300,11 @@ void GamePlayScene::Draw()
 	for (const auto& player : pPlayer_) {
 		player->Draw();
 	}
+	// ボールの描画
+	ball->Draw();
+	
 	//エネミーの描画
-	enemy_->Draw();
+	enemyManager_->Draw();
 
 #pragma endregion
 
