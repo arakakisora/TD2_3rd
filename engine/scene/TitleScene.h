@@ -30,6 +30,9 @@ public:
 	/// </summary>
 	void Draw()override;
 
+	// 切り替え演出
+	void Fade();
+
 private:
 	//ImGuiの更新
 	void UpdateImGui();
@@ -70,5 +73,15 @@ public:
 	//周波数
 	float frequency_ = 1.0f;
 
+
+
+	Sprite* titleSprite_ = nullptr;
+	Sprite* blackSprite_ = nullptr;
+
+	bool isSceneStart_ = true;
+	bool isFadeStart_ = false;
+	bool isChangeScene_ = false;
+	// 透明度
+	float alpha_ = 0.0f;
 };
 

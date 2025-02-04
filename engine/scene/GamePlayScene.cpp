@@ -12,8 +12,8 @@ void GamePlayScene::Initialize()
 {
 	//カメラの生成	
 	pCamera_ = new Camera();
-	pCamera_->SetRotate({ 0,0,0, });
-	pCamera_->SetTranslate({ 0,0,0 });
+	pCamera_->SetRotate({ -2.015f,0.0f,0.0f, });
+	pCamera_->SetTranslate({ 3.0f,-14.285f,8.334f });
 	CameraManager::GetInstans()->AddCamera("main", pCamera_);
 
 
@@ -77,6 +77,24 @@ void GamePlayScene::Initialize()
 	enemyManager_->SetField(pField_.get());
 	enemyManager_->SetPlayer(pPlayer_);
 	enemyManager_->Initialize("Enemy.obj", 3);
+
+	//スプライトの生成
+	whiteSprite_ = new Sprite();
+	whiteSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/white.png");
+	whiteSprite_->SetSize({ 1280.0f,720.0f });
+	whiteSprite_->setColor({ 1.0f,1.0f,1.0f,0.0f });
+
+	blackSprite_ = new Sprite();
+	blackSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/black.png");
+	blackSprite_->SetSize({ 1280.0f,720.0f });
+	blackSprite_->setColor({ 1.0f,1.0f,1.0f,1.0f });
+
+	// フェード
+	isSceneStart_ = true;
+	isClearFadeStart_ = false;
+	isGameOverFadeStart_ = false;
+	whiteAlpha_ = 0.0f;
+	blackAlpha_ = 1.0f;
 }
 
 void GamePlayScene::Finalize()
@@ -99,8 +117,10 @@ void GamePlayScene::Finalize()
 	}
 
 	CameraManager::GetInstans()->RemoveCamera("main");
-	delete pCamera_;
+	
 
+	delete whiteSprite_;
+	delete blackSprite_;
 }
 
 void GamePlayScene::Update()
@@ -109,6 +129,11 @@ void GamePlayScene::Update()
 	CameraManager::GetInstans()->GetActiveCamera()->Update();
 	mousePos = Input::GetInstans()->GetMouseWorldPosition(CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.y);
 
+	//スプライトの更新
+	whiteSprite_->Update();
+	blackSprite_->Update();
+
+	Fade();
 
 	// 現在のカメラの位置を基準にしたマウス位置取得
 
@@ -205,17 +230,18 @@ void GamePlayScene::Update()
 	// ゴール判定
 	if (pField_->IsGoal())
 	{
-		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+		isClearFadeStart_ = true;
 	}
 
 	// ゲームオーバー判定
 	if (pField_->IsGameOver())
 	{
-		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
+		isGameOverFadeStart_ = true;
+		
 	}
 	if (enemyManager_->IsSandwiching() && turnState_ == TurnState::PLAYER)
 	{
-		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
+		isGameOverFadeStart_ = true;
 	}
 
 	// ------------テスト----------------
@@ -243,6 +269,15 @@ void GamePlayScene::Update()
 
 	if (ImGui::CollapsingHeader("Model", ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		if (ImGui::Button("CCC"))
+		{
+			isClearFadeStart_ = true;
+		}
+		if (ImGui::Button("GGG"))
+		{
+			isGameOverFadeStart_ = true;
+		}
+
 		ImGui::Text("gamePlayScene %d");
 		if (ImGui::Button("GameClearScene"))
 		{
@@ -314,8 +349,48 @@ void GamePlayScene::Draw()
 	//Spriteの描画準備。spriteの描画に共通のグラフィックスコマンドを積む
 	SpriteCommon::GetInstance()->CommonDraw();
 
+	whiteSprite_->Draw();
+	blackSprite_->Draw();
+
 #pragma endregion
 
+}
+
+void GamePlayScene::Fade()
+{
+	blackSprite_->setColor({ 1.0f,1.0f,1.0f,blackAlpha_ });
+	whiteSprite_->setColor({ 1.0f,1.0f,1.0f,whiteAlpha_ });
+
+	// シーンスタート
+	if (isSceneStart_ && blackAlpha_ > 0.01f)
+	{
+		blackAlpha_ -= 0.01f;
+
+		if (blackAlpha_ <= 0.01f)
+		{
+			isSceneStart_ = false;
+		}
+	}
+
+	// ゲームオーバー切り替え
+	if (isGameOverFadeStart_ && !isSceneStart_)
+	{
+		blackAlpha_ += 0.01f;
+	}
+	if (blackAlpha_ >= 1.0f)
+	{
+		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
+	}
+
+	// クリア切り替え
+	if (isClearFadeStart_ && !isSceneStart_)
+	{
+		whiteAlpha_ += 0.01f;
+	}
+	if (whiteAlpha_ >= 1.0f)
+	{
+		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+	}
 }
 
 //void GamePlayScene::SetclickPlayerPos()

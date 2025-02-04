@@ -12,6 +12,21 @@
 
 void TitleScene::Initialize()
 {
+	
+	//スプライトの生成
+	titleSprite_ = new Sprite();
+	titleSprite_->Initialize(SpriteCommon::GetInstance(),"Resources/title.png");
+
+	blackSprite_ = new Sprite();
+	blackSprite_->Initialize(SpriteCommon::GetInstance(),"Resources/black.png");
+	blackSprite_->SetSize({ 1280.0f,720.0f });
+	blackSprite_->setColor({ 1.0f,1.0f,1.0f,0.0f });
+
+	isSceneStart_ = true;
+	isFadeStart_ = false;
+	isChangeScene_ = false;
+	alpha_ = 1.0f;
+
 	//モデル読み込み
 	ModelManager::GetInstans()->LoadModel("title_left.obj");
 	ModelManager::GetInstans()->LoadModel("title_right.obj");
@@ -51,15 +66,28 @@ void TitleScene::Initialize()
 
 void TitleScene::Finalize()
 {
+	CameraManager::GetInstans()->RemoveCamera("title");
+
+	delete titleSprite_;
+	delete blackSprite_;
 }
 
 void TitleScene::Update()
 {
 	//カメラのアップデート
 	CameraManager::GetInstans()->GetActiveCamera()->Update();
+	//スプライトの更新
+	titleSprite_->Update();
+	blackSprite_->Update();
 
-	//シーンの切り替え
-	if (Input::GetInstans()->TriggerKey(DIK_SPACE)) 
+	Fade();
+
+	if (Input::GetInstans()->TriggerKey(DIK_SPACE))
+	{
+		isFadeStart_ = true;
+	}
+
+	if (isChangeScene_)
 	{
 		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 	}
@@ -93,6 +121,10 @@ void TitleScene::Draw()
 	//Spriteの描画準備。spriteの描画に共通のグラフィックスコマンドを積む
 	SpriteCommon::GetInstance()->CommonDraw();
 
+	//スプライトの描画
+	//titleSprite_->Draw();
+	blackSprite_->Draw();
+
 }
 
 void TitleScene::UpdateImGui()
@@ -103,6 +135,9 @@ void TitleScene::UpdateImGui()
 	{
 		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 	}
+
+	ImGui::SliderFloat("alpha", &alpha_, 0.0f, 1.0f);
+
 	//カメラの操作
 	#pragma region カメラの操作
 	Vector3 cameraPos = CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate;
@@ -211,6 +246,33 @@ void TitleScene::UpdateTitleObj()
 			elapsedTime_ = 0.0f;
 			waitTime_ = kWaitTime;
 		}
+	}
+}
+	
+
+void TitleScene::Fade()
+{
+	blackSprite_->setColor({ 1.0f,1.0f,1.0f,alpha_ });
+
+	// シーンスタート
+	if (isSceneStart_ && alpha_ > 0.01f)
+	{
+		alpha_ -= 0.01f;
+
+		if (alpha_ <= 0.01f)
+		{
+			isSceneStart_ = false;
+		}
+	}
+
+	if (isFadeStart_ && !isSceneStart_)
+	{
+		alpha_ += 0.01f;
+	}
+
+	if (alpha_ >= 1.0f)
+	{
+		isChangeScene_ = true;
 	}
 }
 

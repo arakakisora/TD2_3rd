@@ -5,25 +5,60 @@
 #include <imgui.h>
 #include "Input.h"
 #include "SceneManager.h"
+#include "CameraManager.h"
 
 void GameClearScene::Initialize()
 {
+	//カメラの生成
+	camera_ = std::make_unique<Camera>();
+	camera_->SetRotate({ 0.0f,0.0f,0.0f });
+	camera_->SetTranslate({ 0.0f,0.0f,-10.0f });
+	//カメラの登録
+	CameraManager::GetInstans()->AddCamera("clear", camera_.get());
+	CameraManager::GetInstans()->SetActiveCamera("clear");
 
+	//スプライトの生成
+	clearSprite_ = new Sprite();
+	clearSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/clear.png");
 
+	whiteSprite_ = new Sprite();
+	whiteSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/black.png");
+	whiteSprite_->SetSize({ 1280.0f,720.0f });
+	whiteSprite_->setColor({ 1.0f,1.0f,1.0f,1.0f });
+
+	blackSprite_ = new Sprite();
+	blackSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/black.png");
+	blackSprite_->SetSize({ 1280.0f,720.0f });
+	blackSprite_->setColor({ 1.0f,1.0f,1.0f,0.0f });
+
+	isSceneStart_ = true;
+	isFadeStart_ = false;
+	whiteAlpha_ = 1.0f;
+	blackAlpha_ = 0.0f;
 }
 
 void GameClearScene::Finalize()
 {
+	CameraManager::GetInstans()->RemoveCamera("clear");
+	
+	delete clearSprite_;
+	delete whiteSprite_;
+	delete blackSprite_;
 }
 
 void GameClearScene::Update()
 {
+	//スプライトの更新
+	clearSprite_->Update();
+	whiteSprite_->Update();
+	blackSprite_->Update();
 
+	Fade();
 
-
-
-
-
+	if (Input::GetInstans()->TriggerKey(DIK_SPACE))
+	{
+		isFadeStart_ = true;
+	}
 
 
 
@@ -36,10 +71,8 @@ void GameClearScene::Update()
 		{
 			SceneManager::GetInstance()->ChangeScene("TITELE");
 		}
-		
 
-
-
+		ImGui::SliderFloat("whiteAlpha", &whiteAlpha_, 0.0f, 1.0f);
 	}
 
 #endif // _DEBUG
@@ -62,6 +95,37 @@ void GameClearScene::Draw()
 	//Spriteの描画準備。spriteの描画に共通のグラフィックスコマンドを積む
 	SpriteCommon::GetInstance()->CommonDraw();
 
+	clearSprite_->Draw();
+	whiteSprite_->Draw();
+	blackSprite_->Draw();
+
 #pragma endregion
+
+}
+
+void GameClearScene::Fade()
+{
+	whiteSprite_->setColor({ 1.0f,1.0f,1.0f,whiteAlpha_ });
+	blackSprite_->setColor({ 1.0f,1.0f,1.0f,blackAlpha_ });
+
+	// シーンスタート
+	if (isSceneStart_ && whiteAlpha_ > 0.01f)
+	{
+		whiteAlpha_ -= 0.01f;
+		if (whiteAlpha_ <= 0.01f)
+		{
+			isSceneStart_ = false;
+		}
+	}
+
+	// タイトルに戻る
+	if (isFadeStart_)
+	{
+		blackAlpha_ += 0.01f;
+	}
+	if (blackAlpha_ >= 1.0f)
+	{
+		SceneManager::GetInstance()->ChangeScene("TITELE");
+	}
 
 }

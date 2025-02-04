@@ -36,10 +36,9 @@ public:
 	/// </summary>
 	void Draw()override;
 
-
-
-
-private:	
+	// 切り替え演出
+	void Fade();
+	
 
 private:
 	//ターン
@@ -62,8 +61,8 @@ private:
 
 	//カメラのポインタ
 	Camera* pCamera_ = nullptr;
-	Vector3 cameraPos_ = Vector3(3.0f, -20.0f, 0.0f);
-	Vector3 cameraRot_ = Vector3(-1.5f, 0.0f, 0.0f);
+	Vector3 cameraPos_ = Vector3(3.0f, -14.285f, 8.334f);
+	Vector3 cameraRot_ = Vector3(-2.015f, 0.0f, 0.0f);
 	// 3Dオブジェクト
 	std::vector<Object3D*> pFieldObject_ = {};
 	// Field
@@ -80,5 +79,15 @@ private:
 
 	Vector3 mousePos = Vector3(0, 0, 0);
 	Object3D* MouseObject = nullptr;
+
+	Sprite* whiteSprite_ = nullptr;
+	Sprite* blackSprite_ = nullptr;
+
+	bool isSceneStart_ = true;
+	bool isClearFadeStart_ = false;
+	bool isGameOverFadeStart_ = false;
+	// 透明度
+	float blackAlpha_ = 0.0f;
+	float whiteAlpha_ = 0.0f;
 };
 

@@ -80,7 +80,7 @@ void Enemy::Move(int dx, int dz)
         {
             // 移動開始位置と目標位置を設定
             moveStartPosition_ = transform_.translate;
-            moveTargetPosition_ = { static_cast<float>(newX), 0.0f, static_cast<float>(newZ) };
+            moveTargetPosition_ = { static_cast<float>(newX), -0.5f, static_cast<float>(newZ) };
 
             // 移動開始
             moveProgress_ = 0.0f;
@@ -244,6 +244,7 @@ void Enemy::UpdateEasingMovement()
         moveProgress_ += 1.0f / 60.0f * 2.0f;
         moveProgress_ = (std::min)(moveProgress_, 1.0f);
 		transform_.translate.x = EasingToEnd(moveStartPosition_.x, moveTargetPosition_.x, EaseInSine, moveProgress_);
+        transform_.translate.y = -0.5f;
 		transform_.translate.z = EasingToEnd(moveStartPosition_.z, moveTargetPosition_.z, EaseInSine, moveProgress_);
     	if (moveProgress_ >= 1.0f) 
         {
@@ -268,6 +269,7 @@ void Enemy::ImGui()
 
 void Enemy::UpdateTransform()
 {
+    transform_.translate.y = -0.5f;
 	object3D_->SetTranslate(transform_.translate);
 	object3D_->SetRotate(transform_.rotate);
 	object3D_->SetScale(transform_.scale);

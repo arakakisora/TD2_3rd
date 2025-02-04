@@ -20,7 +20,7 @@ void Player::Initialize(int posZ, Ball* ball)
 
 	// プレイヤーの初期化
 	this->posZ = posZ;
-	playerData.position = Vector3((float)posX, 0.0f, 10.0f);
+	playerData.position = Vector3((float)posX, -0.5f, 10.0f);
 	playerData.rotate = Vector3(0.0f, 0.0f, 0.0f);
 	playerData.scale = Vector3(0.5f, 0.5f, 0.5f);
 	ModelManager::GetInstans()->LoadModel("Player.obj");
@@ -59,8 +59,6 @@ void Player::Initialize(int posZ, Ball* ball)
 
 void Player::Update()
 {
-	playerData.rotate.z += 0.01f;
-	playerData.rotate.y += 0.01f;
 
 	UpdateTransform();
 	Move(WIDTH, DEPTH);
@@ -139,7 +137,7 @@ void Player::Move(int WIDTH, int DEPTH)
 
 
 	// プレイヤーの位置を更新
-	playerData.position = Vector3(static_cast<float>(posX), 0.0f, static_cast<float>(posZ));
+	playerData.position = Vector3(static_cast<float>(posX), -0.5f, static_cast<float>(posZ));
 
 	// ボールの位置を更新 / ドリブル処理 / パス処理
 	// 空へここの二つのドリブルとパスを分岐できるように頼んだ
