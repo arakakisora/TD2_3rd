@@ -262,6 +262,30 @@ bool Player::CanMoveTo(int x, int z)
 
 void Player::playerPass(Player*& selectedPlayer)
 {
+	// 現在の方向を計算（最後の移動方向を基に）
+	int dirX = posX - prePosX;
+	int dirZ = posZ - prePosZ;
+
+	// 2マス先の座標を計算
+	int targetX = posX + (dirX * 2);
+	int targetZ = posZ + (dirZ * 2);
+
+	// フィールドの範囲内かチェック
+	if (targetX >= 0 && targetX < WIDTH && targetZ >= 0 && targetZ < DEPTH)
+	{
+		// ボールの位置を2マス先に設定
+		if (ball)
+		{
+			Vector3 newBallPos = Vector3(
+				static_cast<float>(targetX),
+				0.0f,
+				static_cast<float>(targetZ)
+			);
+			ball->SetPosition(newBallPos);
+			hasBall = false;  // ボールの所持を解除
+		}
+	}
+
 	isPassing = false;
 	isPassDribbleVisible = false;  // **パス後に選択UIを非表示**
 	ispsMoved = true;  // **パスフラグを立てる**
