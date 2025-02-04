@@ -5,6 +5,8 @@
 #include "Object3D.h"
 #include "Audio.h"
 #include "BaseScene.h"
+#include "Player.h"
+#include "skydome.h"
 
 class TitleScene :public BaseScene
 {
@@ -41,6 +43,8 @@ public:
 	std::unique_ptr<Object3D> titleLeft_;
 	//タイトルOBJの右
 	std::unique_ptr<Object3D> titleRight_;
+	//天球
+	std::unique_ptr<skydome> skydome_;
 	/*-----------------[ イージング用変数 ]------------------*/
 	//経過時間
 	float elapsedTime_ = 0.0f;

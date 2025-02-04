@@ -15,6 +15,7 @@ void TitleScene::Initialize()
 	//モデル読み込み
 	ModelManager::GetInstans()->LoadModel("title_left.obj");
 	ModelManager::GetInstans()->LoadModel("title_right.obj");
+	ModelManager::GetInstans()->LoadModel("skydome.obj");
 
 	//カメラの生成
 	camera_ = std::make_unique<Camera>();
@@ -35,6 +36,10 @@ void TitleScene::Initialize()
 	titleRight_->Initialize(Object3DCommon::GetInstance());
 	titleRight_->SetModel("title_right.obj");
 	titleRight_->SetTranslate({ 2.2f,0.0f,5.0f });
+
+	//天球
+	skydome_ = std::make_unique<skydome>();
+	skydome_->Initialize(Object3DCommon::GetInstance(), "skydome.obj");
 }
 
 void TitleScene::Finalize()
@@ -46,19 +51,10 @@ void TitleScene::Update()
 	//カメラのアップデート
 	CameraManager::GetInstans()->GetActiveCamera()->Update();
 
+	//シーンの切り替え
 	if (Input::GetInstans()->TriggerKey(DIK_SPACE)) 
 	{
 		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
-	}
-
-	if (ImGui::CollapsingHeader("Model", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		ImGui::Text("titleScene %d");
-		if (ImGui::Button("gamePlayScene"))
-		{
-			SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
-		}
-
 	}
 
 	//ImGuiの更新
@@ -70,7 +66,7 @@ void TitleScene::Update()
 	//OBJの更新
 	titleLeft_->Update();
 	titleRight_->Update();
-
+	skydome_->Update();
 }
 
 void TitleScene::Draw()
@@ -80,6 +76,7 @@ void TitleScene::Draw()
 
 	titleLeft_->Draw();
 	titleRight_->Draw();
+	skydome_->Draw();
 
 	//Spriteの描画準備。spriteの描画に共通のグラフィックスコマンドを積む
 	SpriteCommon::GetInstance()->CommonDraw();
@@ -88,7 +85,12 @@ void TitleScene::Draw()
 
 void TitleScene::UpdateImGui()
 {
+#ifdef _DEBUG
 	ImGui::Begin("title");
+	if (ImGui::Button("gamePlayScene"))
+	{
+		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+	}
 	//カメラの操作
 	#pragma region カメラの操作
 	Vector3 cameraPos = CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate;
@@ -151,6 +153,7 @@ void TitleScene::UpdateImGui()
 	#pragma endregion
 
 	ImGui::End();
+#endif
 }
 
 void TitleScene::UpdateTitleObj()
