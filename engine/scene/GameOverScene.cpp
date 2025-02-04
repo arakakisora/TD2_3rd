@@ -11,7 +11,7 @@ void GameOverScene::Initialize()
 {
 	//スプライトの生成
 	gameOverSprite_ = new Sprite();
-	gameOverSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/title.png");
+	gameOverSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/gameover.png");
 
 	blackSprite_ = new Sprite();
 	blackSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/black.png");

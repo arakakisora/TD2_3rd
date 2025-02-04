@@ -19,10 +19,14 @@ void TitleScene::Initialize()
 
 	blackSprite_ = new Sprite();
 	blackSprite_->Initialize(SpriteCommon::GetInstance(),"Resources/black.png");
+	blackSprite_->SetSize({ 1280.0f,720.0f });
 	blackSprite_->setColor({ 1.0f,1.0f,1.0f,0.0f });
 
+	isSceneStart_ = true;
 	isFadeStart_ = false;
 	isChangeScene_ = false;
+	alpha_ = 1.0f;
+
 	//モデル読み込み
 	ModelManager::GetInstans()->LoadModel("title_left.obj");
 	ModelManager::GetInstans()->LoadModel("title_right.obj");
@@ -69,8 +73,8 @@ void TitleScene::Update()
 
 	Fade();
 
-	if (Input::GetInstans()->TriggerKey(DIK_SPACE)) 
-	{	
+	if (Input::GetInstans()->TriggerKey(DIK_SPACE))
+	{
 		isFadeStart_ = true;
 	}
 
@@ -85,25 +89,18 @@ void TitleScene::Update()
 	//タイトルOBJの更新
 	UpdateTitleObj();
 
+	titleLeft_->SetColor({ 1.0f,1.0f,1.0f,alpha_ });
+
 	//OBJの更新
 	titleLeft_->Update();
 	titleRight_->Update();
 	skydome_->Update();
+
+
+	
+
 }
 
-	if (ImGui::CollapsingHeader("Model", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		ImGui::Text("titleScene %d");
-		if (ImGui::Button("gamePlayScene"))
-		{
-			SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
-		}
-	}
-
-
-	ImGui::Text("TitleScene");
-
-	ImGui::SliderFloat("alpha", &alpha_, 0.0f, 1.0f);
 void TitleScene::Draw()
 {
 	//3dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
@@ -116,6 +113,10 @@ void TitleScene::Draw()
 	//Spriteの描画準備。spriteの描画に共通のグラフィックスコマンドを積む
 	SpriteCommon::GetInstance()->CommonDraw();
 
+	//スプライトの描画
+	//titleSprite_->Draw();
+	blackSprite_->Draw();
+
 }
 
 void TitleScene::UpdateImGui()
@@ -126,6 +127,9 @@ void TitleScene::UpdateImGui()
 	{
 		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 	}
+
+	ImGui::SliderFloat("alpha", &alpha_, 0.0f, 1.0f);
+
 	//カメラの操作
 	#pragma region カメラの操作
 	Vector3 cameraPos = CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate;
@@ -155,7 +159,6 @@ void TitleScene::UpdateImGui()
 		ImGui::DragFloat3("startTitleRightPos", &startTitleRightPos.x, 0.1f);
 		ImGui::DragFloat3("targetTitleRightPos", &targetTitleRightPos.x, 0.1f);
 	}
-#endif // _DEBUG
 	#pragma endregion
 
 	//タイトルOBJの操作
@@ -192,7 +195,7 @@ void TitleScene::UpdateImGui()
 #endif
 }
 
-}
+void TitleScene::UpdateTitleObj()
 {
 	const float deltaTime = 1.0f / 60.0f;
 	elapsedTime_ += deltaTime;
@@ -221,17 +224,24 @@ void TitleScene::UpdateImGui()
 		}
 	}
 }
-	//スプライトの描画
-	titleSprite_->Draw();
-	blackSprite_->Draw();
-
-}
+	
 
 void TitleScene::Fade()
 {
 	blackSprite_->setColor({ 1.0f,1.0f,1.0f,alpha_ });
 
-	if (isFadeStart_)
+	// シーンスタート
+	if (isSceneStart_ && alpha_ > 0.01f)
+	{
+		alpha_ -= 0.01f;
+
+		if (alpha_ <= 0.01f)
+		{
+			isSceneStart_ = false;
+		}
+	}
+
+	if (isFadeStart_ && !isSceneStart_)
 	{
 		alpha_ += 0.01f;
 	}
@@ -240,3 +250,4 @@ void TitleScene::Fade()
 	{
 		isChangeScene_ = true;
 	}
+}

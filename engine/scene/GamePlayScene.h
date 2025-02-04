@@ -36,10 +36,9 @@ public:
 	/// </summary>
 	void Draw()override;
 
-
-
-
-private:	
+	// 切り替え演出
+	void Fade();
+	
 
 private:
 	//ターン
@@ -80,5 +79,15 @@ private:
 
 	Vector3 mousePos = Vector3(0, 0, 0);
 	Object3D* MouseObject = nullptr;
+
+	Sprite* whiteSprite_ = nullptr;
+	Sprite* blackSprite_ = nullptr;
+
+	bool isSceneStart_ = true;
+	bool isClearFadeStart_ = false;
+	bool isGameOverFadeStart_ = false;
+	// 透明度
+	float blackAlpha_ = 0.0f;
+	float whiteAlpha_ = 0.0f;
 };
 

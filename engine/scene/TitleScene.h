@@ -60,12 +60,6 @@ public:
 	Vector3 startTitleLeftPos = { -8.0f,0.0f,5.0f };
 	Vector3 startTitleRightPos = { 8.0f,0.0f,5.0f };
 
-	Sprite* titleSprite_ = nullptr;
-	Sprite* blackSprite_ = nullptr;
-
-	bool isFadeStart_ = false;
-	bool isChangeScene_ = false;
-
 	//目標位置
 	Vector3 targetTitleLeftPos = { -1.7f,0.0f,0.0f };
 	Vector3 targetTitleRightPos = { 1.5f,0.0f,0.0f };
@@ -75,6 +69,14 @@ public:
 	//周波数
 	float frequency_ = 1.0f;
 
+
+
+	Sprite* titleSprite_ = nullptr;
+	Sprite* blackSprite_ = nullptr;
+
+	bool isSceneStart_ = true;
+	bool isFadeStart_ = false;
+	bool isChangeScene_ = false;
 	// 透明度
 	float alpha_ = 0.0f;
 };

@@ -30,13 +30,15 @@ public:
 private:
 
 	Sprite* clearSprite_ = nullptr;
+	Sprite* whiteSprite_ = nullptr;
 	Sprite* blackSprite_ = nullptr;
 
+	bool isSceneStart_ = false;
 	bool isFadeStart_ = false;
-	bool isChangeScene_ = false;
 
 	// 透明度
-	float alpha_ = 0.0f;
+	float whiteAlpha_ = 0.0f;
+	float blackAlpha_ = 1.0f;
 
 };
 
