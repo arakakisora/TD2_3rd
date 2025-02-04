@@ -32,17 +32,16 @@ void CameraManager::AddCamera(const std::string& name, const Camera* camera)
 }
 
 void CameraManager::RemoveCamera(const std::string& name) {
-   // if (cameras.erase(name) > 0 && activeCameraName == name) {
-   //     // アクティブカメラが削除された場合、他のカメラをアクティブに設定
-   //     if (!cameras.empty()) {
-   //         activeCameraName = cameras.begin()->first;
-			//cameras.erase(name);
-   //     }
-   //     else {
-   //         activeCameraName.clear();
-   //     }
-   // }
-    cameras.erase(name);
+    if (cameras.erase(name) > 0 && activeCameraName == name) {
+        // アクティブカメラが削除された場合、他のカメラをアクティブに設定
+        if (!cameras.empty()) {
+            activeCameraName = cameras.begin()->first;
+			cameras.erase(name);
+        }
+        else {
+            activeCameraName.clear();
+        }
+    }
 }
 
 Camera* CameraManager::GetCamera(const std::string& name) {
