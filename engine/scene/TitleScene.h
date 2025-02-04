@@ -35,6 +35,8 @@ private:
 	void UpdateImGui();
 	//タイトルOBJをイージングで動かす
 	void UpdateTitleObj();
+	//サッカーボールの更新
+	void UpdateSoccerBall();
 
 public:
 	//カメラ
@@ -45,6 +47,8 @@ public:
 	std::unique_ptr<Object3D> titleRight_;
 	//天球
 	std::unique_ptr<skydome> skydome_;
+	//サッカーボール
+	std::unique_ptr<Object3D> soccerBall_;
 	/*-----------------[ イージング用変数 ]------------------*/
 	//経過時間
 	float elapsedTime_ = 0.0f;
@@ -58,8 +62,8 @@ public:
 	Vector3 startTitleRightPos = { 8.0f,0.0f,5.0f };
 
 	//目標位置
-	Vector3 targetTitleLeftPos = { -1.7f,0.0f,0.0f };
-	Vector3 targetTitleRightPos = { 1.5f,0.0f,0.0f };
+	Vector3 targetTitleLeftPos = { -2.2f,0.0f,0.0f };
+	Vector3 targetTitleRightPos = { 2.0f,0.0f,0.0f };
 	/*-----------------[ 波形用変数 ]------------------*/
 	//振幅
 	float amplitude_ = 1.0f;

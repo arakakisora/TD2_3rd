@@ -16,6 +16,7 @@ void TitleScene::Initialize()
 	ModelManager::GetInstans()->LoadModel("title_left.obj");
 	ModelManager::GetInstans()->LoadModel("title_right.obj");
 	ModelManager::GetInstans()->LoadModel("skydome.obj");
+	ModelManager::GetInstans()->LoadModel("soccerBall.obj");
 
 	//カメラの生成
 	camera_ = std::make_unique<Camera>();
@@ -40,6 +41,12 @@ void TitleScene::Initialize()
 	//天球
 	skydome_ = std::make_unique<skydome>();
 	skydome_->Initialize(Object3DCommon::GetInstance(), "skydome.obj");
+
+	//サッカーボール
+	soccerBall_ = std::make_unique<Object3D>();
+	soccerBall_->Initialize(Object3DCommon::GetInstance());
+	soccerBall_->SetModel("soccerBall.obj");
+	soccerBall_->SetTranslate({ 0.3f,0.6f,21.0f });
 }
 
 void TitleScene::Finalize()
@@ -63,10 +70,14 @@ void TitleScene::Update()
 	//タイトルOBJの更新
 	UpdateTitleObj();
 
+	//サッカーボールの更新
+	UpdateSoccerBall();
+
 	//OBJの更新
 	titleLeft_->Update();
 	titleRight_->Update();
 	skydome_->Update();
+	soccerBall_->Update();
 }
 
 void TitleScene::Draw()
@@ -77,6 +88,7 @@ void TitleScene::Draw()
 	titleLeft_->Draw();
 	titleRight_->Draw();
 	skydome_->Draw();
+	soccerBall_->Draw();
 
 	//Spriteの描画準備。spriteの描画に共通のグラフィックスコマンドを積む
 	SpriteCommon::GetInstance()->CommonDraw();
@@ -152,6 +164,22 @@ void TitleScene::UpdateImGui()
 	}
 	#pragma endregion
 
+	//サッカーボールの操作
+	#pragma region サッカーボールの操作
+	if (ImGui::CollapsingHeader("soccerBall", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		Vector3 soccerBallPos = soccerBall_->GetTransform().translate;
+		ImGui::DragFloat3("soccerBallPos", &soccerBallPos.x, 0.1f);
+		soccerBall_->SetTranslate(soccerBallPos);
+		Vector3 soccerBallRot = soccerBall_->GetTransform().rotate;
+		ImGui::DragFloat3("soccerBallRot", &soccerBallRot.x, 0.1f);
+		soccerBall_->SetRotate(soccerBallRot);
+		Vector3 soccerBallScale = soccerBall_->GetTransform().scale;
+		ImGui::DragFloat3("soccerBallScale", &soccerBallScale.x, 0.1f);
+		soccerBall_->SetScale(soccerBallScale);
+	}
+	#pragma endregion
+
 	ImGui::End();
 #endif
 }
@@ -184,4 +212,16 @@ void TitleScene::UpdateTitleObj()
 			waitTime_ = kWaitTime;
 		}
 	}
+}
+
+void TitleScene::UpdateSoccerBall()
+{
+	const float deltaTime = 1.0f / 60.0f;
+	//サッカーボールの回転
+	Vector3 rotate = soccerBall_->GetTransform().rotate;
+	rotate.x += 3.14f * deltaTime / 2;
+	rotate.y += 3.14f * deltaTime;
+	//回転角度の制限
+	if (rotate.y >= 3.14f) { rotate.y = -3.14f; }
+	soccerBall_->SetRotate(rotate);
 }
