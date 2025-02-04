@@ -146,8 +146,8 @@ void GamePlayScene::Update()
 			{
 				turnState_ = TurnState::ENEMY;
 				
-        // エネミーのターン開始
-			enemyManager_->SetEnemyTurn(true);
+				// エネミーのターン開始
+				enemyManager_->SetEnemyTurn(true);
 				player->ResetMoveFlag();
 				player->ResetPassFlag();
 			}
