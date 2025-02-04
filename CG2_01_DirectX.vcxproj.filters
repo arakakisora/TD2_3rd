@@ -46,6 +46,7 @@
     <ClCompile Include="engine\scene\TitleScene.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Ball.cpp" />
+    <ClCompile Include="skydome.cpp" />
     <ClCompile Include="ParticleEmitter.cpp" />
     <ClCompile Include="ParticleMnager.cpp" />
     <ClCompile Include="engine\base\GraphicsPipeline.cpp" />
@@ -93,6 +94,8 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Field.h" />
     <ClInclude Include="Ball.h" />
+    <ClInclude Include="engine\math\Easing.h" />
+    <ClInclude Include="skydome.h" />
     <ClInclude Include="ParticleEmitter.h" />
     <ClInclude Include="ParticleMnager.h" />
     <ClInclude Include="engine\base\GraphicsPipeline.h" />
