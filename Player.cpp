@@ -173,54 +173,51 @@ bool Player::CheckObjectClick(Object3D* object, const Vector3& mousePos)
 
 void Player::HandleMouseClick(const Vector3& mousePos, Field* field, Player*& selectedPlayer)
 {
-	// **新しいプレイヤーが選択された場合、前のプレイヤーの選択状態をリセット**
+	// プレイヤー本体がクリックされた場合
 	if (CheckObjectClick(object3D_, mousePos)) {
 		if (selectedPlayer != this) {
-			// **前に選択していたプレイヤーの選択を解除**
 			if (selectedPlayer) {
-				selectedPlayer->isPassDribbleVisible = false;  // **表示をオフ**
+				selectedPlayer->isPassDribbleVisible = false;
 				selectedPlayer->isPassing = false;
 				selectedPlayer->isDribbling = false;
 			}
-			// **新しいプレイヤーを選択**
 			selectedPlayer = this;
 			isPassDribbleVisible = true;
 		}
 		return;
 	}
 
-	// **選択されていない場合は何もしない**
+	// 選択されていない場合は何もしない
 	if (selectedPlayer != this) return;
 
-	// **ドリブルモードを先に処理して、移動可能ならすぐ移動**
+	// ドリブルモードの処理
 	if (isDribbling) {
 		playerDribble(mousePos, field, selectedPlayer);
 		return;
 	}
 
-	// **パスオブジェクトのクリック判定**
+	// パスオブジェクトのクリック判定
 	if (CheckObjectClick(passObject3D_, mousePos) && isPassDribbleVisible) {
 		isPassing = true;
 		isDribbling = false;
-		isPassDribbleVisible = false;  // **選択後は非表示**
+		isPassDribbleVisible = false;
 		return;
 	}
 
-	// **ドリブルオブジェクトのクリック判定**
+	// ドリブルオブジェクトのクリック判定
 	if (CheckObjectClick(dribbleObject3D_, mousePos) && isPassDribbleVisible) {
 		isDribbling = true;
 		isPassing = false;
-		isPassDribbleVisible = false;  // **選択後は非表示**
+		isPassDribbleVisible = false;
 		return;
 	}
 
-	// **パスモードの場合にパス**
+	// パスモードでのクリック処理
 	if (isPassing) {
-		playerPass(selectedPlayer);
+		PlayerPass(mousePos, field, selectedPlayer);
 		return;
 	}
 }
-
 
 
 
@@ -258,39 +255,63 @@ bool Player::CanMoveTo(int x, int z)
 	return (abs(x - posX) + abs(z - posZ) == 1); // 1マスのみ移動許可
 }
 
-
-
-void Player::playerPass(Player*& selectedPlayer)
+bool Player::IsValidPassPosition(const Vector3& mousePos, Field* field)
 {
-	// 現在の方向を計算（最後の移動方向を基に）
-	int dirX = posX - prePosX;
-	int dirZ = posZ - prePosZ;
+	// マウス位置をグリッド座標に変換
+	int targetX = static_cast<int>(std::round(mousePos.x));
+	int targetZ = static_cast<int>(std::round(mousePos.z));
 
-	// 2マス先の座標を計算
-	int targetX = posX + (dirX * 2);
-	int targetZ = posZ + (dirZ * 2);
+	// 現在位置からの相対位置を計算
+	int deltaX = targetX - posX;
+	int deltaZ = targetZ - posZ;
+
+	// パス可能な位置の条件：
+	// 十字の2マス先のみ（上下左右のいずれか）
+	bool isValidPass = (
+		(std::abs(deltaX) == 2 && deltaZ == 0) ||  // 左右2マス
+		(deltaX == 0 && std::abs(deltaZ) == 2)     // 上下2マス
+		);
 
 	// フィールドの範囲内かチェック
-	if (targetX >= 0 && targetX < WIDTH && targetZ >= 0 && targetZ < DEPTH)
+	bool isWithinField = (
+		targetX >= 0 &&
+		targetX < WIDTH &&
+		targetZ >= 0 &&
+		targetZ < DEPTH
+		);
+
+	return isValidPass && isWithinField;
+}
+
+void Player::PlayerPass(const Vector3& mousePos, Field* field, Player*& selectedPlayer)
+{
+	// 有効なパス位置でない場合は処理を行わない
+	if (!IsValidPassPosition(mousePos, field)) {
+		return;
+	}
+
+	// マウス位置をグリッド座標に変換
+	int targetX = static_cast<int>(std::round(mousePos.x));
+	int targetZ = static_cast<int>(std::round(mousePos.z));
+
+	// ボールの位置を更新
+	if (ball)
 	{
-		// ボールの位置を2マス先に設定
-		if (ball)
-		{
-			Vector3 newBallPos = Vector3(
-				static_cast<float>(targetX),
-				0.0f,
-				static_cast<float>(targetZ)
-			);
-			ball->SetPosition(newBallPos);
-			hasBall = false;  // ボールの所持を解除
-		}
+		Vector3 newBallPos = Vector3(
+			static_cast<float>(targetX),
+			0.0f,
+			static_cast<float>(targetZ)
+		);
+		ball->SetPosition(newBallPos);
+		hasBall = false;  // ボールの所持を解除
 	}
 
 	isPassing = false;
-	isPassDribbleVisible = false;  // **パス後に選択UIを非表示**
-	ispsMoved = true;  // **パスフラグを立てる**
-	selectedPlayer = nullptr;  // **選択を解除**
+	isPassDribbleVisible = false;
+	ispsMoved = true;     // ターン終了フラグを立てる
+	selectedPlayer = nullptr;
 }
+
 
 
 

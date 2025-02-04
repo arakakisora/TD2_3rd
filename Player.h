@@ -41,13 +41,14 @@ public:
 	void HandleMouseClick(const Vector3& mousePos, Field* field, Player*& selectedPlayer);
 	
 	bool CanMoveTo(int x, int z);
+	bool IsValidPassPosition(const Vector3& mousePos, Field* field);
 	bool CheckObjectClick(Object3D* object, const Vector3& mousePos);
 
 	
 	
 
 	void playerDribble(const Vector3& mousePos, Field* field, Player*& selectedPlayer);
-	void playerPass(Player*& selectedPlayer);
+	void PlayerPass(const Vector3& mousePos, Field* field, Player*& selectedPlayer);
 
 
 public: //アクセッサ
