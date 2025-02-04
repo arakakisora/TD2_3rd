@@ -36,8 +36,9 @@ void Model::Initialize(ModelCommon* modeleCommon, const std::string& directorypa
 	//色
 	materialData->color = { Vector4(1.0f, 1.0f, 1.0f, 1.0f) };
 
-	materialData->enableLighting = false;//有効にするか否か
+	materialData->enableLighting = true;//有効にするか否か
 	materialData->uvTransform = materialData->uvTransform.MakeIdentity4x4();
+	materialData->shiniess = 60.0f;
 
 
 	//.objの参照しているテクスチャファイル読み込み
@@ -60,6 +61,8 @@ void Model::Draw()
 
 
 }
+
+
 
 MaterialData Model::LoadMaterialTemplateFile(const std::string& directorypath, const std::string& filename)
 {

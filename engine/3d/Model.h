@@ -13,7 +13,16 @@ public:
 	/// 描画
 	/// </summary>
 	void Draw();
-	
+	//void ParticleDraw(uint32_t instanceCount);
+
+	D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView()const { return vertexBufferView; }
+	ModelData GetModelData() { return modelData; }
+
+
+	//ライトのオンオフ
+	void SetEnableLighting(bool enable) { materialData->enableLighting = enable; }
+	//色の設定
+	void SetColor(const Vector4& color) { materialData->color = color; }
 
 	static MaterialData LoadMaterialTemplateFile(const std::string& directorypath, const std::string& filename);
 	static ModelData LoadObjeFile(const std::string& ditrectoryPath, const std::string& filename);

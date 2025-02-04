@@ -29,6 +29,13 @@ struct Material {
 	int32_t enableLighting;
 	float padding[3];
 	Matrix4x4 uvTransform;
+	float shiniess;
+};
+
+struct MaterialSprite
+{
+	Vector4 color;
+	Matrix4x4 uvTransform;
 };
 
 
@@ -36,6 +43,15 @@ struct TransformationMatrix
 {
 	Matrix4x4 WVP;
 	Matrix4x4 World;
+	Matrix4x4 worldInberseTranspose;
+
+};
+
+struct TransformationMatrixsprite
+{
+	Matrix4x4 WVP;
+	Matrix4x4 World;
+	
 
 };
 
@@ -59,3 +75,7 @@ struct ModelData {
 	MaterialData material;
 
 }; 
+
+struct CaMeraForGpu {
+	Vector3 worldPosition;
+};

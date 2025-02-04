@@ -33,7 +33,7 @@ public:
 	//transrat
 	void SetTransform(const Transform& transform) { this->transform = transform; }
 	Transform GetTransform() { return transform; }
-	Vector2 GetPosition() { return Vector2(transform.translate.x, transform.translate.z); }
+
 	//スケール
 	void SetScale(const Vector3& scale) { transform.scale = scale; }
 	//回転
@@ -43,7 +43,27 @@ public:
 	//カメラ
 	//void SetCamera(Camera* camera) { this->camera = camera; }
 	////デフォルトカメラ
+	
+	//ライト
+	void SetDirectionalLight(const DirectionalLight& directionalLight) { *directionalLightData = directionalLight; }
+	DirectionalLight GetDirectionalLight() { return *directionalLightData; }
+	//ライトの向き
+	void SetDirectionalLightDirection(const Vector3& direction) { directionalLightData->direction = direction; }
+	//ライトの色
+	void SetDirectionalLightColor(const Vector4& color) { directionalLightData->color = color; }
+	//ライトの強さ
+	void SetDirectionalLightIntensity(float intensity) { directionalLightData->intensity = intensity; }
 
+	//ライトのオンオフ
+	void SetLighting(bool enable) { enableLighting = enable; }
+	
+	
+
+	void SetColor(const Vector4& color) { color_ = color; }
+	Vector4 GetColor() const { return color_; }
+	
+
+	
 
 private:
 	Object3DCommon* object3DCommon_ = nullptr;
@@ -69,7 +89,17 @@ private:
 	Matrix4x4 worldMatrix;
 	Matrix4x4 worldViewProjectionMatrix;
 
+
+	//ライトのオンオフ
+	bool enableLighting = false;
+
 	Camera* camera = nullptr;
+	//カメラforGPU
+	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;//カメラのデータを送るためのリソース
+	CaMeraForGpu* cameraForGpu = nullptr;//カメラのデータをGPUに送るための構造体
+
+private:
+	Vector4 color_ = { 1.0f, 1.0f, 1.0f, 1.0f }; // デフォルトは白
 
 
 
