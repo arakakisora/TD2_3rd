@@ -1,5 +1,6 @@
 #include "EnemyManager.h"
 #include <limits>
+#include <random>
 
 void EnemyManager::Initialize(const std::string& filename, int enemyCount)
 {
@@ -13,10 +14,10 @@ void EnemyManager::Initialize(const std::string& filename, int enemyCount)
 		enemies_[index]->Initialize(Object3DCommon::GetInstance(), filename);
 		enemies_[index]->SetField(field_);
 		//NOTE:今は仮にプレイヤーの0番目をセット
-		enemies_[index]->SetPlayer(playerList_[0]);
+		enemies_[index]->SetPlayer(playerList_);
 		enemies_[index]->SetEnemyManager(this);
 		//座標をずらして配置
-		enemies_[index]->SetPosition({ 0.0f , 0.0f, static_cast<float>(index) });
+		enemies_[index]->SetPosition({ 5.0f , 0.0f, static_cast<float>(index) });
 	}
 }
 
@@ -43,6 +44,9 @@ void EnemyManager::Update()
 			}
 		}
 	}
+
+	//挟み込み判定
+	CheckSandwiching();
 }
 
 
@@ -87,7 +91,8 @@ void EnemyManager::SetEnemyTurn(bool isEnemyTurn)
 {
 	if (isEnemyTurn) {
 		// ターン開始時に全ての敵のターン終了フラグをリセット
-		for (auto& enemy : enemies_) {
+		for (auto& enemy : enemies_) 
+		{
 			enemy->SetTurnEnd(true);
 		}
 
@@ -96,15 +101,114 @@ void EnemyManager::SetEnemyTurn(bool isEnemyTurn)
 	currentEnemy_ = nullptr;
 }
 
+void EnemyManager::CheckSandwiching()
+{
+	isSandwiching_ = false; // デフォルトはfalseにリセット
+
+	for (const auto& player : playerList_)
+	{
+		if (!player->HasBall())
+		{
+			continue; // ボールを持っていないプレイヤーはスキップ
+		}
+
+		Vector3 playerPos = player->GetPosition();
+
+		// 上下左右の敵の存在をチェック
+		bool hasUp = false;
+		bool hasDown = false;
+		bool hasLeft = false;
+		bool hasRight = false;
+
+		// 上
+		int checkX = static_cast<int>(playerPos.x);
+		int checkZ = static_cast<int>(playerPos.z) + 1;
+		if (checkZ < DEPTH)
+		{
+			for (const auto& enemy : enemies_)
+			{
+				Vector3 enemyPos = enemy->GetPosition();
+				if (static_cast<int>(enemyPos.x) == checkX && static_cast<int>(enemyPos.z) == checkZ)
+				{
+					hasUp = true;
+					break;
+				}
+			}
+		}
+
+		// 下
+		checkZ = static_cast<int>(playerPos.z) - 1;
+		if (checkZ >= 0)
+		{
+			for (const auto& enemy : enemies_)
+			{
+				Vector3 enemyPos = enemy->GetPosition();
+				if (static_cast<int>(enemyPos.x) == checkX && static_cast<int>(enemyPos.z) == checkZ)
+				{
+					hasDown = true;
+					break;
+				}
+			}
+		}
+
+		// 左
+		checkX = static_cast<int>(playerPos.x) - 1;
+		checkZ = static_cast<int>(playerPos.z);
+		if (checkX >= 0)
+		{
+			for (const auto& enemy : enemies_)
+			{
+				Vector3 enemyPos = enemy->GetPosition();
+				if (static_cast<int>(enemyPos.x) == checkX && static_cast<int>(enemyPos.z) == checkZ)
+				{
+					hasLeft = true;
+					break;
+				}
+			}
+		}
+
+		// 右
+		checkX = static_cast<int>(playerPos.x) + 1;
+		if (checkX < WIDTH)
+		{
+			for (const auto& enemy : enemies_)
+			{
+				Vector3 enemyPos = enemy->GetPosition();
+				if (static_cast<int>(enemyPos.x) == checkX && static_cast<int>(enemyPos.z) == checkZ)
+				{
+					hasRight = true;
+					break;
+				}
+			}
+		}
+
+		// 上下両方、または左右両方に敵が存在する場合に挟み込みと判定
+		if ((hasUp && hasDown) || (hasLeft && hasRight))
+		{
+			isSandwiching_ = true;
+		}
+	}
+}
+
+
 Enemy* EnemyManager::SelectEnemyToMove()
 {
+	//ボールを持っているプレイヤーの位置を取得
+	int playerIndex = 0;
+	for (int index = 0; index < playerList_.size(); index++)
+	{
+		if (playerList_[index]->HasBall())
+		{
+			playerIndex = index;
+			break;
+		}
+	}
+
 	// プレイヤーの位置を取得
-	Vector3 playerPos = playerList_[0]->GetPosition();
+	Vector3 playerPos = playerList_[playerIndex]->GetPosition();
 
-	// 挟み込みに最適な敵を選択
-	Enemy* selectedEnemy = nullptr;
-	float minDistance = (std::numeric_limits<float>::max)();
-
+	// ランダムに敵を選択
+	std::vector<Enemy*> candidates;
 	for (auto& enemy : enemies_) {
 		// 敵の位置を取得
 		Vector3 enemyPos = enemy->GetPosition();
@@ -114,27 +218,27 @@ Enemy* EnemyManager::SelectEnemyToMove()
 			continue;
 		}
 
-		// プレイヤーとの距離を計算
-		Vector2 playerPosVec2 = Vector2(playerPos.x, playerPos.z);
-		Vector2 enemyPosVec2 = Vector2(enemyPos.x, enemyPos.z);
-		float distance = Vector2(playerPosVec2 - enemyPosVec2).Length();
-
-		if (distance < minDistance) {
-			minDistance = distance;
-			selectedEnemy = enemy.get();
-			// 選択した敵のターン終了フラグをリセット
-			selectedEnemy->SetTurnEnd(false);
-		}
+		candidates.push_back(enemy.get());
 	}
-	
 
-	// すべての敵が隣接している場合は、ターンを終了
-	if (!selectedEnemy) {
+	if (candidates.empty()) {
+		// すべての敵が隣接している場合は、ターンを終了
 		isEnemyTurn_ = false;
+		return nullptr;
 	}
+
+	// ランダムに選択
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<size_t> dis(0, candidates.size() - 1);
+	Enemy* selectedEnemy = candidates[dis(gen)];
+
+	// 選択した敵のターン終了フラグをリセット
+	selectedEnemy->SetTurnEnd(false);
 
 	return selectedEnemy;
 }
+
 
 bool EnemyManager::IsAdjacent(const Vector3& pos1, const Vector3& pos2)
 {

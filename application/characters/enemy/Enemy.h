@@ -39,7 +39,7 @@ public: //アクセッサ
 	void SetField(Field* field) { field_ = field; }
 
 	// プレイヤーのポインタをセット
-	void SetPlayer(Player* player) { player_ = player; }
+	void SetPlayer(std::vector<Player*> player) { playerList_ = player; }
 
 	void SetEnemyManager(EnemyManager* enemyManager) { enemyManager_ = enemyManager; }
 
@@ -62,7 +62,7 @@ private:
 	bool isTurnEnd_ = false;
 
 	//プレイヤー
-	Player* player_ = nullptr;
+	std::vector<Player*> playerList_;
 
 	//エネミーマネージャー
 	EnemyManager* enemyManager_ = nullptr;
