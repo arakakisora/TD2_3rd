@@ -44,6 +44,9 @@ void EnemyManager::Update()
 			}
 		}
 	}
+
+	//挟み込み判定
+	CheckSandwiching();
 }
 
 
@@ -88,13 +91,103 @@ void EnemyManager::SetEnemyTurn(bool isEnemyTurn)
 {
 	if (isEnemyTurn) {
 		// ターン開始時に全ての敵のターン終了フラグをリセット
-		for (auto& enemy : enemies_) {
+		for (auto& enemy : enemies_) 
+		{
 			enemy->SetTurnEnd(true);
 		}
 
 	}
 	isEnemyTurn_ = isEnemyTurn;
 	currentEnemy_ = nullptr;
+}
+
+void EnemyManager::CheckSandwiching()
+{
+	isSandwiching_ = false; // デフォルトはfalseにリセット
+
+	for (const auto& player : playerList_)
+	{
+		if (!player->HasBall())
+		{
+			continue; // ボールを持っていないプレイヤーはスキップ
+		}
+
+		Vector3 playerPos = player->GetPosition();
+
+		// 上下左右の敵の存在をチェック
+		bool hasUp = false;
+		bool hasDown = false;
+		bool hasLeft = false;
+		bool hasRight = false;
+
+		// 上
+		int checkX = static_cast<int>(playerPos.x);
+		int checkZ = static_cast<int>(playerPos.z) + 1;
+		if (checkZ < DEPTH)
+		{
+			for (const auto& enemy : enemies_)
+			{
+				Vector3 enemyPos = enemy->GetPosition();
+				if (static_cast<int>(enemyPos.x) == checkX && static_cast<int>(enemyPos.z) == checkZ)
+				{
+					hasUp = true;
+					break;
+				}
+			}
+		}
+
+		// 下
+		checkZ = static_cast<int>(playerPos.z) - 1;
+		if (checkZ >= 0)
+		{
+			for (const auto& enemy : enemies_)
+			{
+				Vector3 enemyPos = enemy->GetPosition();
+				if (static_cast<int>(enemyPos.x) == checkX && static_cast<int>(enemyPos.z) == checkZ)
+				{
+					hasDown = true;
+					break;
+				}
+			}
+		}
+
+		// 左
+		checkX = static_cast<int>(playerPos.x) - 1;
+		checkZ = static_cast<int>(playerPos.z);
+		if (checkX >= 0)
+		{
+			for (const auto& enemy : enemies_)
+			{
+				Vector3 enemyPos = enemy->GetPosition();
+				if (static_cast<int>(enemyPos.x) == checkX && static_cast<int>(enemyPos.z) == checkZ)
+				{
+					hasLeft = true;
+					break;
+				}
+			}
+		}
+
+		// 右
+		checkX = static_cast<int>(playerPos.x) + 1;
+		if (checkX < WIDTH)
+		{
+			for (const auto& enemy : enemies_)
+			{
+				Vector3 enemyPos = enemy->GetPosition();
+				if (static_cast<int>(enemyPos.x) == checkX && static_cast<int>(enemyPos.z) == checkZ)
+				{
+					hasRight = true;
+					break;
+				}
+			}
+		}
+
+		// 上下両方、または左右両方に敵が存在する場合に挟み込みと判定
+		if ((hasUp && hasDown) || (hasLeft && hasRight))
+		{
+			isSandwiching_ = true;
+		}
+	}
 }
 
 

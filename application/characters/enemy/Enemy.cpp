@@ -98,7 +98,7 @@ void Enemy::HandleAI() {
     int enemyX = static_cast<int>(transform_.translate.x);
     int enemyZ = static_cast<int>(transform_.translate.z);
 
-    // 最も近いプレイヤーを探す
+	// ボールを持っているプレイヤーを取得
     Player* targetPlayer = nullptr;
     float minDistance = (std::numeric_limits<float>::max)();
     for (const auto& player : playerList_) {

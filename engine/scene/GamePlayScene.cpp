@@ -202,6 +202,10 @@ void GamePlayScene::Update()
 	{
 		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
 	}
+	if (enemyManager_->IsSandwiching() && turnState_ == TurnState::PLAYER)
+	{
+		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
+	}
 
 
 	// ------------テスト----------------
