@@ -159,6 +159,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Ball.h" />
     <ClInclude Include="CameraManager.h" />
     <ClInclude Include="application\characters\enemy\EnemyManager.h" />
+    <ClInclude Include="engine\math\Easing.h" />
     <ClInclude Include="engine\scene\AbstractSceneFactory.h" />
     <ClInclude Include="engine\scene\BaseScene.h" />
     <ClInclude Include="engine\camera\Camera.h" />

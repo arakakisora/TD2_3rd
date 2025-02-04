@@ -86,6 +86,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Field.h" />
     <ClInclude Include="Ball.h" />
+    <ClInclude Include="engine\math\Easing.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Object3d.hlsli" />
