@@ -23,17 +23,21 @@ void EnemyManager::Initialize(const std::string& filename, int enemyCount)
 
 void EnemyManager::Update()
 {
-	if (isEnemyTurn_) {
-		if (currentEnemy_ == nullptr) {
+	if (isEnemyTurn_)
+	{
+		if (currentEnemy_ == nullptr)
+		{
 			// まだ敵が選択されていない場合、選択する
 			currentEnemy_ = SelectEnemyToMove();
-			if (currentEnemy_) {
+			if (currentEnemy_) 
+			{
 				// 選択した敵のターン終了フラグをリセット
 				currentEnemy_->SetTurnEnd(false);
 			}
 		}
 
-		if (currentEnemy_) {
+		if (currentEnemy_) 
+		{
 			// 選択された敵のみ更新
 			currentEnemy_->Update();
 
@@ -89,7 +93,8 @@ void EnemyManager::SetPlayer(const std::vector<std::unique_ptr<Player>>& player)
 
 void EnemyManager::SetEnemyTurn(bool isEnemyTurn)
 {
-	if (isEnemyTurn) {
+	if (isEnemyTurn) 
+	{
 		// ターン開始時に全ての敵のターン終了フラグをリセット
 		for (auto& enemy : enemies_) 
 		{
@@ -209,19 +214,22 @@ Enemy* EnemyManager::SelectEnemyToMove()
 
 	// ランダムに敵を選択
 	std::vector<Enemy*> candidates;
-	for (auto& enemy : enemies_) {
+	for (auto& enemy : enemies_) 
+	{
 		// 敵の位置を取得
 		Vector3 enemyPos = enemy->GetPosition();
 
 		// 敵がプレイヤーに隣接している場合はスキップ
-		if (IsAdjacent(enemyPos, playerPos)) {
+		if (IsAdjacent(enemyPos, playerPos)) 
+		{
 			continue;
 		}
 
 		candidates.push_back(enemy.get());
 	}
 
-	if (candidates.empty()) {
+	if (candidates.empty()) 
+	{
 		// すべての敵が隣接している場合は、ターンを終了
 		isEnemyTurn_ = false;
 		return nullptr;
