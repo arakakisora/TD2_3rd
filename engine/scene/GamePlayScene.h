@@ -16,6 +16,7 @@ class GamePlayScene :public BaseScene
 {
 public:
 
+
 	/// <summary>
 	/// シーンの初期化
 	/// </summary>
@@ -34,7 +35,9 @@ public:
 	void Draw()override;
 
 
-	void  SetclickPlayerPos();
+	//void  SetclickPlayerPos();
+
+
 
 private:	
 

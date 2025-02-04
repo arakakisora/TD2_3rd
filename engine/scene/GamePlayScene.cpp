@@ -19,6 +19,7 @@ void GamePlayScene::Initialize()
 
 	// 3Dオブジェクト
 	ModelManager::GetInstans()->LoadModel("cube.obj");
+	ModelManager::GetInstans()->LoadModel("cube2.obj");
 
 	// フィールド
 
@@ -97,7 +98,12 @@ void GamePlayScene::Update()
 
 	MouseObject->SetTranslate(mousePos);
 	MouseObject->Update();
-	SetclickPlayerPos();
+	// **プレイヤーのクリック処理を Player 側で処理**
+	if (Input::GetInstans()->TriggerMouse(0)) {
+		for (auto& player : pPlayer_) {
+			player->HandleMouseClick(mousePos, pField_.get(), selectedPlayer_);
+		}
+	}
 	CameraManager::GetInstans()->GetActiveCamera()->SetTranslate(cameraPos_);
 	CameraManager::GetInstans()->GetActiveCamera()->SetRotate(cameraRot_);
 
@@ -120,12 +126,13 @@ void GamePlayScene::Update()
 
 			// ターン終了
 			//NOTE:今はエンターキーでターンを切り替える
-			if (player->GetHasMoved())
+			if (player->GetHasMoved()||player->IsPassing())
 			{
 				turnState_ = TurnState::ENEMY;
 				// エネミーのターン開始
 				enemy_->SetTurnEnd(false);
 				player->ResetMoveFlag();
+				player->ResetPassFlag();
 			}
 
 		}
@@ -337,35 +344,36 @@ void GamePlayScene::Draw()
 
 }
 
-void GamePlayScene::SetclickPlayerPos()
-{
-	// **プレイヤーの選択処理**
-	for (const auto& player : pPlayer_) {
-		Vector3 playerPos = pField_->GetBlockPositionAt(player->GetPosX(), 0, player->GetPosZ());
-		Vector3 playerSize = Vector3(1.0f, 1.0f, 1.0f);
-
-		// **マウスがプレイヤーの範囲内にあるか判定**
-		if (mousePos.x >= playerPos.x - playerSize.x / 2 &&
-			mousePos.x <= playerPos.x + playerSize.x / 2 &&
-			mousePos.z >= playerPos.z - playerSize.z / 2 &&
-			mousePos.z <= playerPos.z + playerSize.z / 2) {
-
-			// **左クリックでプレイヤーを選択**
-			if (Input::GetInstans()->TriggerMouse(0)) {
-				selectedPlayer_ = player.get(); // `unique_ptr` からポインタ取得
-				ImGui::Text("Player Selected at: %d, %d", player->GetPosX(), player->GetPosZ());
-				return;
-			}
-		}
-	}
-
-	// **プレイヤーが選択されている場合に移動を実行**
-	if (selectedPlayer_ != nullptr) {
-		if (Input::GetInstans()->TriggerMouse(0)) {
-			selectedPlayer_->HandleMouseClick(mousePos, pField_.get(), selectedPlayer_);
-		}
-	}
-}
+//void GamePlayScene::SetclickPlayerPos()
+//{
+//	// **プレイヤーの選択処理**
+//	for (const auto& player : pPlayer_) {
+//		Vector3 playerPos = pField_->GetBlockPositionAt(player->GetPosX(), 0, player->GetPosZ());
+//		Vector3 playerSize = Vector3(1.0f, 1.0f, 1.0f);
+//
+//		// **マウスがプレイヤーの範囲内にあるか判定**
+//		if (mousePos.x >= playerPos.x - playerSize.x / 2 &&
+//			mousePos.x <= playerPos.x + playerSize.x / 2 &&
+//			mousePos.z >= playerPos.z - playerSize.z / 2 &&
+//			mousePos.z <= playerPos.z + playerSize.z / 2) {
+//
+//			// **左クリックでプレイヤーを選択**
+//			if (Input::GetInstans()->TriggerMouse(0)) {
+//				selectedPlayer_ = player.get(); // `unique_ptr` からポインタ取得
+//				ImGui::Text("Player Selected at: %d, %d", player->GetPosX(), player->GetPosZ());
+//				return;
+//			}
+//		}
+//	}
+//
+//	// **プレイヤーが選択されている場合に移動を実行**
+//	if (selectedPlayer_ != nullptr) {
+//		if (Input::GetInstans()->TriggerMouse(0)) {
+//
+//			selectedPlayer_->HandleMouseClick(mousePos, pField_.get(), selectedPlayer_);
+//		}
+//	}
+//}
 
 
 

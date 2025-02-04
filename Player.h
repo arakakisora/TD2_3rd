@@ -23,11 +23,17 @@ public:
 	void Move(int WIDTH, int DEPTH);
 	//3Dオブジェクトの更新
 	void UpdateTransform();
-
+	// マウスクリック時の処理
 	void HandleMouseClick(const Vector3& mousePos, Field* field, Player*& selectedPlayer);
-
-	bool CanMoveTo(int x, int z);
 	
+	bool CanMoveTo(int x, int z);
+	bool CheckObjectClick(Object3D* object, const Vector3& mousePos);
+
+	
+	
+
+	void playerDribble(const Vector3& mousePos, Field* field, Player*& selectedPlayer);
+	void playerPass(Player*& selectedPlayer);
 
 
 public: //アクセッサ
@@ -45,6 +51,10 @@ public: // ゲッター  追加
 
 	bool GetHasMoved() { return isMoved; }
 	void ResetMoveFlag() { isMoved = false; }
+
+	bool IsPassing() const { return  ispsMoved; }
+	void ResetPassFlag() { ispsMoved = false; }
+
 
 	// プレイヤーの位置(マス) 追加
 	int GetPosX() { return posX; }
@@ -69,7 +79,16 @@ public: // ゲッター  追加
 private:
 	Model* model;
 	Object3D* object3D_;
+	Object3D* passObject3D_;
+	Object3D* dribbleObject3D_;
 	bool isMoved = false; // 1ターン内での移動を制限
+	bool ispsMoved = false; // 1ターン内での移動を制限
+
+	bool isPassing = false;    // パスモードかどうか
+	bool isDribbling = false;  // ドリブルモードかどうか
+	bool isPassDribbleVisible = false;  // パス・ドリブルオブジェクトの可視フラグ
+
+
 
 
 	struct PlayerData
