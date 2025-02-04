@@ -118,7 +118,7 @@ void GamePlayScene::Update()
 	// **プレイヤーのクリック処理を Player 側で処理**
 	if (Input::GetInstans()->TriggerMouse(0)) {
 		for (auto& player : pPlayer_) {
-			player->HandleMouseClick(mousePos, pField_.get(), selectedPlayer_);
+			player->HandleMouseClick(mousePos, pField_.get(), selectedPlayer_,enemyManager_.get());
 		}
 	}
 	CameraManager::GetInstans()->GetActiveCamera()->SetTranslate(cameraPos_);

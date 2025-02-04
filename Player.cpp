@@ -2,6 +2,7 @@
 #include "Field.h"
 #include "CameraManager.h"
 #include "Ball.h"
+#include "application/characters/enemy/EnemyManager.h"
 Player::Player()
 {
 }
@@ -171,7 +172,7 @@ bool Player::CheckObjectClick(Object3D* object, const Vector3& mousePos)
 }
 
 
-void Player::HandleMouseClick(const Vector3& mousePos, Field* field, Player*& selectedPlayer)
+void Player::HandleMouseClick(const Vector3& mousePos, Field* field, Player*& selectedPlayer, EnemyManager* enemyManager)
 {
 	// プレイヤー本体がクリックされた場合
 	if (CheckObjectClick(object3D_, mousePos)) {
@@ -192,7 +193,7 @@ void Player::HandleMouseClick(const Vector3& mousePos, Field* field, Player*& se
 
 	// ドリブルモードの処理
 	if (isDribbling) {
-		playerDribble(mousePos, field, selectedPlayer);
+		playerDribble(mousePos, field, selectedPlayer,enemyManager);
 		return;
 	}
 
@@ -224,7 +225,7 @@ void Player::HandleMouseClick(const Vector3& mousePos, Field* field, Player*& se
 
 
 // **移動時の処理**
-void Player::playerDribble(const Vector3& mousePos, Field* field, Player*& selectedPlayer)
+void Player::playerDribble(const Vector3& mousePos, Field* field, Player*& selectedPlayer, EnemyManager* enemyManager)
 {
 	for (int z = 0; z < DEPTH; z++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -235,6 +236,12 @@ void Player::playerDribble(const Vector3& mousePos, Field* field, Player*& selec
 				mousePos.x <= blockPos.x + 0.5f &&
 				mousePos.z >= blockPos.z - 0.5f &&
 				mousePos.z <= blockPos.z + 0.5f) {
+
+				// **移動先にエネミーがいるかチェック**
+				if (enemyManager && enemyManager->IsEnemyAtPosition(x, z))
+				{
+					return; // エネミーがいるので移動不可
+				}
 
 				// **隣接1マスのみ移動を許可**
 				if (CanMoveTo(x, z)) {

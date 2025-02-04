@@ -256,3 +256,16 @@ bool EnemyManager::IsAdjacent(const Vector3& pos1, const Vector3& pos2)
 	// 隣接しているかチェック（距離が1.0fの場合）
 	return (distanceX + distanceZ == 1.0f);
 }
+
+bool EnemyManager::IsEnemyAtPosition(int x, int z)
+{
+	for (const auto& enemy : enemies_)
+	{
+		if (enemy->GetPosition().x == x && enemy->GetPosition().z == z)
+		{
+			return true; // エネミーがいる
+		}
+	}
+	return false; // エネミーがいない
+}
+

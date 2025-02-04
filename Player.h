@@ -6,6 +6,7 @@
 #include "Object3DCommon.h"
 #include "Field.h"
 
+class EnemyManager;
 class Ball;
 class Player
 {
@@ -38,7 +39,7 @@ public:
   
   
 
-	void HandleMouseClick(const Vector3& mousePos, Field* field, Player*& selectedPlayer);
+	void HandleMouseClick(const Vector3& mousePos, Field* field, Player*& selectedPlayer,EnemyManager* enemyManager);
 	
 	bool CanMoveTo(int x, int z);
 	bool IsValidPassPosition(const Vector3& mousePos, Field* field);
@@ -47,8 +48,10 @@ public:
 	
 	
 
-	void playerDribble(const Vector3& mousePos, Field* field, Player*& selectedPlayer);
+	
 	void PlayerPass(const Vector3& mousePos, Field* field, Player*& selectedPlayer);
+	void playerDribble(const Vector3& mousePos, Field* field, Player*& selectedPlayer, EnemyManager* enemyManager);
+	void playerPass(Player*& selectedPlayer);
 
 
 public: //アクセッサ

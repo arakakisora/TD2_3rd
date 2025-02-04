@@ -23,6 +23,10 @@ public:
 	//挟み込み判定
 	bool IsSandwiching() const { return isSandwiching_; }
 
+	// エネミーが指定の座標にいるか判定する関数
+	bool IsEnemyAtPosition(int x, int z);
+
+
 public: //アクセッサ
 	void SetField(Field* field) { field_ = field; }
 	void SetPlayer(const std::vector<std::unique_ptr<Player>>& player);
