@@ -42,7 +42,7 @@ void Player::Initialize(int posZ, Ball* ball)
 
 	//ドリブルモデルの初期化
 	dribbleObject3D_ = new Object3D;
-	dribbleObject3D_->SetModel("cube2.obj");
+	dribbleObject3D_->SetModel("cube.obj");
 	dribbleObject3D_->Initialize(Object3DCommon::GetInstance());
 	dribbleObject3D_->SetTranslate(playerData.position+Vector3(0.0f,0.0f,1.0f));
 	dribbleObject3D_->SetRotate(playerData.rotate);
