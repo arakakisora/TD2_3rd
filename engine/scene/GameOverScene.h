@@ -2,7 +2,6 @@
 #include "BaseScene.h"
 class GameOverScene :public BaseScene
 {
-
 public:
 	/// <summary>
 	/// シーンの初期化
