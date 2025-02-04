@@ -117,7 +117,7 @@ void GamePlayScene::Finalize()
 	}
 
 	CameraManager::GetInstans()->RemoveCamera("main");
-	delete pCamera_;
+	
 
 	delete whiteSprite_;
 	delete blackSprite_;

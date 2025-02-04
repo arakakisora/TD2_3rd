@@ -6,23 +6,38 @@
 #include <imgui.h>
 #include "Input.h"
 #include "SceneManager.h"
+#include "CameraManager.h"
 
 void GameOverScene::Initialize()
 {
+	//カメラの生成
+	camera_ = std::make_unique<Camera>();
+	camera_->SetRotate({ 0.0f,0.0f,0.0f });
+	camera_->SetTranslate({ 0.0f,0.0f,-10.0f });
+	//カメラの登録
+	CameraManager::GetInstans()->AddCamera("gameOver", camera_.get());
+	CameraManager::GetInstans()->SetActiveCamera("gameOver");
+
 	//スプライトの生成
 	gameOverSprite_ = new Sprite();
 	gameOverSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/gameover.png");
 
 	blackSprite_ = new Sprite();
 	blackSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/black.png");
-	blackSprite_->setColor({ 1.0f,1.0f,1.0f,0.0f });
+	blackSprite_->SetSize({ 1280.0f,720.0f });
+	blackSprite_->setColor({ 1.0f,1.0f,1.0f,1.0f });
 
+	isSceneStart_ = true;
 	isFadeStart_ = false;
-	isChangeScene_ = false;
+
+	alpha_ = 1.0f;
 }
 
 void GameOverScene::Finalize()
 {
+	CameraManager::GetInstans()->RemoveCamera("gameOver");
+	
+
 	delete gameOverSprite_;
 	delete blackSprite_;
 }
@@ -40,11 +55,6 @@ void GameOverScene::Update()
 		isFadeStart_ = true;
 	}
 
-	if (isChangeScene_)
-	{
-		SceneManager::GetInstance()->ChangeScene("TITELE");
-	}
-
 
 #ifdef _DEBUG
 
@@ -55,6 +65,8 @@ void GameOverScene::Update()
 		{
 			SceneManager::GetInstance()->ChangeScene("TITELE");
 		}
+
+		ImGui::SliderFloat("alpha", &alpha_, 0.0f, 1.0f);
 	}
 
 #endif // _DEBUG
@@ -87,12 +99,22 @@ void GameOverScene::Fade()
 {
 	blackSprite_->setColor({ 1.0f,1.0f,1.0f,alpha_ });
 
+	// シーンスタート
+	if (isSceneStart_ && alpha_ > 0.01f)
+	{
+		alpha_ -= 0.01f;
+		if (alpha_ <= 0.01f)
+		{
+			isSceneStart_ = false;
+		}
+	}
+	// タイトルに遷移
 	if (isFadeStart_)
 	{
 		alpha_ += 0.01f;
 		if (alpha_ >= 1.0f)
 		{
-			isChangeScene_ = true;
+			SceneManager::GetInstance()->ChangeScene("TITELE");
 		}
 	}
 }

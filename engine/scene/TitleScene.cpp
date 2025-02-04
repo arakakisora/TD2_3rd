@@ -59,6 +59,8 @@ void TitleScene::Initialize()
 
 void TitleScene::Finalize()
 {
+	CameraManager::GetInstans()->RemoveCamera("title");
+
 	delete titleSprite_;
 	delete blackSprite_;
 }
@@ -88,8 +90,6 @@ void TitleScene::Update()
 
 	//タイトルOBJの更新
 	UpdateTitleObj();
-
-	titleLeft_->SetColor({ 1.0f,1.0f,1.0f,alpha_ });
 
 	//OBJの更新
 	titleLeft_->Update();

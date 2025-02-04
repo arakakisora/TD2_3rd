@@ -2,6 +2,8 @@
 
 #include "BaseScene.h"
 #include"Sprite.h"
+#include "Camera.h"	
+#include <memory>
 
 class GameClearScene:public BaseScene
 {
@@ -28,6 +30,8 @@ public:
 	void Fade();
 
 private:
+	//カメラ
+	std::unique_ptr<Camera> camera_;
 
 	Sprite* clearSprite_ = nullptr;
 	Sprite* whiteSprite_ = nullptr;

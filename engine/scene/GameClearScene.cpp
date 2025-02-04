@@ -5,9 +5,18 @@
 #include <imgui.h>
 #include "Input.h"
 #include "SceneManager.h"
+#include "CameraManager.h"
 
 void GameClearScene::Initialize()
 {
+	//カメラの生成
+	camera_ = std::make_unique<Camera>();
+	camera_->SetRotate({ 0.0f,0.0f,0.0f });
+	camera_->SetTranslate({ 0.0f,0.0f,-10.0f });
+	//カメラの登録
+	CameraManager::GetInstans()->AddCamera("clear", camera_.get());
+	CameraManager::GetInstans()->SetActiveCamera("clear");
+
 	//スプライトの生成
 	clearSprite_ = new Sprite();
 	clearSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/clear.png");
@@ -30,6 +39,8 @@ void GameClearScene::Initialize()
 
 void GameClearScene::Finalize()
 {
+	CameraManager::GetInstans()->RemoveCamera("clear");
+	
 	delete clearSprite_;
 	delete whiteSprite_;
 	delete blackSprite_;
@@ -61,6 +72,7 @@ void GameClearScene::Update()
 			SceneManager::GetInstance()->ChangeScene("TITELE");
 		}
 
+		ImGui::SliderFloat("whiteAlpha", &whiteAlpha_, 0.0f, 1.0f);
 	}
 
 #endif // _DEBUG
@@ -84,6 +96,7 @@ void GameClearScene::Draw()
 	SpriteCommon::GetInstance()->CommonDraw();
 
 	clearSprite_->Draw();
+	whiteSprite_->Draw();
 	blackSprite_->Draw();
 
 #pragma endregion
