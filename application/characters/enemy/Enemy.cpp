@@ -45,23 +45,28 @@ void Enemy::Move(int dx, int dz)
     int newZ = static_cast<int>(transform_.translate.z) + dz;
 
     // マップの範囲内か確認（WIDTHとDEPTHはフィールドのサイズ）
-    if (newX >= 0 && newX < WIDTH && newZ >= 0 && newZ < DEPTH) {
+    if (newX >= 0 && newX < WIDTH && newZ >= 0 && newZ < DEPTH) 
+    {
         // 他の敵やプレイヤーがいないか確認
         bool blocked = false;
 
         // プレイヤーの位置と比較
-        for (const auto& player : playerList_) {
+        for (const auto& player : playerList_)
+        {
             int playerX = static_cast<int>(player->GetPosition().x);
             int playerZ = static_cast<int>(player->GetPosition().z);
-            if (newX == playerX && newZ == playerZ) {
+            if (newX == playerX && newZ == playerZ) 
+            {
                 blocked = true;
                 break;
             }
         }
 
         // 他の敵の位置と比較
-        for (const auto& otherEnemy : enemyManager_->GetEnemies()) {
-            if (otherEnemy.get() != this) {
+        for (const auto& otherEnemy : enemyManager_->GetEnemies()) 
+        {
+            if (otherEnemy.get() != this)
+            {
                 int enemyX = static_cast<int>(otherEnemy->GetPosition().x);
                 int enemyZ = static_cast<int>(otherEnemy->GetPosition().z);
                 if (newX == enemyX && newZ == enemyZ) {
@@ -71,7 +76,8 @@ void Enemy::Move(int dx, int dz)
             }
         }
 
-        if (!blocked) {
+        if (!blocked) 
+        {
             // 移動開始位置と目標位置を設定
             moveStartPosition_ = transform_.translate;
             moveTargetPosition_ = { static_cast<float>(newX), 0.0f, static_cast<float>(newZ) };
@@ -80,18 +86,21 @@ void Enemy::Move(int dx, int dz)
             moveProgress_ = 0.0f;
             isEaseStart_ = true;
         }
-        else {
+        else 
+        {
             // 移動できない場合はターン終了
             isTurnEnd_ = true;
         }
     }
-    else {
+    else 
+    {
         // マップ外の場合はターン終了
         isTurnEnd_ = true;
     }
 }
 
-void Enemy::HandleAI() {
+void Enemy::HandleAI()
+{
     if (isEaseStart_) return; // 移動中はスキップ
 
     // 敵の整数座標を取得
@@ -101,8 +110,10 @@ void Enemy::HandleAI() {
 	// ボールを持っているプレイヤーを取得
     Player* targetPlayer = nullptr;
     float minDistance = (std::numeric_limits<float>::max)();
-    for (const auto& player : playerList_) {
-        if (player->HasBall()) {
+    for (const auto& player : playerList_) 
+    {
+        if (player->HasBall()) 
+        {
             targetPlayer = player;
         }
     }
@@ -115,8 +126,10 @@ void Enemy::HandleAI() {
 
     // 他のプレイヤーの位置を取得（ターゲットプレイヤーを除く）
     std::set<std::pair<int, int>> occupiedPositions;
-    for (const auto& player : playerList_) {
-        if (player != targetPlayer) {
+    for (const auto& player : playerList_) 
+    {
+        if (player != targetPlayer) 
+        {
             int otherX = static_cast<int>(player->GetPosition().x);
             int otherZ = static_cast<int>(player->GetPosition().z);
             occupiedPositions.emplace(otherX, otherZ);
@@ -124,8 +137,10 @@ void Enemy::HandleAI() {
     }
 
     // 他の敵の位置を取得（自分以外）
-    for (const auto& otherEnemy : enemyManager_->GetEnemies()) {
-        if (otherEnemy.get() != this) {
+    for (const auto& otherEnemy : enemyManager_->GetEnemies()) 
+    {
+        if (otherEnemy.get() != this) 
+        {
             int otherX = static_cast<int>(otherEnemy->GetPosition().x);
             int otherZ = static_cast<int>(otherEnemy->GetPosition().z);
             occupiedPositions.emplace(otherX, otherZ);
@@ -143,12 +158,14 @@ void Enemy::HandleAI() {
 
     bool pathFound = false;
 
-    while (!queue.empty()) {
+    while (!queue.empty())
+    {
         auto current = queue.front();
         queue.pop();
 
         // 目標地点に到達した場合
-        if (current == targetPos) {
+        if (current == targetPos) 
+        {
             pathFound = true;
             break;
         }
@@ -161,17 +178,21 @@ void Enemy::HandleAI() {
             { 0, -1 }
         };
 
-        for (const auto& dir : directions) {
+        for (const auto& dir : directions) 
+        {
             int nextX = current.first + dir.first;
             int nextZ = current.second + dir.second;
             std::pair<int, int> nextPos = { nextX, nextZ };
 
             // マップ範囲内か確認
-            if (nextX >= 0 && nextX < WIDTH && nextZ >= 0 && nextZ < DEPTH) {
+            if (nextX >= 0 && nextX < WIDTH && nextZ >= 0 && nextZ < DEPTH) 
+            {
                 // すでに訪問済みでないことを確認
-                if (cameFrom.find(nextPos) == cameFrom.end()) {
+                if (cameFrom.find(nextPos) == cameFrom.end()) 
+                {
                     // 次の位置がターゲットの位置か、占有されていないかを確認
-                    if (nextPos == targetPos || occupiedPositions.find(nextPos) == occupiedPositions.end()) {
+                    if (nextPos == targetPos || occupiedPositions.find(nextPos) == occupiedPositions.end())
+                    {
                         queue.push(nextPos);
                         cameFrom[nextPos] = current;
                     }
@@ -180,17 +201,20 @@ void Enemy::HandleAI() {
         }
     }
 
-    if (pathFound) {
+    if (pathFound)
+    {
         // 経路を復元
         std::vector<std::pair<int, int>> path;
         auto current = targetPos;
-        while (current != startPos) {
+        while (current != startPos) 
+        {
             path.push_back(current);
             current = cameFrom[current];
         }
         std::reverse(path.begin(), path.end());
 
-        if (!path.empty()) {
+        if (!path.empty()) 
+        {
             // 次に移動する位置を取得
             int nextX = path.front().first;
             int nextZ = path.front().second;
@@ -200,25 +224,29 @@ void Enemy::HandleAI() {
             // 移動を試みる
             Move(dx, dz);
         }
-        else {
+        else 
+        {
             // 経路が存在するが移動できない場合はターン終了
             isTurnEnd_ = true;
         }
     }
-    else {
+    else 
+    {
         // 経路が見つからない場合はターン終了
         isTurnEnd_ = true;
     }
 }
 void Enemy::UpdateEasingMovement()
 {
-    if (isEaseStart_) {
+    if (isEaseStart_) 
+    {
         // 移動中の場合、イージングを適用して現在の位置を更新
         moveProgress_ += 1.0f / 60.0f * 2.0f;
         moveProgress_ = (std::min)(moveProgress_, 1.0f);
 		transform_.translate.x = EasingToEnd(moveStartPosition_.x, moveTargetPosition_.x, EaseInSine, moveProgress_);
 		transform_.translate.z = EasingToEnd(moveStartPosition_.z, moveTargetPosition_.z, EaseInSine, moveProgress_);
-    	if (moveProgress_ >= 1.0f) {
+    	if (moveProgress_ >= 1.0f) 
+        {
 			// 移動完了
     		isEaseStart_ = false;
             //ターン終了
