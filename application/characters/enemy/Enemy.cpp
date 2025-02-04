@@ -102,9 +102,7 @@ void Enemy::HandleAI() {
     Player* targetPlayer = nullptr;
     float minDistance = (std::numeric_limits<float>::max)();
     for (const auto& player : playerList_) {
-        float distance = std::sqrtf(std::powf(player->GetPosition().x - enemyX, 2.0f) + std::powf(player->GetPosition().z - enemyZ, 2.0f));
-        if (distance < minDistance) {
-            minDistance = distance;
+        if (player->HasBall()) {
             targetPlayer = player;
         }
     }
@@ -115,16 +113,24 @@ void Enemy::HandleAI() {
     int playerX = static_cast<int>(targetPlayer->GetPosition().x);
     int playerZ = static_cast<int>(targetPlayer->GetPosition().z);
 
-    // 他の敵の位置を取得（自分以外）
+    // 他のプレイヤーの位置を取得（ターゲットプレイヤーを除く）
     std::set<std::pair<int, int>> occupiedPositions;
-    for (const auto& otherEnemy : enemyManager_->GetEnemies()) {
-        // 自分自身の位置も占有済みとして扱う場合は、このままでよい
-        int otherX = static_cast<int>(otherEnemy->GetPosition().x);
-        int otherZ = static_cast<int>(otherEnemy->GetPosition().z);
-        occupiedPositions.emplace(otherX, otherZ);
+    for (const auto& player : playerList_) {
+        if (player != targetPlayer) {
+            int otherX = static_cast<int>(player->GetPosition().x);
+            int otherZ = static_cast<int>(player->GetPosition().z);
+            occupiedPositions.emplace(otherX, otherZ);
+        }
     }
-    // ※プレイヤーの位置は占有済みリストに追加しない
-    //     もしくは、BFS探索時にプレイヤーの位置は特例扱いするようにする
+
+    // 他の敵の位置を取得（自分以外）
+    for (const auto& otherEnemy : enemyManager_->GetEnemies()) {
+        if (otherEnemy.get() != this) {
+            int otherX = static_cast<int>(otherEnemy->GetPosition().x);
+            int otherZ = static_cast<int>(otherEnemy->GetPosition().z);
+            occupiedPositions.emplace(otherX, otherZ);
+        }
+    }
 
     // 幅優先探索(BFS)の初期化
     std::queue<std::pair<int, int>> queue;
@@ -162,12 +168,13 @@ void Enemy::HandleAI() {
 
             // マップ範囲内か確認
             if (nextX >= 0 && nextX < WIDTH && nextZ >= 0 && nextZ < DEPTH) {
-                // すでに訪問済みでないことを確認し、
-                // 次の位置がプレイヤーの位置ならば占有判定をスキップ、それ以外なら occupiedPositions に入っていないかも確認
-                if (cameFrom.find(nextPos) == cameFrom.end() &&
-                    (nextPos == targetPos || occupiedPositions.find(nextPos) == occupiedPositions.end())) {
-                    queue.push(nextPos);
-                    cameFrom[nextPos] = current;
+                // すでに訪問済みでないことを確認
+                if (cameFrom.find(nextPos) == cameFrom.end()) {
+                    // 次の位置がターゲットの位置か、占有されていないかを確認
+                    if (nextPos == targetPos || occupiedPositions.find(nextPos) == occupiedPositions.end()) {
+                        queue.push(nextPos);
+                        cameFrom[nextPos] = current;
+                    }
                 }
             }
         }
@@ -203,7 +210,6 @@ void Enemy::HandleAI() {
         isTurnEnd_ = true;
     }
 }
-
 void Enemy::UpdateEasingMovement()
 {
     if (isEaseStart_) {
