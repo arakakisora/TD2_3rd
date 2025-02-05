@@ -52,6 +52,9 @@ public:
 	std::unique_ptr<skydome> skydome_;
 	//サッカーボール
 	std::unique_ptr<Object3D> soccerBall_;
+	//スプライト
+	std::unique_ptr<Sprite> titleSprite_ = nullptr;
+	std::unique_ptr<Sprite> blackSprite_ = nullptr;
 	/*-----------------[ イージング用変数 ]------------------*/
 	//経過時間
 	float elapsedTime_ = 0.0f;
@@ -63,7 +66,6 @@ public:
 	//開始位置
 	Vector3 startTitleLeftPos = { -8.0f,0.0f,5.0f };
 	Vector3 startTitleRightPos = { 8.0f,0.0f,5.0f };
-
 	//目標位置
 	Vector3 targetTitleLeftPos = { -2.2f,0.0f,0.0f };
 	Vector3 targetTitleRightPos = { 2.0f,0.0f,0.0f };
@@ -72,12 +74,11 @@ public:
 	float amplitude_ = 1.0f;
 	//周波数
 	float frequency_ = 1.0f;
-
-
-
-	Sprite* titleSprite_ = nullptr;
-	Sprite* blackSprite_ = nullptr;
-
+	/*-----------------[ サウンド ]------------------*/
+	//BGM
+	SoundData bgm_;
+	bool isBgmPlay_ = false;
+	/*-----------------[ フェード用変数 ]------------------*/
 	bool isSceneStart_ = true;
 	bool isFadeStart_ = false;
 	bool isChangeScene_ = false;

@@ -3,6 +3,7 @@
 #include "CameraManager.h"
 #include "Ball.h"
 #include "application/characters/enemy/EnemyManager.h"
+#include "PlayerManager.h"
 Player::Player()
 {
 }
@@ -39,17 +40,17 @@ void Player::Initialize(int posZ, Ball* ball)
 	passObject3D_ = new Object3D;
 	passObject3D_->SetModel("uiBlock2.obj");
 	passObject3D_->Initialize(Object3DCommon::GetInstance());
-	passObject3D_->SetTranslate(playerData.position+Vector3(0.0f, 0.0f, -1.0f));
+	passObject3D_->SetTranslate(playerData.position + Vector3(-1.0f, 0.0f, 0.0f));
 	passObject3D_->SetRotate(playerData.rotate);
-	passObject3D_->SetScale({1.0f,1.0f,1.0f});
+	passObject3D_->SetScale({ 0.5f,0.5f,0.5f });
 
 	//ドリブルモデルの初期化
 	dribbleObject3D_ = new Object3D;
 	dribbleObject3D_->SetModel("uiBlock1.obj");
 	dribbleObject3D_->Initialize(Object3DCommon::GetInstance());
-	dribbleObject3D_->SetTranslate(playerData.position+Vector3(0.0f,0.0f,1.0f));
+	dribbleObject3D_->SetTranslate(playerData.position + Vector3(1.0f, 0.0f, 0.0f));
 	dribbleObject3D_->SetRotate(playerData.rotate);
-	dribbleObject3D_->SetScale({ 1.0f,1.0f,1.0f });
+	dribbleObject3D_->SetScale({ 0.5f,0.5f,0.5f });
 
 
 	if (HasBall())
@@ -59,11 +60,11 @@ void Player::Initialize(int posZ, Ball* ball)
 
 }
 
-void Player::Update()
+void Player::Update(PlayerManager* playerManager)
 {
 
 	UpdateTransform();
-	Move(WIDTH, DEPTH);
+	Move(WIDTH, DEPTH,playerManager);
 
 	object3D_->SetTranslate(playerData.position);
 	object3D_->SetRotate(playerData.rotate);
@@ -71,14 +72,20 @@ void Player::Update()
 	object3D_->Update();
 
 	//パスモデルの更新
-	passObject3D_->SetTranslate(playerData.position + Vector3(0.0f, 0.0f, -1.0f));
+	passObject3D_->SetTranslate(playerData.position + Vector3(-1.0f, -0.5f, -0.5f));
 	passObject3D_->Update();
 
 	//ドリブルモデルの更新0
-	dribbleObject3D_->SetTranslate(playerData.position + Vector3(0.0f, 0.0f, 1.0f));
+	dribbleObject3D_->SetTranslate(playerData.position + Vector3(1.0f, -0.5f, -0.5f));
 	dribbleObject3D_->Update();
 
 
+	// **ボールの所有者が移動したらボールを追従させる**
+	if (hasBall && ball)
+	{
+		ball->SetPosition(playerData.position);
+	}
+	
 
 	ImGui();
 
@@ -93,7 +100,7 @@ void Player::Draw()
 		passObject3D_->Draw();
 		dribbleObject3D_->Draw();
 	}
-	
+
 
 }
 
@@ -107,47 +114,31 @@ void Player::Finalize()
 
 }
 
-void Player::Move(int WIDTH, int DEPTH)
+void Player::Move(int WIDTH, int DEPTH, PlayerManager* playerManager)
 {
 	// キー入力に応じてプレイヤーの位置を更新
-	if (Input::GetInstans()->TriggerKey(DIK_S) && posZ < DEPTH - 1)
-	{
-		prePosX = posX;
-		prePosZ = posZ;
-		posZ += 1;
-	}
-	if (Input::GetInstans()->TriggerKey(DIK_W) && posZ > 0)
-	{
-		prePosX = posX;
-		prePosZ = posZ;
-		posZ -= 1;
-	}
-	if (Input::GetInstans()->TriggerKey(DIK_A) && posX > 0)
-	{
-		prePosX = posX;
-		prePosZ = posZ;
-		posX -= 1;
-	}
-	if (Input::GetInstans()->TriggerKey(DIK_D) && posX < WIDTH - 1)
-	{
-		prePosX = posX;
-		prePosZ = posZ;
-		posX += 1;
-	}
-
-
-
+	if (Input::GetInstans()->TriggerKey(DIK_S) && posZ < DEPTH - 1) { posZ += 1; }
+	if (Input::GetInstans()->TriggerKey(DIK_W) && posZ > 0) { posZ -= 1; }
+	if (Input::GetInstans()->TriggerKey(DIK_A) && posX > 0) { posX -= 1; }
+	if (Input::GetInstans()->TriggerKey(DIK_D) && posX < WIDTH - 1) { posX += 1; }
 
 	// プレイヤーの位置を更新
 	playerData.position = Vector3(static_cast<float>(posX), -0.5f, static_cast<float>(posZ));
-
-	// ボールの位置を更新 / ドリブル処理 / パス処理
-	// 空へここの二つのドリブルとパスを分岐できるように頼んだ
-	Dribble();
 	
 
-	//Pass();
+	// 🔹 **ボールの取得処理を統合**
+	Ball* gameBall = playerManager->GetBall();
+	if (gameBall && !hasBall)
+	{
+		Vector3 ballPos = gameBall->GetPosition();
+		if (std::round(ballPos.x) == posX && std::round(ballPos.z) == posZ)
+		{
+			SetBall(gameBall);
+		}
+	}
 }
+
+
 
 
 void Player::UpdateTransform()
@@ -158,21 +149,9 @@ void Player::UpdateTransform()
 	object3D_->Update();
 }
 
-// **オブジェクトのクリック判定**
-bool Player::CheckObjectClick(Object3D* object, const Vector3& mousePos)
-{
-	Vector3 objPos = object->GetTransform().translate; // オブジェクトの位置
-	Vector3 objSize = object->GetTransform().scale;   // オブジェクトのサイズ
 
 
-	return (mousePos.x >= objPos.x - objSize.x / 2 &&
-		mousePos.x <= objPos.x + objSize.x / 2 &&
-		mousePos.z >= objPos.z - objSize.z / 2 &&
-		mousePos.z <= objPos.z + objSize.z / 2);
-}
-
-
-void Player::HandleMouseClick(const Vector3& mousePos, Field* field, Player*& selectedPlayer, EnemyManager* enemyManager)
+void Player::HandleMouseClick(const Vector3& mousePos, Field* field, Player*& selectedPlayer, EnemyManager* enemyManager, PlayerManager* playerManager)
 {
 	// プレイヤー本体がクリックされた場合
 	if (CheckObjectClick(object3D_, mousePos)) {
@@ -193,7 +172,7 @@ void Player::HandleMouseClick(const Vector3& mousePos, Field* field, Player*& se
 
 	// ドリブルモードの処理
 	if (isDribbling) {
-		playerDribble(mousePos, field, selectedPlayer,enemyManager);
+		playerDribble(mousePos, field, selectedPlayer, enemyManager);
 		return;
 	}
 
@@ -215,7 +194,7 @@ void Player::HandleMouseClick(const Vector3& mousePos, Field* field, Player*& se
 
 	// パスモードでのクリック処理
 	if (isPassing) {
-		PlayerPass(mousePos, field, selectedPlayer);
+		PlayerPass(mousePos, field, selectedPlayer, playerManager);
 		return;
 	}
 }
@@ -227,6 +206,13 @@ void Player::HandleMouseClick(const Vector3& mousePos, Field* field, Player*& se
 // **移動時の処理**
 void Player::playerDribble(const Vector3& mousePos, Field* field, Player*& selectedPlayer, EnemyManager* enemyManager)
 {
+
+	// ボールを所持している場合、ボールをプレイヤーの位置に設定
+	if (hasBall && ball)
+	{
+		ball->SetPosition(playerData.position);
+	}
+
 	for (int z = 0; z < DEPTH; z++) {
 		for (int x = 0; x < WIDTH; x++) {
 			Vector3 blockPos = field->GetBlockPositionAt(x, 0, z);
@@ -247,6 +233,7 @@ void Player::playerDribble(const Vector3& mousePos, Field* field, Player*& selec
 				if (CanMoveTo(x, z)) {
 					SetPlayerPos(x, z);
 					isMoved = true;  // **移動フラグを立てる**
+	
 					isDribbling = false; // **移動後にドリブル解除**
 					selectedPlayer = nullptr;  // **移動後に選択解除**
 
@@ -257,6 +244,27 @@ void Player::playerDribble(const Vector3& mousePos, Field* field, Player*& selec
 		}
 	}
 }
+
+void Player::SetBall(Ball* newBall)
+{
+	if (newBall)
+	{
+		this->ball = newBall;
+		hasBall = true;
+		ball->SetPosition(playerData.position);
+	}
+	else
+	{
+		this->ball = nullptr;
+		hasBall = false;
+	}
+}
+
+
+
+
+
+
 
 // **指定した座標に移動可能かを判定**
 bool Player::CanMoveTo(int x, int z)
@@ -292,34 +300,77 @@ bool Player::IsValidPassPosition(const Vector3& mousePos, Field* field)
 	return isValidPass && isWithinField;
 }
 
-void Player::PlayerPass(const Vector3& mousePos, Field* field, Player*& selectedPlayer)
+bool Player::CheckObjectClick(Object3D* object, const Vector3& mousePos)
 {
-	// 有効なパス位置でない場合は処理を行わない
-	if (!IsValidPassPosition(mousePos, field)) {
+	if (!object) return false;
+
+	Vector3 objPos = object->GetTransform().translate;
+	Vector3 objSize = Vector3(1.0f, 1.0f, 1.0f);
+
+	return (mousePos.x >= objPos.x - objSize.x / 2 &&
+		mousePos.x <= objPos.x + objSize.x / 2 &&
+		mousePos.z >= objPos.z - objSize.z / 2 &&
+		mousePos.z <= objPos.z + objSize.z / 2);
+}
+
+
+void Player::PlayerPass(const Vector3& mousePos, Field* field, Player*& selectedPlayer, PlayerManager* playerManager)
+{
+	if (!IsValidPassPosition(mousePos, field))
+	{
+		// **無効な位置でもターン終了フラグを立てるように修正**
+		ispsMoved = true;
+		isMoved = true;
+		selectedPlayer = nullptr;
+		
 		return;
 	}
 
-	// マウス位置をグリッド座標に変換
 	int targetX = static_cast<int>(std::round(mousePos.x));
 	int targetZ = static_cast<int>(std::round(mousePos.z));
 
-	// ボールの位置を更新
-	if (ball)
+	Player* receiver = nullptr;
+	for (auto& player : playerManager->GetPlayers())
 	{
-		Vector3 newBallPos = Vector3(
-			static_cast<float>(targetX),
-			0.0f,
-			static_cast<float>(targetZ)
-		);
-		ball->SetPosition(newBallPos);
-		hasBall = false;  // ボールの所持を解除
+		if (player->GetPosX() == targetX && player->GetPosZ() == targetZ)
+		{
+			receiver = player.get();
+			break;
+		}
 	}
+
+	if (receiver)
+	{
+		// 🔹 **受け取るプレイヤーにボールを渡す**
+		receiver->SetBall(ball);
+	}
+	else
+	{
+		// 🔹 **誰もいなければボールだけを置く**
+		if (ball)
+		{
+			Vector3 newBallPos = Vector3(static_cast<float>(targetX), -0.5f, static_cast<float>(targetZ));
+			ball->SetPosition(newBallPos);
+		}
+	}
+
 
 	isPassing = false;
 	isPassDribbleVisible = false;
-	ispsMoved = true;     // ターン終了フラグを立てる
+
+	// 🔹 **ターン終了フラグを確実に設定**
+	ispsMoved = true;
+	isMoved = true;
 	selectedPlayer = nullptr;
+	// 🔹 **元のプレイヤーのボール所有を解除**
+	hasBall = false;
+	ball = nullptr;  // ボールの所有者がいなくなる
 }
+
+
+
+
+
 
 
 
@@ -336,29 +387,35 @@ void Player::ImGui()
 	//ImGui::Text("mousePos : %f %f %f", mousePos.x, mousePos.y, mousePos.z);
 
 	ImGui::Text("HasBall : %d", ball);
+
+	//パスオブジェクト
+	//位置調節
+	Transform passObjectTransform = passObject3D_->GetTransform();
+	ImGui::DragFloat3("passObjectPos", &passObjectTransform.translate.x, 0.1f);
+	ImGui::DragFloat3("passObjectRot", &passObjectTransform.rotate.x, 0.1f);
+	ImGui::DragFloat3("passObjectScale", &passObjectTransform.scale.x, 0.1f);
+	passObject3D_->SetTransform(passObjectTransform);
+
+
+	//ドリブルオブジェクト
+	//位置調節
+	Transform dribbleObjectTransform = dribbleObject3D_->GetTransform();
+	ImGui::DragFloat3("dribbleObjectPos", &dribbleObjectTransform.translate.x, 0.1f);
+	ImGui::DragFloat3("dribbleObjectRot", &dribbleObjectTransform.rotate.x, 0.1f);
+	ImGui::DragFloat3("dribbleObjectScale", &dribbleObjectTransform.scale.x, 0.1f);
+	dribbleObject3D_->SetTransform(dribbleObjectTransform);
+
+
+
+
 }
 
-void Player::Dribble()
-{
-	// ドリブル処理
-	if (hasBall)
-	{
-		// ボールの位置をプレイヤーの位置に設定
-		ball->SetPosition(playerData.position);
-	}
-}
 
-void Player::Pass()
-{
-	// パス処理
-	if (ball != nullptr)
-	{
-		// ボールの位置をプレイヤーの位置に設定
-		ball->SetPosition(playerData.position);
-		// ボールの所持を解除
-		SetBall(nullptr);
-	}
-}
+
+
+
+
+
 
 
 
