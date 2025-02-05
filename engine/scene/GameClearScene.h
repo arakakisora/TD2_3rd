@@ -5,6 +5,8 @@
 #include "Camera.h"	
 #include <memory>
 
+#include "Audio.h"
+
 class GameClearScene:public BaseScene
 {
 
@@ -43,6 +45,9 @@ private:
 	// 透明度
 	float whiteAlpha_ = 0.0f;
 	float blackAlpha_ = 1.0f;
+
+	// bgmのデータ
+	SoundData bgm_;
 
 };
 

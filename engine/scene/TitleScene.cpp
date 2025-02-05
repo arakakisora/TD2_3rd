@@ -75,6 +75,7 @@ void TitleScene::Finalize()
 	delete titleSprite_;
 	delete blackSprite_;
 
+	Audio::GetInstance()->StopAudio();
 	Audio::GetInstance()->SoundUnload(&bgm_);
 }
 
