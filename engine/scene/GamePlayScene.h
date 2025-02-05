@@ -15,6 +15,7 @@
 #include "Ball.h"
 #include "PlayerManager.h"  // 追加
 #include "skydome.h"
+#include "Stadium.h"
 
 class GamePlayScene :public BaseScene
 {
@@ -79,6 +80,9 @@ private:
 
 	// プレイヤーの位置
 	std::vector<Field::Pos> playerPosList_ = {};
+
+	// 観客席
+	std::unique_ptr<Stadium> stadium_ = nullptr;
 
 	Ball* ball = nullptr;
 

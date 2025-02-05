@@ -52,8 +52,9 @@ void GamePlayScene::Initialize()
 	playerManager_->Initialize(ball);  // 追加
 	
 
-
-	
+	// 観客席
+	stadium_ = std::make_unique<Stadium>();
+	stadium_->Initialize();
 
 	//敵のモデル読み込み
 	ModelManager::GetInstans()->LoadModel("Enemy.obj");
@@ -216,6 +217,9 @@ void GamePlayScene::Update()
 	// 天球の更新
 	skydome_->Update();
 
+	// 観客席の更新
+	stadium_->Update();
+
 	// ゴール判定
 	if (pField_->IsGoal())
 	{
@@ -330,6 +334,9 @@ void GamePlayScene::Draw()
 
 	// 天球の描画
 	skydome_->Draw();
+
+	// 観客席の描画
+	stadium_->Draw();
 
 #pragma endregion
 
