@@ -34,6 +34,7 @@ void Player::Initialize(int posZ, Ball* ball)
 	object3D_->SetTranslate(playerData.position);
 	object3D_->SetRotate(playerData.rotate);
 	object3D_->SetScale(playerData.scale);
+	object3D_->SetLighting(true);
 
 
 	//パスモデルの初期化
@@ -64,7 +65,7 @@ void Player::Update(PlayerManager* playerManager)
 {
 
 	UpdateTransform();
-	Move(WIDTH, DEPTH,playerManager);
+	Move(WIDTH, DEPTH, playerManager);
 
 	object3D_->SetTranslate(playerData.position);
 	object3D_->SetRotate(playerData.rotate);
@@ -85,7 +86,7 @@ void Player::Update(PlayerManager* playerManager)
 	{
 		ball->SetPosition(playerData.position);
 	}
-	
+
 
 	ImGui();
 
@@ -97,7 +98,11 @@ void Player::Draw()
 
 	if (isPassDribbleVisible)
 	{
-		passObject3D_->Draw();
+		if (hasBall) {
+			passObject3D_->Draw();
+
+		}
+
 		dribbleObject3D_->Draw();
 	}
 
@@ -124,7 +129,7 @@ void Player::Move(int WIDTH, int DEPTH, PlayerManager* playerManager)
 
 	// プレイヤーの位置を更新
 	playerData.position = Vector3(static_cast<float>(posX), -0.5f, static_cast<float>(posZ));
-	
+
 
 	// 🔹 **ボールの取得処理を統合**
 	Ball* gameBall = playerManager->GetBall();
@@ -176,13 +181,14 @@ void Player::HandleMouseClick(const Vector3& mousePos, Field* field, Player*& se
 		return;
 	}
 
-	// パスオブジェクトのクリック判定
-	if (CheckObjectClick(passObject3D_, mousePos) && isPassDribbleVisible) {
+	// パスオブジェクトのクリック判定（ボールを持っている場合のみ）
+	if (CheckObjectClick(passObject3D_, mousePos) && isPassDribbleVisible && hasBall) {
 		isPassing = true;
 		isDribbling = false;
 		isPassDribbleVisible = false;
 		return;
 	}
+
 
 	// ドリブルオブジェクトのクリック判定
 	if (CheckObjectClick(dribbleObject3D_, mousePos) && isPassDribbleVisible) {
@@ -233,7 +239,7 @@ void Player::playerDribble(const Vector3& mousePos, Field* field, Player*& selec
 				if (CanMoveTo(x, z)) {
 					SetPlayerPos(x, z);
 					isMoved = true;  // **移動フラグを立てる**
-	
+
 					isDribbling = false; // **移動後にドリブル解除**
 					selectedPlayer = nullptr;  // **移動後に選択解除**
 
@@ -322,7 +328,7 @@ void Player::PlayerPass(const Vector3& mousePos, Field* field, Player*& selected
 		ispsMoved = true;
 		isMoved = true;
 		selectedPlayer = nullptr;
-		
+
 		return;
 	}
 

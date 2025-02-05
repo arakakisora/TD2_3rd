@@ -31,7 +31,7 @@ void Object3D::Initialize(Object3DCommon* object3DCommon)
 	directionalLightResource = object3DCommon_->GetDxCommon()->CreateBufferResource(sizeof(DirectionalLight));
 	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 	directionalLightData->color = { 1.0f,1.0f,1.0f,1.0f };
-	directionalLightData->direction = { 0.0f,-1.0f,1.0f };
+	directionalLightData->direction = { 3.0f,13.0f,-8.80f };
 	directionalLightData->intensity = 1.0f;
 
 
