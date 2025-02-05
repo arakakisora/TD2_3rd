@@ -14,10 +14,10 @@ void TitleScene::Initialize()
 {
 	
 	//スプライトの生成
-	titleSprite_ = new Sprite();
+	titleSprite_ = std::make_unique<Sprite>();
 	titleSprite_->Initialize(SpriteCommon::GetInstance(),"Resources/title.png");
 
-	blackSprite_ = new Sprite();
+	blackSprite_ = std::make_unique<Sprite>();
 	blackSprite_->Initialize(SpriteCommon::GetInstance(),"Resources/black.png");
 	blackSprite_->SetSize({ 1280.0f,720.0f });
 	blackSprite_->setColor({ 1.0f,1.0f,1.0f,0.0f });
@@ -67,9 +67,6 @@ void TitleScene::Initialize()
 void TitleScene::Finalize()
 {
 	CameraManager::GetInstans()->RemoveCamera("title");
-
-	delete titleSprite_;
-	delete blackSprite_;
 }
 
 void TitleScene::Update()

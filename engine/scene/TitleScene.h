@@ -73,10 +73,9 @@ public:
 	//周波数
 	float frequency_ = 1.0f;
 
-
-
-	Sprite* titleSprite_ = nullptr;
-	Sprite* blackSprite_ = nullptr;
+	//スプライト
+	std::unique_ptr<Sprite> titleSprite_ = nullptr;
+	std::unique_ptr<Sprite> blackSprite_ = nullptr;
 
 	bool isSceneStart_ = true;
 	bool isFadeStart_ = false;
