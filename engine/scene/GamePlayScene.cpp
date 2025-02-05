@@ -89,6 +89,19 @@ void GamePlayScene::Initialize()
 	whiteAlpha_ = 0.0f;
 	blackAlpha_ = 1.0f;
 
+	//危険信号
+	dangerSignal_ = std::make_unique<Sprite>();
+	dangerSignal_->Initialize(SpriteCommon::GetInstance(), "Resources/danger.png");
+	dangerSignal_->SetPosition({ 0.0f,-50.0f });
+
+	//プレイヤーターン
+	playerTurn_ = std::make_unique<Sprite>();
+	playerTurn_->Initialize(SpriteCommon::GetInstance(), "Resources/playerTurn.png");
+
+	//エネミーターン
+	enemyTurn_ = std::make_unique<Sprite>();
+	enemyTurn_->Initialize(SpriteCommon::GetInstance(), "Resources/enemyTurn.png");
+
 	// BGMの読み込みと再生
 	bgm_ = Audio::GetInstance()->SoundLoadWave("Resources/audio/gameplay/bgm.wav");
 	//音量の設定
@@ -229,11 +242,25 @@ void GamePlayScene::Update()
 	// 天球の更新
 	skydome_->Update();
 
+	//危険信号の更新
+	dangerSignal_->Update();
+
+	//プレイヤーターンの更新
+	playerTurn_->Update();
+
+	//エネミーターンの更新
+	enemyTurn_->Update();
+
 	// 観客席の更新
 	stadium_->Update();
 
 	// ゴール判定
 	if (pField_->IsGoal())
+	{
+		isClearFadeStart_ = true;
+		Audio::GetInstance()->SoundPlayWave(gameOverSE_);
+	}
+	if (playerManager_->IsGoal()) 
 	{
 		isClearFadeStart_ = true;
 		Audio::GetInstance()->SoundPlayWave(gameOverSE_);
@@ -364,8 +391,26 @@ void GamePlayScene::Draw()
 	//Spriteの描画準備。spriteの描画に共通のグラフィックスコマンドを積む
 	SpriteCommon::GetInstance()->CommonDraw();
 
+	if (enemyManager_->IsDangerSignal())
+	{
+		dangerSignal_->Draw();
+	}
+
+	//ターン表示
+	switch (turnState_)
+	{
+	case TurnState::PLAYER:
+		playerTurn_->Draw();
+		break;
+	case TurnState::ENEMY:
+		enemyTurn_->Draw();
+		break;
+	}
+
 	whiteSprite_->Draw();
 	blackSprite_->Draw();
+
+	
 
 #pragma endregion
 

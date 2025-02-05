@@ -91,6 +91,12 @@ private:
 
 	Sprite* whiteSprite_ = nullptr;
 	Sprite* blackSprite_ = nullptr;
+	//危険信号
+	std::unique_ptr<Sprite> dangerSignal_ = nullptr;
+	//プレイヤーのターン
+	std::unique_ptr<Sprite> playerTurn_ = nullptr;
+	//エネミーのターン
+	std::unique_ptr<Sprite> enemyTurn_ = nullptr;
 
 	bool isSceneStart_ = true;
 	bool isClearFadeStart_ = false;
