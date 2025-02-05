@@ -59,6 +59,10 @@ public:
     void SetPlaybackSpeed(float speed); // 全音の速度変更
     void SetPlaybackSpeed(SoundData* soundData, float speed); // 指定音の速度変更
 
+    // **音量調整**
+    void SetVolume(float volume); // 全ての音の音量変更
+    void SetVolume(SoundData* soundData, float volume); // 指定音の音量変更
+
     // 状態取得
     bool IsSoundPlaying() const; // 何か音が鳴っているか
     bool IsSoundPlaying(SoundData* soundData) const; // 指定音が鳴っているか

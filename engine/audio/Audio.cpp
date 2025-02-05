@@ -203,6 +203,8 @@ bool Audio::IsSoundPlaying() const
     return false;
 }
 
+
+
 bool Audio::IsSoundPlaying(SoundData* soundData) const
 {
     auto it = activeVoices.find(soundData);
@@ -215,4 +217,24 @@ bool Audio::IsSoundPlaying(SoundData* soundData) const
         }
     }
     return false;
+}
+
+void Audio::SetVolume(float volume)
+{
+    for (auto& [soundData, voice] : activeVoices) {
+        if (voice) {
+            voice->SetVolume(volume);
+        }
+    }
+}
+
+void Audio::SetVolume(SoundData* soundData, float volume)
+{
+    auto it = activeVoices.find(soundData);
+    if (it != activeVoices.end()) {
+        IXAudio2SourceVoice* voice = it->second;
+        if (voice) {
+            voice->SetVolume(volume);
+        }
+    }
 }

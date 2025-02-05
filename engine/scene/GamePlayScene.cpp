@@ -91,11 +91,16 @@ void GamePlayScene::Initialize()
 
 	// BGMの読み込みと再生
 	bgm_ = Audio::GetInstance()->SoundLoadWave("Resources/audio/gameplay/bgm.wav");
+	//音量の設定
+	
+	
+	
 	//駒を動かしたときの効果音
 	moveSE_ = Audio::GetInstance()->SoundLoadWave("Resources/audio/gameplay/move.wav");
 	//ゲーム終了の効果音
 	gameOverSE_ = Audio::GetInstance()->SoundLoadWave("Resources/audio/gameplay/finish.wav");
 }
+
 
 void GamePlayScene::Finalize()
 {
@@ -128,6 +133,7 @@ void GamePlayScene::Update()
 	if (!isBgmPlay_)
 	{
 		Audio::GetInstance()->SoundPlayWave(bgm_);
+		Audio::GetInstance()->SetVolume(0.1f);
 		isBgmPlay_ = true;
 	}
 	if (isBgmPlay_ && !Audio::GetInstance()->IsSoundPlaying())
