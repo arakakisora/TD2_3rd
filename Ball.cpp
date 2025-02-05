@@ -22,7 +22,8 @@ void Ball::Update()
 	// ImGui
 	ImGui();
 	// モデル座標の更新
-	ballData.rotate.z += 0.01f;
+	ballData.rotate.y += 0.02f;
+	ballData.rotate.z += 0.02f;
 	object3D_->SetTranslate(ballData.position);
 	object3D_->SetRotate(ballData.rotate);
 	object3D_->SetScale(ballData.scale);
