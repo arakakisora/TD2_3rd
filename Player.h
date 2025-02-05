@@ -6,6 +6,8 @@
 #include "Object3DCommon.h"
 #include "Field.h"
 
+
+class PlayerManager;
 class EnemyManager;
 class Ball;
 class Player
@@ -18,13 +20,13 @@ public:
 	// 初期化
 	void Initialize(int posZ, Ball* ball = nullptr);
 	// 更新
-	void Update();
+	void Update(PlayerManager* playerManager);
 	// 描画
 	void Draw();
 	// 終了
 	void Finalize();
 	// 移動
-	void Move(int WIDTH, int DEPTH);
+	void Move(int WIDTH, int DEPTH, PlayerManager* playerManager);
 	//3Dオブジェクトの更新
 	void UpdateTransform();
 
@@ -32,14 +34,16 @@ public:
 	// ImGui 描画
 	void ImGui();
 	// ドリブル
-	void Dribble();
+	void Dribble(PlayerManager* playerManager);
 	// パス
 	void Pass();
   
-  
+	bool HasPerformedAction() const { return isMoved || ispsMoved; }
+	void ResetActionFlags() { isMoved = false; ispsMoved = false; }
+
   
 
-	void HandleMouseClick(const Vector3& mousePos, Field* field, Player*& selectedPlayer,EnemyManager* enemyManager);
+	void HandleMouseClick(const Vector3& mousePos, Field* field, Player*& selectedPlayer,EnemyManager* enemyManager, PlayerManager* playerManager);
 	
 	bool CanMoveTo(int x, int z);
 	bool IsValidPassPosition(const Vector3& mousePos, Field* field);
@@ -49,9 +53,9 @@ public:
 	
 
 	
-	void PlayerPass(const Vector3& mousePos, Field* field, Player*& selectedPlayer);
+	void PlayerPass(const Vector3& mousePos, Field* field, Player*& selectedPlayer, PlayerManager* playerManager);
 	void playerDribble(const Vector3& mousePos, Field* field, Player*& selectedPlayer, EnemyManager* enemyManager);
-	void playerPass(Player*& selectedPlayer);
+	//void playerPass(Player*& selectedPlayer);
 
 
 public: //アクセッサ
@@ -65,7 +69,7 @@ public: //アクセッサ
 
 	// ボール所持
 	bool HasBall() { return ball; }
-	void SetBall(Ball* ball) { this->ball = ball; }
+	void SetBall(Ball* ball);
 
 
 
@@ -76,6 +80,8 @@ public: // ゲッター  追加
 
 	bool IsPassing() const { return  ispsMoved; }
 	void ResetPassFlag() { ispsMoved = false; }
+
+	
 
 
 	// プレイヤーの位置(マス) 追加
