@@ -90,6 +90,7 @@ void TitleScene::Update()
 	if (!isBgmPlay_)
 	{
 		Audio::GetInstance()->SoundPlayWave(bgm_);
+		Audio::GetInstance()->SetVolume(&bgm_,0.1f);
 		isBgmPlay_ = true;
 	}
 	if (isBgmPlay_ && !Audio::GetInstance()->IsSoundPlaying())
@@ -107,7 +108,7 @@ void TitleScene::Update()
 
 	Fade();
 
-	if (Input::GetInstans()->TriggerKey(DIK_SPACE))
+	if (Input::GetInstans()->TriggerMouse(0))
 	{
 		if (crick2_)
 		{

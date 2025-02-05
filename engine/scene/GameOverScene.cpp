@@ -63,7 +63,7 @@ void GameOverScene::Update()
 	Fade();
 
 
-	if (Input::GetInstans()->TriggerKey(DIK_SPACE))
+	if (Input::GetInstans()->TriggerMouse(0))
 	{
 		isFadeStart_ = true;
 	}
