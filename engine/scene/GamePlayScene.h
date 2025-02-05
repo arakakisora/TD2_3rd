@@ -14,8 +14,8 @@
 #include "application/characters/enemy/EnemyManager.h"
 #include "Ball.h"
 #include "skydome.h"
+#include "Stadium.h"
 #include "PlayerManager.h"  // 追加
-
 
 class GamePlayScene :public BaseScene
 {
@@ -80,6 +80,9 @@ private:
 
 	// プレイヤーの位置
 	std::vector<Field::Pos> playerPosList_ = {};
+
+	// 観客席
+	std::unique_ptr<Stadium> stadium_ = nullptr;
 
 	Ball* ball = nullptr;
 
