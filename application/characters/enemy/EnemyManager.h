@@ -22,20 +22,27 @@ public:
 	bool IsAdjacent(const Vector3& pos1, const Vector3& pos2);
 	//挟み込み判定
 	bool IsSandwiching() const { return isSandwiching_; }
-
 	// エネミーが指定の座標にいるか判定する関数
 	bool IsEnemyAtPosition(int x, int z);
-
+	//ボールを奪い取ったか
+	bool IsBallStolen() const { return isBallStolen_; }
+	//危険信号を出すか
+	bool IsDangerSignal() const { return isDangerSignal_; }
 
 public: //アクセッサ
 	void SetField(Field* field) { field_ = field; }
 	void SetPlayer(const std::vector<std::unique_ptr<Player>>& player);
 	void SetPlayer(std::vector<Player*> player) { playerList_ = player; }
 	void SetEnemyTurn(bool isEnemyTurn);
+	void SetBall(Ball* ball) { ball_ = ball; }
 	bool IsEnemyTurn() const { return isEnemyTurn_; }
 	const std::vector<std::unique_ptr<Enemy>>& GetEnemies() { return enemies_; }
 	//挟み込み判定
 	void CheckSandwiching();
+	//ボールを奪い取ったか
+	void ChackBallStolen();
+	//危険信号を出すか
+	void CheckDangerSignal();
 
 private:
 	//敵のリスト
@@ -44,11 +51,17 @@ private:
 	Field* field_ = nullptr;
 	//プレイヤーのポインタ
 	std::vector<Player*> playerList_;
+	//ボールのポインタ
+	Ball* ball_ = nullptr;
 	//今の敵のターンかどうか
 	bool isEnemyTurn_ = false;
 	//選択された敵
 	Enemy* currentEnemy_ = nullptr;
 	//ボールを持ったプレイヤーが挟みこまれているか
 	bool isSandwiching_ = false;
+	//ボールを奪い取ったか
+	bool isBallStolen_ = false;
+	//危険信号を出すか
+	bool isDangerSignal_ = false;
 };
 

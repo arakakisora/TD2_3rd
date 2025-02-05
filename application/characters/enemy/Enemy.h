@@ -47,6 +47,9 @@ public: //アクセッサ
 	bool IsTurnEnd() const { return isTurnEnd_; }
 	void SetTurnEnd(bool isTurnEnd) { isTurnEnd_ = isTurnEnd; }
 
+	//ボールのセット
+	void SetBall(Ball* ball) { ball_ = ball; }
+
 private:
 	// AI処理
 	void HandleAI();
@@ -57,6 +60,9 @@ private:
 private:
 	//フィールド
 	Field* field_ = nullptr;
+
+	//ボールのポインタ
+	Ball* ball_ = nullptr;
 
 	//ターン終了フラグ
 	bool isTurnEnd_ = false;
