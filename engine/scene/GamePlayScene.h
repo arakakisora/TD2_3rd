@@ -98,5 +98,7 @@ private:
 	// bgmのサウンドデータ
 	SoundData bgm_;
 	bool isBgmPlay_ = false;
+	// 駒を動かしたときの効果音
+	SoundData moveSE_;
 };
 

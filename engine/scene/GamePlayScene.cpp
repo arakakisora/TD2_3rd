@@ -88,6 +88,8 @@ void GamePlayScene::Initialize()
 
 	// BGMの読み込みと再生
 	bgm_ = Audio::GetInstance()->SoundLoadWave("Resources/audio/gameplay/bgm.wav");
+	//駒を動かしたときの効果音
+	moveSE_ = Audio::GetInstance()->SoundLoadWave("Resources/audio/gameplay/move.wav");
 }
 
 void GamePlayScene::Finalize()
@@ -162,6 +164,7 @@ void GamePlayScene::Update()
 	
 		//playerManager_->UpdateTransform();
 		if (playerManager_->HasAnyPlayerMovedOrPassed()) {
+			Audio::GetInstance()->SoundPlayWave(moveSE_);
 			turnState_ = TurnState::ENEMY;
 			enemyManager_->SetEnemyTurn(true);
 			playerManager_->ResetAllMoveAndPassFlags();
@@ -176,6 +179,7 @@ void GamePlayScene::Update()
 		if (!enemyManager_->IsEnemyTurn())
 		{
 			turnState_ = TurnState::PLAYER;
+			Audio::GetInstance()->SoundPlayWave(moveSE_);
 		}
 		break;
 	}
