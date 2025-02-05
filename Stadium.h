@@ -24,6 +24,9 @@ private:
 	// スタジアムの3Dオブジェクト３
 	std::unique_ptr<Object3D> object3D3_;
 	Transform transform3;
+	// スタジアムの3Dオブジェクト４
+	std::unique_ptr<Object3D> object3D4_;
+	Transform transform4;
 
 };
 
