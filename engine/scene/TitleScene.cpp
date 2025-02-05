@@ -81,7 +81,7 @@ void TitleScene::Finalize()
 {
 	CameraManager::GetInstans()->RemoveCamera("title");
 
-	Audio::GetInstance()->StopAudio();
+	Audio::GetInstance()->StopSpecificAudio(&bgm_);
 }
 
 void TitleScene::Update()

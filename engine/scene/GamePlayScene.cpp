@@ -122,6 +122,7 @@ void GamePlayScene::Finalize()
 	delete ball;
 	// プレイヤーの終了処理
 	playerManager_->Finalize();
+	Audio::GetInstance()->StopAudio();
 
 
 	delete MouseObject;

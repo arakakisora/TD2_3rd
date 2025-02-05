@@ -38,6 +38,7 @@ void GameOverScene::Initialize()
 void GameOverScene::Finalize()
 {
 	CameraManager::GetInstans()->RemoveCamera("gameOver");
+	Audio::GetInstance()->StopAudio();
 	
 
 	delete gameOverSprite_;

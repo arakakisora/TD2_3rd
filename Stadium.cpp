@@ -85,6 +85,8 @@ void Stadium::Finalize()
 
 void Stadium::ImGui()
 {
+#ifdef _DEBUG
+
 	ImGui::Text("Stadium");
 	ImGui::DragFloat3("stadiumPos", &transform.translate.x, 0.1f);
 	ImGui::DragFloat3("stadiumPos2", &transform2.translate.x, 0.1f);
@@ -103,6 +105,8 @@ void Stadium::ImGui()
 	object3D2_->SetTransform(transform2);
 	object3D3_->SetTransform(transform3);
 	object3D4_->SetTransform(transform4);
+#endif // _DEBUG
+
 
 
 }

@@ -383,6 +383,9 @@ void Player::PlayerPass(const Vector3& mousePos, Field* field, Player*& selected
 
 void Player::ImGui()
 {
+#ifdef _DEBUG
+
+
 	ImGui::Text("Player");
 	ImGui::Text("posX : %d", posX);
 	ImGui::Text("posY : %d", posY);
@@ -410,6 +413,7 @@ void Player::ImGui()
 	ImGui::DragFloat3("dribbleObjectRot", &dribbleObjectTransform.rotate.x, 0.1f);
 	ImGui::DragFloat3("dribbleObjectScale", &dribbleObjectTransform.scale.x, 0.1f);
 	dribbleObject3D_->SetTransform(dribbleObjectTransform);
+#endif // _DEBUG
 
 
 

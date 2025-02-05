@@ -45,6 +45,8 @@ void Ball::Finalize()
 
 void Ball::ImGui()
 {
+#ifdef _DEBUG
+
 	ImGui::Begin("ball");
 	ImGui::DragFloat3("position", &ballData.position.x, 0.1f);
 	ImGui::DragFloat3("scale", &ballData.scale.x, 0.1f);
@@ -63,8 +65,10 @@ void Ball::ImGui()
 	if (ImGui::DragFloat("Light Intensity", &lightIntensity, 0.1f, 0.0f, 10.0f)) {
 		object3D_->SetDirectionalLightIntensity(lightIntensity);
 	}
+	ImGui::End();
+#endif // DEBUG
+
 
 	
 
-	ImGui::End();
 }
