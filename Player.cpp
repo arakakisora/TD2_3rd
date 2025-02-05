@@ -39,17 +39,17 @@ void Player::Initialize(int posZ, Ball* ball)
 	passObject3D_ = new Object3D;
 	passObject3D_->SetModel("uiBlock2.obj");
 	passObject3D_->Initialize(Object3DCommon::GetInstance());
-	passObject3D_->SetTranslate(playerData.position+Vector3(0.0f, 0.0f, -1.0f));
+	passObject3D_->SetTranslate(playerData.position+Vector3(-1.0f, 0.0f, 0.0f));
 	passObject3D_->SetRotate(playerData.rotate);
-	passObject3D_->SetScale({1.0f,1.0f,1.0f});
+	passObject3D_->SetScale({0.5f,0.5f,0.5f});
 
 	//ドリブルモデルの初期化
 	dribbleObject3D_ = new Object3D;
 	dribbleObject3D_->SetModel("uiBlock1.obj");
 	dribbleObject3D_->Initialize(Object3DCommon::GetInstance());
-	dribbleObject3D_->SetTranslate(playerData.position+Vector3(0.0f,0.0f,1.0f));
+	dribbleObject3D_->SetTranslate(playerData.position+Vector3(1.0f,0.0f,0.0f));
 	dribbleObject3D_->SetRotate(playerData.rotate);
-	dribbleObject3D_->SetScale({ 1.0f,1.0f,1.0f });
+	dribbleObject3D_->SetScale({ 0.5f,0.5f,0.5f });
 
 
 	if (HasBall())
@@ -71,11 +71,11 @@ void Player::Update()
 	object3D_->Update();
 
 	//パスモデルの更新
-	passObject3D_->SetTranslate(playerData.position + Vector3(0.0f, 0.0f, -1.0f));
+	passObject3D_->SetTranslate(playerData.position + Vector3(-1.0f, -0.5f, -0.5f));
 	passObject3D_->Update();
 
 	//ドリブルモデルの更新0
-	dribbleObject3D_->SetTranslate(playerData.position + Vector3(0.0f, 0.0f, 1.0f));
+	dribbleObject3D_->SetTranslate(playerData.position + Vector3(1.0f, -0.5f, -0.5f));
 	dribbleObject3D_->Update();
 
 
@@ -162,8 +162,8 @@ void Player::UpdateTransform()
 bool Player::CheckObjectClick(Object3D* object, const Vector3& mousePos)
 {
 	Vector3 objPos = object->GetTransform().translate; // オブジェクトの位置
-	Vector3 objSize = object->GetTransform().scale;   // オブジェクトのサイズ
-
+	//Vector3 objSize = object->GetTransform().scale;   // オブジェクトのサイズ
+	Vector3 objSize = Vector3(1.0f, 1.0f, 1.0f);
 
 	return (mousePos.x >= objPos.x - objSize.x / 2 &&
 		mousePos.x <= objPos.x + objSize.x / 2 &&
@@ -336,6 +336,27 @@ void Player::ImGui()
 	//ImGui::Text("mousePos : %f %f %f", mousePos.x, mousePos.y, mousePos.z);
 
 	ImGui::Text("HasBall : %d", ball);
+
+	//パスオブジェクト
+	//位置調節
+	Transform passObjectTransform = passObject3D_->GetTransform();
+	ImGui::DragFloat3("passObjectPos", &passObjectTransform.translate.x, 0.1f);
+	ImGui::DragFloat3("passObjectRot", &passObjectTransform.rotate.x, 0.1f);
+	ImGui::DragFloat3("passObjectScale", &passObjectTransform.scale.x, 0.1f);
+	passObject3D_->SetTransform(passObjectTransform);
+	
+
+	//ドリブルオブジェクト
+	//位置調節
+	Transform dribbleObjectTransform = dribbleObject3D_->GetTransform();
+	ImGui::DragFloat3("dribbleObjectPos", &dribbleObjectTransform.translate.x, 0.1f);
+	ImGui::DragFloat3("dribbleObjectRot", &dribbleObjectTransform.rotate.x, 0.1f);
+	ImGui::DragFloat3("dribbleObjectScale", &dribbleObjectTransform.scale.x, 0.1f);
+	dribbleObject3D_->SetTransform(dribbleObjectTransform);
+
+	
+
+
 }
 
 void Player::Dribble()
