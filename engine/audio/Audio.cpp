@@ -112,15 +112,12 @@ SoundData Audio::SoundLoadWave(const char* filename)
 void Audio::SoundUnload(SoundData* soundData)
 {
 	
-	if (pSourceVoice) {
-		pSourceVoice->Stop();
-		pSourceVoice->DestroyVoice();
-		pSourceVoice = nullptr;
-	}
+	// 指定した音楽を停止
+	StopSpecificAudio(soundData);
 
-	//buffaのメモリ解放
+	// バッファのメモリ解放
 	delete[] soundData->PBuffer;
-	soundData->PBuffer = 0;
+	soundData->PBuffer = nullptr;
 	soundData->bufferSize = 0;
 	soundData->wfex = {};
 
@@ -130,15 +127,12 @@ void Audio::SoundPlayWave(const SoundData& soundData)
 {
 	HRESULT hr;
 
-	// 再生中のソースボイスがある場合は停止
-	if (pSourceVoice) {
-		pSourceVoice->Stop();
-		pSourceVoice->DestroyVoice();
-	}
+	// すでに再生中なら停止
+	StopSpecificAudio(const_cast<SoundData*>(&soundData));
 
-	//波形フォーマット元にSourcwvoiceの生成
-	pSourceVoice = nullptr;
-	hr = xAudio2->CreateSourceVoice(&pSourceVoice, &soundData.wfex);
+	// 新しい SourceVoice の作成
+	IXAudio2SourceVoice* newVoice = nullptr;
+	hr = xAudio2->CreateSourceVoice(&newVoice, &soundData.wfex);
 	assert(SUCCEEDED(hr));
 
 	// 再生するサウンドデータを保存
@@ -150,9 +144,12 @@ void Audio::SoundPlayWave(const SoundData& soundData)
 	buf.AudioBytes = soundData.bufferSize;
 	buf.Flags = XAUDIO2_END_OF_STREAM;
 
-	//波形データ再生
-	hr = pSourceVoice->SubmitSourceBuffer(&buf);
-	hr = pSourceVoice->Start();
+	// 音声データを再生
+	hr = newVoice->SubmitSourceBuffer(&buf);
+	hr = newVoice->Start();
+
+	// マップに登録
+	activeVoices[const_cast<SoundData*>(&soundData)] = newVoice;
 
 }
 
@@ -163,6 +160,18 @@ void Audio::StopAudio()
 		pSourceVoice->FlushSourceBuffers();
 	}
 
+}
+void Audio::StopSpecificAudio(SoundData* soundData)
+{
+	auto it = activeVoices.find(soundData);
+	if (it != activeVoices.end()) {
+		IXAudio2SourceVoice* voice = it->second;
+		if (voice) {
+			voice->Stop();
+			voice->DestroyVoice();
+		}
+		activeVoices.erase(it);
+	}
 }
 
 void Audio::PauseAudio()

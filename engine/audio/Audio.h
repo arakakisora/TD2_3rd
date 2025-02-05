@@ -4,6 +4,7 @@
 #include <wrl.h>
 #include <fstream>
 #include <cassert>
+#include <unordered_map>
 
 
 
@@ -68,6 +69,8 @@ public:
 
 	//停止関数
 	void StopAudio();
+	//特定のオーディオを停止する
+	void StopSpecificAudio(SoundData* soundData);
 
 	//一時停止
 	void PauseAudio();
@@ -90,6 +93,9 @@ private:
 	IXAudio2MasteringVoice* masterVoice=nullptr;
 	//波形フォーマット元にSourcwvoiceの生成
 	IXAudio2SourceVoice* pSourceVoice = nullptr;
+
+	// 複数の SourceVoice を管理
+	std::unordered_map<SoundData*, IXAudio2SourceVoice*> activeVoices;
 
 private:
 	UINT64 playCursor = 0; // 再生位置（バイト単位）を保持

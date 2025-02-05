@@ -33,6 +33,7 @@ void GamePlayScene::Initialize()
 
 	//サウンドの読み込み
 	sampleSoundData = Audio::GetInstance()->SoundLoadWave("Resources/gamePlayBGM.wav");//今のところwavのみ対応
+	sampleSoundData2 = Audio::GetInstance()->SoundLoadWave("Resources/gamePlayBGM.wav");//今のところwavのみ対応
 
 }
 
@@ -101,10 +102,17 @@ void GamePlayScene::Update()
 		}
 		if (ImGui::CollapsingHeader("Sound", ImGuiTreeNodeFlags_DefaultOpen)) {
 
-			if (ImGui::Button("Play Sound")) {
+			if (ImGui::Button("Play Sound1")) {
 				//再生
 				if (!soundPlaying) {
 					Audio::GetInstance()->SoundPlayWave(sampleSoundData);
+					soundPlaying = true;
+				}
+			}
+			if (ImGui::Button("Play Sound2")) {
+				//再生
+				if (!soundPlaying) {
+					Audio::GetInstance()->SoundPlayWave(sampleSoundData2);
 					soundPlaying = true;
 				}
 			}
@@ -123,10 +131,11 @@ void GamePlayScene::Update()
 				Audio::GetInstance()->ResumeAudio();
 			}
 
-			//音楽を止める
-			if (ImGui::Button("Stop Sound")) {
-				Audio::GetInstance()->StopAudio();
+			//音楽1を止める
+			if (ImGui::Button("Stop Sound1")) {
+				Audio::GetInstance()->StopSpecificAudio(&sampleSoundData);
 			}
+
 
 			//再生速度の設定
 			

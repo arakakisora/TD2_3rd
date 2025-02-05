@@ -37,6 +37,7 @@ private:
 	Object3D* sampleObj3d = nullptr;//3Dオブジェクト
 	Sprite* sampleSprite = nullptr;//スプライト
 	SoundData sampleSoundData;//サウンドデータ
+	SoundData sampleSoundData2;//サウンドデータ
 
 	//サウンド再生中かどうか
 	bool soundPlaying = false;
