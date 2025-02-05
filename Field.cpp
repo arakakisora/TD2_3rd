@@ -2,6 +2,15 @@
 
 void Field::Initialize(std::vector<Object3D*> object3D)
 {
+
+	ModelManager::GetInstans()->LoadModel("goal.obj");
+
+	goalObject_ = std::make_unique<Object3D>();
+	goalObject_->Initialize(Object3DCommon::GetInstance());
+	goalObject_->SetModel("goal.obj");
+	goalObject_->SetTranslate({ 6.0f,0.0f,2.0f });
+	goalObject_->SetScale({ 0.5f,0.5f,2.5f });
+
 	// ブロックの初期化
 	for (int z = 0; z < DEPTH; z++)
 	{
@@ -11,7 +20,7 @@ void Field::Initialize(std::vector<Object3D*> object3D)
 			{
 				pBlocks_[z][y][x].object3D = *object3D[x + y * WIDTH + z * WIDTH * HEIGHT];
 				pBlocks_[z][y][x].object3D.SetTranslate(Vector3(float(x), float(y), float(z)));
-				pBlocks_[z][y][x].object3D.SetScale(Vector3(0.3f, 0.3f, 0.3f));
+				pBlocks_[z][y][x].object3D.SetScale(Vector3(0.4f, 0.4f, 0.4f));
 				pBlocks_[z][y][x].type = 0;
 			
 				// 攻めゴールの位置Typeを2にしてる
@@ -39,6 +48,8 @@ void Field::Finalize()
 
 void Field::Update()
 {
+	goalObject_->Update();
+
 	for (int z = 0; z < DEPTH; z++)
 	{
 		for (int y = 0; y < HEIGHT; y++)
@@ -73,30 +84,31 @@ void Field::Update()
 				// 大きさ戻す
 				if (pBlocks_[z][y][x].type == 0)
 				{
-					pBlocks_[z][y][x].object3D.SetScale(Vector3(0.3f, 0.3f, 0.3f));
+					pBlocks_[z][y][x].object3D.SetScale(Vector3(0.4f, 0.4f, 0.4f));
 				}
 				
 				// ボールの大きさ変更
-				if (pBlocks_[z][y][x].type == 1)
+				/*if (pBlocks_[z][y][x].type == 1)
 				{
 					pBlocks_[z][y][x].object3D.SetScale(Vector3(0.15f, 0.15f, 0.15f));
-				}				
+				}*/				
 
 				// ゴール位置(とりあえずでっかくしてる)
-				if (pBlocks_[z][y][x].type == 2)
+				/*if (pBlocks_[z][y][x].type == 2)
 				{
 					pBlocks_[z][y][x].object3D.SetScale(Vector3(0.8f, 0.8f, 0.8f));
-				}
+				}*/
 
 				// ボール持ち
-				if (pBlocks_[z][y][x].type == 5)
+				/*if (pBlocks_[z][y][x].type == 5)
 				{
 					pBlocks_[z][y][x].object3D.SetScale(Vector3(0.5f, 0.5f, 0.5f));
-				}
+				}*/
 				
 			}
 		}
 	}
+
 }
 
 void Field::Draw()
@@ -109,9 +121,13 @@ void Field::Draw()
 			for (int x = 0; x < WIDTH; x++)
 			{
 				pBlocks_[z][y][x].object3D.Draw();
+
 			}
 		}
 	}
+
+	goalObject_->Draw();
+
 }
 
 void Field::ImGui()

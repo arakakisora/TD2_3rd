@@ -5,11 +5,11 @@ void Ball::Initialize()
 	// ボールの初期化
 	ballData.position = Vector3(float(posX), 0.0f, 10.0f);
 	ballData.rotate = Vector3(0.0f, 0.0f, 0.0f);
-	ballData.scale = Vector3(0.5f, 0.5f, 0.5f);
-	ModelManager::GetInstans()->LoadModel("ball.obj");
+	ballData.scale = Vector3(0.2f, 0.2f, 0.2f);
+	ModelManager::GetInstans()->LoadModel("soccerBall.obj");
 	// モデルの生成
 	object3D_ = new Object3D;
-	object3D_->SetModel("ball.obj");
+	object3D_->SetModel("soccerBall.obj");
 	object3D_->Initialize(Object3DCommon::GetInstance());
 	object3D_->SetTranslate(ballData.position);
 	object3D_->SetRotate(ballData.rotate);
@@ -22,6 +22,8 @@ void Ball::Update()
 	// ImGui
 	ImGui();
 	// モデル座標の更新
+	ballData.rotate.y += 0.02f;
+	ballData.rotate.z += 0.02f;
 	object3D_->SetTranslate(ballData.position);
 	object3D_->SetRotate(ballData.rotate);
 	object3D_->SetScale(ballData.scale);

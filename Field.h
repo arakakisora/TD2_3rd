@@ -111,6 +111,9 @@ private:
 	// ブロックの配列
 	std::array<std::array<std::array<Block, WIDTH>, HEIGHT>, DEPTH> pBlocks_;
 
+	// ゴールモデル
+	std::unique_ptr<Object3D> goalObject_;
+
 	// ゴールフラグ
 	bool isGoal_ = false;
 

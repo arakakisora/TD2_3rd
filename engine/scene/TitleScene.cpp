@@ -22,6 +22,7 @@ void TitleScene::Initialize()
 	blackSprite_->SetSize({ 1280.0f,720.0f });
 	blackSprite_->setColor({ 1.0f,1.0f,1.0f,0.0f });
 
+
 	isSceneStart_ = true;
 	isFadeStart_ = false;
 	isChangeScene_ = false;
@@ -92,6 +93,7 @@ void TitleScene::Update()
 	//スプライトの更新
 	titleSprite_->Update();
 	blackSprite_->Update();
+
 
 	Fade();
 
