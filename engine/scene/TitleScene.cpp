@@ -62,6 +62,10 @@ void TitleScene::Initialize()
 	soccerBall_->Initialize(Object3DCommon::GetInstance());
 	soccerBall_->SetModel("soccerBall.obj");
 	soccerBall_->SetTranslate({ 0.3f,0.6f,21.0f });
+
+	//BGMの読み込みと再生
+	bgm_ = Audio::GetInstance()->SoundLoadWave("./Resources/audio/title/bgm.wav");
+	Audio::GetInstance()->SoundPlayWave(bgm_);
 }
 
 void TitleScene::Finalize()
@@ -70,6 +74,8 @@ void TitleScene::Finalize()
 
 	delete titleSprite_;
 	delete blackSprite_;
+
+	Audio::GetInstance()->SoundUnload(&bgm_);
 }
 
 void TitleScene::Update()

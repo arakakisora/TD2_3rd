@@ -72,7 +72,9 @@ public:
 	float amplitude_ = 1.0f;
 	//周波数
 	float frequency_ = 1.0f;
-
+	/*-----------------[ サウンド ]------------------*/
+	//BGM
+	SoundData bgm_;
 
 
 	Sprite* titleSprite_ = nullptr;
