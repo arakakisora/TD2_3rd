@@ -13,8 +13,9 @@
 #include "application/characters/enemy/Enemy.h"
 #include "application/characters/enemy/EnemyManager.h"
 #include "Ball.h"
-#include "PlayerManager.h"  // 追加
 #include "skydome.h"
+#include "PlayerManager.h"  // 追加
+
 
 class GamePlayScene :public BaseScene
 {
