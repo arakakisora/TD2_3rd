@@ -31,9 +31,12 @@ public:
     bool HasAnyPlayerMovedOrPassed();
     void ResetAllMoveAndPassFlags();
 
+    Ball* GetBall() { return ball_; }
+
 
 
 private:
     std::vector<std::unique_ptr<Player>> players_;
     Player* selectedPlayer_ = nullptr;
+	Ball* ball_ = nullptr;
 };
