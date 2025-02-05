@@ -50,10 +50,6 @@ void GamePlayScene::Initialize()
 
 	playerManager_ = std::make_unique<PlayerManager>();  // 追加
 	playerManager_->Initialize(ball);  // 追加
-	
-
-
-	
 
 	//敵のモデル読み込み
 	ModelManager::GetInstans()->LoadModel("Enemy.obj");
@@ -90,6 +86,8 @@ void GamePlayScene::Initialize()
 	bgm_ = Audio::GetInstance()->SoundLoadWave("Resources/audio/gameplay/bgm.wav");
 	//駒を動かしたときの効果音
 	moveSE_ = Audio::GetInstance()->SoundLoadWave("Resources/audio/gameplay/move.wav");
+	//ゲーム終了の効果音
+	gameOverSE_ = Audio::GetInstance()->SoundLoadWave("Resources/audio/gameplay/finish.wav");
 }
 
 void GamePlayScene::Finalize()
@@ -129,8 +127,6 @@ void GamePlayScene::Update()
 	{
 		isBgmPlay_ = false;
 	}
-
-	Audio::GetInstance()->SetPlaybackSpeed(3.0f);
 	
 	//カメラの更新
 	CameraManager::GetInstans()->GetActiveCamera()->Update();
@@ -224,17 +220,19 @@ void GamePlayScene::Update()
 	if (pField_->IsGoal())
 	{
 		isClearFadeStart_ = true;
+		Audio::GetInstance()->SoundPlayWave(gameOverSE_);
 	}
 
 	// ゲームオーバー判定
 	if (pField_->IsGameOver())
 	{
 		isGameOverFadeStart_ = true;
-		
 	}
+
 	if (enemyManager_->IsSandwiching() && turnState_ == TurnState::PLAYER)
 	{
 		isGameOverFadeStart_ = true;
+		Audio::GetInstance()->SoundPlayWave(gameOverSE_);
 	}
 
 	////// ------------テスト----------------

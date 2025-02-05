@@ -31,7 +31,7 @@ void PlayerManager::Update(Field* field, EnemyManager* enemyManager) {
 
     // マウスクリックでプレイヤーを選択
     Vector3 mousePos = Input::GetInstans()->GetMouseWorldPosition(
-        CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.y);
+        CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.y + 0.5f);
 
     if (Input::GetInstans()->TriggerMouse(0)) {
         for (auto& player : players_) {
