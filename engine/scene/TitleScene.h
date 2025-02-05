@@ -55,6 +55,8 @@ public:
 	//スプライト
 	std::unique_ptr<Sprite> titleSprite_ = nullptr;
 	std::unique_ptr<Sprite> blackSprite_ = nullptr;
+	std::unique_ptr<Sprite> description1Sprite_ = nullptr;
+	std::unique_ptr<Sprite> description2Sprite_ = nullptr;
 	/*-----------------[ イージング用変数 ]------------------*/
 	//経過時間
 	float elapsedTime_ = 0.0f;
@@ -80,6 +82,8 @@ public:
 	bool isBgmPlay_ = false;
 	/*-----------------[ フェード用変数 ]------------------*/
 	bool isSceneStart_ = true;
+	bool crick1_ = false;
+	bool crick2_ = false;
 	bool isFadeStart_ = false;
 	bool isChangeScene_ = false;
 	// 透明度
