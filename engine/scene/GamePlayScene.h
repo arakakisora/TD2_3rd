@@ -92,5 +92,7 @@ private:
 	// 透明度
 	float blackAlpha_ = 0.0f;
 	float whiteAlpha_ = 0.0f;
+	// bgmのサウンドデータ
+	SoundData bgm_;
 };
 

@@ -81,6 +81,10 @@ void GamePlayScene::Initialize()
 	isGameOverFadeStart_ = false;
 	whiteAlpha_ = 0.0f;
 	blackAlpha_ = 1.0f;
+
+	// BGMの読み込みと再生
+	bgm_ = Audio::GetInstance()->SoundLoadWave("Resources/audio/gameplay/bgm.wav");
+	Audio::GetInstance()->SoundPlayWave(bgm_);
 }
 
 void GamePlayScene::Finalize()
@@ -106,6 +110,8 @@ void GamePlayScene::Finalize()
 
 	delete whiteSprite_;
 	delete blackSprite_;
+
+	Audio::GetInstance()->SoundUnload(&bgm_);
 }
 
 void GamePlayScene::Update()
