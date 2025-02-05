@@ -50,18 +50,21 @@ void GamePlayScene::Initialize()
 
 	playerManager_ = std::make_unique<PlayerManager>();  // 追加
 	playerManager_->Initialize(ball);  // 追加
-	
 
 
-	
+	// 観客席
+	stadium_ = std::make_unique<Stadium>();
+	stadium_->Initialize();
+
 
 	//敵のモデル読み込み
 	ModelManager::GetInstans()->LoadModel("Enemy.obj");
 
 	//エネミーマネージャー
 	enemyManager_ = std::make_unique<EnemyManager>();
-	enemyManager_->SetField(pField_.get());
-	enemyManager_->SetPlayer(playerManager_->GetPlayers());  // プレイヤーをエネミーマネージャーにセット
+	enemyManager_->SetField(pField_.get());						// フィールドをエネミーマネージャーにセット
+	enemyManager_->SetPlayer(playerManager_->GetPlayers());		// プレイヤーをエネミーマネージャーにセット
+	enemyManager_->SetBall(ball);								// ボールをエネミーマネージャーにセット
 	enemyManager_->Initialize("Enemy.obj", 3);
 
 	//天球
@@ -88,6 +91,10 @@ void GamePlayScene::Initialize()
 
 	// BGMの読み込みと再生
 	bgm_ = Audio::GetInstance()->SoundLoadWave("Resources/audio/gameplay/bgm.wav");
+	//駒を動かしたときの効果音
+	moveSE_ = Audio::GetInstance()->SoundLoadWave("Resources/audio/gameplay/move.wav");
+	//ゲーム終了の効果音
+	gameOverSE_ = Audio::GetInstance()->SoundLoadWave("Resources/audio/gameplay/finish.wav");
 }
 
 void GamePlayScene::Finalize()
@@ -127,8 +134,6 @@ void GamePlayScene::Update()
 	{
 		isBgmPlay_ = false;
 	}
-
-	Audio::GetInstance()->SetPlaybackSpeed(3.0f);
 	
 	//カメラの更新
 	CameraManager::GetInstans()->GetActiveCamera()->Update();
@@ -162,6 +167,7 @@ void GamePlayScene::Update()
 	
 		//playerManager_->UpdateTransform();
 		if (playerManager_->HasAnyPlayerMovedOrPassed()) {
+			Audio::GetInstance()->SoundPlayWave(moveSE_);
 			turnState_ = TurnState::ENEMY;
 			enemyManager_->SetEnemyTurn(true);
 			playerManager_->ResetAllMoveAndPassFlags();
@@ -176,6 +182,7 @@ void GamePlayScene::Update()
 		if (!enemyManager_->IsEnemyTurn())
 		{
 			turnState_ = TurnState::PLAYER;
+			Audio::GetInstance()->SoundPlayWave(moveSE_);
 		}
 		break;
 	}
@@ -216,19 +223,28 @@ void GamePlayScene::Update()
 	// 天球の更新
 	skydome_->Update();
 
+	// 観客席の更新
+	stadium_->Update();
+
 	// ゴール判定
 	if (pField_->IsGoal())
 	{
 		isClearFadeStart_ = true;
+		Audio::GetInstance()->SoundPlayWave(gameOverSE_);
 	}
 
 	// ゲームオーバー判定
 	if (pField_->IsGameOver())
 	{
 		isGameOverFadeStart_ = true;
-		
 	}
+
 	if (enemyManager_->IsSandwiching() && turnState_ == TurnState::PLAYER)
+	{
+		isGameOverFadeStart_ = true;
+		Audio::GetInstance()->SoundPlayWave(gameOverSE_);
+	}
+	if (enemyManager_->IsBallStolen())
 	{
 		isGameOverFadeStart_ = true;
 	}
@@ -330,6 +346,9 @@ void GamePlayScene::Draw()
 
 	// 天球の描画
 	skydome_->Draw();
+
+	// 観客席の描画
+	stadium_->Draw();
 
 #pragma endregion
 

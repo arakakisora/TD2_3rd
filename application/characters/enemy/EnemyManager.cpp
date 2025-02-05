@@ -1,6 +1,7 @@
 #include "EnemyManager.h"
 #include <limits>
 #include <random>
+#include <Ball.h>
 
 void EnemyManager::Initialize(const std::string& filename, int enemyCount)
 {
@@ -13,8 +14,8 @@ void EnemyManager::Initialize(const std::string& filename, int enemyCount)
 		enemies_[index] = std::make_unique<Enemy>();
 		enemies_[index]->Initialize(Object3DCommon::GetInstance(), filename);
 		enemies_[index]->SetField(field_);
-		//NOTE:今は仮にプレイヤーの0番目をセット
 		enemies_[index]->SetPlayer(playerList_);
+		enemies_[index]->SetBall(ball_);
 		enemies_[index]->SetEnemyManager(this);
 		//座標をずらして配置
 		enemies_[index]->SetPosition({ 5.0f , 0.0f, static_cast<float>(index) });
@@ -48,9 +49,12 @@ void EnemyManager::Update()
 			}
 		}
 	}
-
 	//挟み込み判定
 	CheckSandwiching();
+	//ボールの奪取判定
+	ChackBallStolen();
+	//危険信号判定
+	CheckDangerSignal();
 }
 
 
@@ -191,6 +195,38 @@ void EnemyManager::CheckSandwiching()
 		if ((hasUp && hasDown) || (hasLeft && hasRight))
 		{
 			isSandwiching_ = true;
+		}
+	}
+}
+
+void EnemyManager::ChackBallStolen()
+{
+	isBallStolen_ = false; // デフォルトはfalseにリセット
+	for (const auto& enemy : enemies_)
+	{
+		Vector3 enemyPos = enemy->GetPosition();
+		Vector3 ballPos = ball_->GetPosition();
+		//ボールと敵の位置が一緒なら奪い取ったと判定
+		if (enemyPos.x == ballPos.x && enemyPos.z == ballPos.z)
+		{
+			isBallStolen_ = true;
+			break;
+		}
+	}
+}
+
+void EnemyManager::CheckDangerSignal()
+{
+	isDangerSignal_ = false; // デフォルトはfalseにリセット
+	for (const auto& enemy : enemies_)
+	{
+		Vector3 enemyPos = enemy->GetPosition();
+		Vector3 ballPos = ball_->GetPosition();
+		//ボールの半径１マスに敵がいる場合は危険信号を出す
+		if (std::abs(enemyPos.x - ballPos.x) <= 1.0f && std::abs(enemyPos.z - ballPos.z) <= 1.0f)
+		{
+			isDangerSignal_ = true;
+			break;
 		}
 	}
 }
