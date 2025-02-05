@@ -13,6 +13,7 @@
 #include "application/characters/enemy/Enemy.h"
 #include "application/characters/enemy/EnemyManager.h"
 #include "Ball.h"
+#include "skydome.h"
 
 class GamePlayScene :public BaseScene
 {
@@ -69,6 +70,8 @@ private:
 	std::unique_ptr<Field> pField_ = nullptr;
 	//エネミーマネージャー
 	std::unique_ptr<EnemyManager> enemyManager_ = nullptr;
+	//天球
+	std::unique_ptr<skydome> skydome_;
 	// テスト用
 	std::vector<Vector3> prePos_ = {};
 

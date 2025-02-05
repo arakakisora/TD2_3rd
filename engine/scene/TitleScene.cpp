@@ -122,7 +122,7 @@ void TitleScene::Draw()
 	SpriteCommon::GetInstance()->CommonDraw();
 
 	//スプライトの描画
-	//titleSprite_->Draw();
+	titleSprite_->Draw();
 	blackSprite_->Draw();
 
 }

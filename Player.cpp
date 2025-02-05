@@ -24,6 +24,8 @@ void Player::Initialize(int posZ, Ball* ball)
 	playerData.rotate = Vector3(0.0f, 0.0f, 0.0f);
 	playerData.scale = Vector3(0.5f, 0.5f, 0.5f);
 	ModelManager::GetInstans()->LoadModel("Player.obj");
+	ModelManager::GetInstans()->LoadModel("uiBlock1.obj");
+	ModelManager::GetInstans()->LoadModel("uiBlock2.obj");
 	// モデルの生成
 	object3D_ = new Object3D;
 	object3D_->SetModel("Player.obj");
@@ -35,7 +37,7 @@ void Player::Initialize(int posZ, Ball* ball)
 
 	//パスモデルの初期化
 	passObject3D_ = new Object3D;
-	passObject3D_->SetModel("cube.obj");
+	passObject3D_->SetModel("uiBlock2.obj");
 	passObject3D_->Initialize(Object3DCommon::GetInstance());
 	passObject3D_->SetTranslate(playerData.position+Vector3(0.0f, 0.0f, -1.0f));
 	passObject3D_->SetRotate(playerData.rotate);
@@ -43,7 +45,7 @@ void Player::Initialize(int posZ, Ball* ball)
 
 	//ドリブルモデルの初期化
 	dribbleObject3D_ = new Object3D;
-	dribbleObject3D_->SetModel("cube.obj");
+	dribbleObject3D_->SetModel("uiBlock1.obj");
 	dribbleObject3D_->Initialize(Object3DCommon::GetInstance());
 	dribbleObject3D_->SetTranslate(playerData.position+Vector3(0.0f,0.0f,1.0f));
 	dribbleObject3D_->SetRotate(playerData.rotate);
