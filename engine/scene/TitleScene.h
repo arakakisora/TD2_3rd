@@ -52,6 +52,10 @@ public:
 	std::unique_ptr<skydome> skydome_;
 	//サッカーボール
 	std::unique_ptr<Object3D> soccerBall_;
+	//スプライト
+	std::unique_ptr<Sprite> titleSprite_ = nullptr;
+	std::unique_ptr<Sprite> blackSprite_ = nullptr;
+
 	/*-----------------[ イージング用変数 ]------------------*/
 	//経過時間
 	float elapsedTime_ = 0.0f;
@@ -73,9 +77,7 @@ public:
 	//周波数
 	float frequency_ = 1.0f;
 
-	//スプライト
-	std::unique_ptr<Sprite> titleSprite_ = nullptr;
-	std::unique_ptr<Sprite> blackSprite_ = nullptr;
+	/*-----------------[ フェード用変数 ]------------------*/
 
 	bool isSceneStart_ = true;
 	bool isFadeStart_ = false;
