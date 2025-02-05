@@ -3,7 +3,7 @@
 
 void PlayerManager::Initialize(Ball* ball) {
     std::vector<int> initPosZ = { 0, 2, 4 };
-
+    ball_ = ball; // 🔹 ボールのポインタを保存
     for (size_t i = 0; i < initPosZ.size(); ++i) {
         auto player = std::make_unique<Player>();
         if (i == 0) {
@@ -25,7 +25,7 @@ void PlayerManager::Finalize()
 
 void PlayerManager::Update(Field* field, EnemyManager* enemyManager) {
     for (auto& player : players_) {
-        player->Update();
+        player->Update(this);
         field->SetPlayerPos(player->GetPosX(), player->GetPosY(), player->GetPosZ());
     }
 
@@ -35,7 +35,7 @@ void PlayerManager::Update(Field* field, EnemyManager* enemyManager) {
 
     if (Input::GetInstans()->TriggerMouse(0)) {
         for (auto& player : players_) {
-            player->HandleMouseClick(mousePos, field, selectedPlayer_, enemyManager);
+            player->HandleMouseClick(mousePos, field, selectedPlayer_, enemyManager,this);
         }
     }
 }
@@ -61,8 +61,8 @@ void PlayerManager::UpdateTransform()
 
 bool PlayerManager::HasAnyPlayerMovedOrPassed() {
     for (const auto& player : players_) {
-        if (player->GetHasMoved() || player->IsPassing()) {
-            return true;
+        if (player->HasPerformedAction()) {
+            return true; // **ボールを持っていなくてもターンが進む**
         }
     }
     return false;
@@ -70,8 +70,8 @@ bool PlayerManager::HasAnyPlayerMovedOrPassed() {
 
 void PlayerManager::ResetAllMoveAndPassFlags() {
     for (auto& player : players_) {
-        player->ResetMoveFlag();
-        player->ResetPassFlag();
+		player->ResetActionFlags();
+       
     }
 }
 

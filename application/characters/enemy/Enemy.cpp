@@ -3,6 +3,7 @@
 #include <queue>
 #include <set>
 
+#include "Ball.h"
 #include "EnemyManager.h"
 
 float EaseInSine(float x) { return 1.0f - std::cos((x * std::numbers::pi_v<float>) / 2.0f); }
@@ -107,28 +108,37 @@ void Enemy::HandleAI()
     int enemyX = static_cast<int>(transform_.translate.x);
     int enemyZ = static_cast<int>(transform_.translate.z);
 
-	// ボールを持っているプレイヤーを取得
+    // ボールを持っているプレイヤーを取得
     Player* targetPlayer = nullptr;
-    float minDistance = (std::numeric_limits<float>::max)();
-    for (const auto& player : playerList_) 
+    for (const auto& player : playerList_)
     {
-        if (player->HasBall()) 
+        if (player->HasBall())
         {
             targetPlayer = player;
+            break;
         }
     }
 
-    if (!targetPlayer) return; // プレイヤーが見つからない場合はスキップ
-
-    // プレイヤーの整数座標を取得
-    int playerX = static_cast<int>(targetPlayer->GetPosition().x);
-    int playerZ = static_cast<int>(targetPlayer->GetPosition().z);
+    // 目標地点の設定
+    int targetX, targetZ;
+    if (targetPlayer)
+    {
+        // ボールを持ったプレイヤーがいる場合、そのプレイヤーの位置を目標地点とする
+        targetX = static_cast<int>(targetPlayer->GetPosition().x);
+        targetZ = static_cast<int>(targetPlayer->GetPosition().z);
+    }
+    else
+    {
+        // ボールを持ったプレイヤーがいない場合、ボールの位置を目標地点とする
+        targetX = static_cast<int>(ball_->GetPosition().x);
+        targetZ = static_cast<int>(ball_->GetPosition().z);
+    }
 
     // 他のプレイヤーの位置を取得（ターゲットプレイヤーを除く）
     std::set<std::pair<int, int>> occupiedPositions;
-    for (const auto& player : playerList_) 
+    for (const auto& player : playerList_)
     {
-        if (player != targetPlayer) 
+        if (player != targetPlayer)
         {
             int otherX = static_cast<int>(player->GetPosition().x);
             int otherZ = static_cast<int>(player->GetPosition().z);
@@ -137,9 +147,9 @@ void Enemy::HandleAI()
     }
 
     // 他の敵の位置を取得（自分以外）
-    for (const auto& otherEnemy : enemyManager_->GetEnemies()) 
+    for (const auto& otherEnemy : enemyManager_->GetEnemies())
     {
-        if (otherEnemy.get() != this) 
+        if (otherEnemy.get() != this)
         {
             int otherX = static_cast<int>(otherEnemy->GetPosition().x);
             int otherZ = static_cast<int>(otherEnemy->GetPosition().z);
@@ -151,7 +161,7 @@ void Enemy::HandleAI()
     std::queue<std::pair<int, int>> queue;
     std::map<std::pair<int, int>, std::pair<int, int>> cameFrom;
     std::pair<int, int> startPos = { enemyX, enemyZ };
-    std::pair<int, int> targetPos = { playerX, playerZ };
+    std::pair<int, int> targetPos = { targetX, targetZ };
 
     queue.push(startPos);
     cameFrom[startPos] = { -1, -1 }; // 始点
@@ -164,7 +174,7 @@ void Enemy::HandleAI()
         queue.pop();
 
         // 目標地点に到達した場合
-        if (current == targetPos) 
+        if (current == targetPos)
         {
             pathFound = true;
             break;
@@ -178,17 +188,17 @@ void Enemy::HandleAI()
             { 0, -1 }
         };
 
-        for (const auto& dir : directions) 
+        for (const auto& dir : directions)
         {
             int nextX = current.first + dir.first;
             int nextZ = current.second + dir.second;
             std::pair<int, int> nextPos = { nextX, nextZ };
 
             // マップ範囲内か確認
-            if (nextX >= 0 && nextX < WIDTH && nextZ >= 0 && nextZ < DEPTH) 
+            if (nextX >= 0 && nextX < WIDTH && nextZ >= 0 && nextZ < DEPTH)
             {
                 // すでに訪問済みでないことを確認
-                if (cameFrom.find(nextPos) == cameFrom.end()) 
+                if (cameFrom.find(nextPos) == cameFrom.end())
                 {
                     // 次の位置がターゲットの位置か、占有されていないかを確認
                     if (nextPos == targetPos || occupiedPositions.find(nextPos) == occupiedPositions.end())
@@ -206,14 +216,14 @@ void Enemy::HandleAI()
         // 経路を復元
         std::vector<std::pair<int, int>> path;
         auto current = targetPos;
-        while (current != startPos) 
+        while (current != startPos)
         {
             path.push_back(current);
             current = cameFrom[current];
         }
         std::reverse(path.begin(), path.end());
 
-        if (!path.empty()) 
+        if (!path.empty())
         {
             // 次に移動する位置を取得
             int nextX = path.front().first;
@@ -224,18 +234,20 @@ void Enemy::HandleAI()
             // 移動を試みる
             Move(dx, dz);
         }
-        else 
+        else
         {
             // 経路が存在するが移動できない場合はターン終了
             isTurnEnd_ = true;
         }
     }
-    else 
+    else
     {
         // 経路が見つからない場合はターン終了
         isTurnEnd_ = true;
     }
 }
+
+
 void Enemy::UpdateEasingMovement()
 {
     if (isEaseStart_) 
