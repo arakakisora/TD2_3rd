@@ -367,7 +367,7 @@ void GamePlayScene::Draw()
 	Object3DCommon::GetInstance()->CommonDraw();
 
 	//3Dオブジェクトの描画
-	MouseObject->Draw();
+//	MouseObject->Draw();
 	pField_->Draw();
 	playerManager_->Draw();
 
