@@ -17,6 +17,7 @@ void Enemy::Initialize(Object3DCommon* objectCommon, const std::string& filename
 	object3D_ = std::make_unique<Object3D>();
 	object3D_->Initialize(objectCommon);
 	object3D_->SetModel(filename);
+	object3D_->SetLighting(true);
 }
 
 void Enemy::Update()
