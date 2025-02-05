@@ -35,6 +35,9 @@ void GameClearScene::Initialize()
 	isFadeStart_ = false;
 	whiteAlpha_ = 1.0f;
 	blackAlpha_ = 0.0f;
+
+	// BGMの読み込みと再生
+	bgm_ = Audio::GetInstance()->SoundLoadWave("Resources/audio/gameclear/bgm.wav");
 }
 
 void GameClearScene::Finalize()
@@ -44,10 +47,23 @@ void GameClearScene::Finalize()
 	delete clearSprite_;
 	delete whiteSprite_;
 	delete blackSprite_;
+
+	Audio::GetInstance()->StopAudio();
 }
 
 void GameClearScene::Update()
 {
+	// BGMの再生
+	if (!isBgmPlay_)
+	{
+		Audio::GetInstance()->SoundPlayWave(bgm_);
+		isBgmPlay_ = true;
+	}
+	if (isBgmPlay_ && !Audio::GetInstance()->IsSoundPlaying())
+	{
+		isBgmPlay_ = false;
+	}
+
 	//スプライトの更新
 	clearSprite_->Update();
 	whiteSprite_->Update();

@@ -5,6 +5,8 @@
 #include "Camera.h"	
 #include <memory>
 
+#include "Audio.h"
+
 class GameOverScene :public BaseScene
 {
 public:
@@ -41,6 +43,9 @@ private:
 	// 透明度
 	float alpha_ = 0.0f;
 
+	// bgmのデータ
+	SoundData bgm_;
+	bool isBgmPlay_ = false;
 
 };
 

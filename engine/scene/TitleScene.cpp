@@ -62,15 +62,31 @@ void TitleScene::Initialize()
 	soccerBall_->Initialize(Object3DCommon::GetInstance());
 	soccerBall_->SetModel("soccerBall.obj");
 	soccerBall_->SetTranslate({ 0.3f,0.6f,21.0f });
+
+	//BGMの読み込みと再生
+	bgm_ = Audio::GetInstance()->SoundLoadWave("./Resources/audio/title/bgm.wav");
 }
 
 void TitleScene::Finalize()
 {
 	CameraManager::GetInstans()->RemoveCamera("title");
+
+	Audio::GetInstance()->StopAudio();
 }
 
 void TitleScene::Update()
 {
+	// BGMの再生
+	if (!isBgmPlay_)
+	{
+		Audio::GetInstance()->SoundPlayWave(bgm_);
+		isBgmPlay_ = true;
+	}
+	if (isBgmPlay_ && !Audio::GetInstance()->IsSoundPlaying())
+	{
+		isBgmPlay_ = false;
+	}
+
 	//カメラのアップデート
 	CameraManager::GetInstans()->GetActiveCamera()->Update();
 	//スプライトの更新
