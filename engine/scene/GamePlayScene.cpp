@@ -48,26 +48,12 @@ void GamePlayScene::Initialize()
 	ball = new Ball();
 	ball->Initialize();
 
-	//Playerの初期化
-	std::vector<int> initPosZ = { 0, 2, 4 };
-	for (int i = 0; i < initPosZ.size(); ++i) {
-		auto player = std::make_unique<Player>();
-		if(i ==0)
-		{
-			//１番目にボールを持たせる
-			player->Initialize(initPosZ[i], ball);
-		} else
-		{
-			player->Initialize(initPosZ[i]);
-		}
-		pPlayer_.push_back(std::move(player));
-	}
+	playerManager_ = std::make_unique<PlayerManager>();  // 追加
+	playerManager_->Initialize(ball);  // 追加
+	
 
 
-	// プレイヤーの位置をフィールドにセット
-	for (const auto& player : pPlayer_) {
-		pField_->SetPlayerPos(player->GetPosX(), player->GetPosY(), player->GetPosZ());
-	}
+	
 
 	//敵のモデル読み込み
 	ModelManager::GetInstans()->LoadModel("Enemy.obj");
@@ -75,7 +61,7 @@ void GamePlayScene::Initialize()
 	//エネミーマネージャー
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->SetField(pField_.get());
-	enemyManager_->SetPlayer(pPlayer_);
+	enemyManager_->SetPlayer(playerManager_->GetPlayers());  // プレイヤーをエネミーマネージャーにセット
 	enemyManager_->Initialize("Enemy.obj", 3);
 
 	//天球
@@ -107,9 +93,8 @@ void GamePlayScene::Finalize()
 	ball->Finalize();
 	delete ball;
 	// プレイヤーの終了処理
-	for (auto& player : pPlayer_) {
-		player->Finalize();
-	}
+	playerManager_->Finalize();
+
 
 	delete MouseObject;
 
@@ -129,6 +114,7 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update()
 {
+	
 	//カメラの更新
 	CameraManager::GetInstans()->GetActiveCamera()->Update();
 	mousePos = Input::GetInstans()->GetMouseWorldPosition(CameraManager::GetInstans()->GetActiveCamera()->GetTransform().translate.y);
@@ -144,14 +130,10 @@ void GamePlayScene::Update()
 
 	MouseObject->SetTranslate(mousePos);
 	MouseObject->Update();
-	// **プレイヤーのクリック処理を Player 側で処理**
-	if (Input::GetInstans()->TriggerMouse(0)) {
-		for (auto& player : pPlayer_) {
-			player->HandleMouseClick(mousePos, pField_.get(), selectedPlayer_,enemyManager_.get());
-		}
-	}
+	
 	CameraManager::GetInstans()->GetActiveCamera()->SetTranslate(cameraPos_);
 	CameraManager::GetInstans()->GetActiveCamera()->SetRotate(cameraRot_);
+	
 
 
 
@@ -161,28 +143,15 @@ void GamePlayScene::Update()
 	case TurnState::NONE:
 		break;
 	case TurnState::PLAYER:
-		for (auto& player : pPlayer_) {
-			player->Update();
-			// プレイヤーの位置をフィールドにセット
-			pField_->SetPlayerPos(player->GetPosX(), player->GetPosY(), player->GetPosZ());
+
+	
+		//playerManager_->UpdateTransform();
+		if (playerManager_->HasAnyPlayerMovedOrPassed()) {
+			turnState_ = TurnState::ENEMY;
+			enemyManager_->SetEnemyTurn(true);
+			playerManager_->ResetAllMoveAndPassFlags();
 		}
 
-		for (auto& player : pPlayer_) {
-
-			// ターン終了
-			//NOTE:今はエンターキーでターンを切り替える
-			if (player->GetHasMoved()||player->IsPassing())
-			{
-				turnState_ = TurnState::ENEMY;
-				
-				// エネミーのターン開始
-				enemyManager_->SetEnemyTurn(true);
-				player->ResetMoveFlag();
-				player->ResetPassFlag();
-			}
-
-
-		}
 
 		break;
 	case TurnState::ENEMY:
@@ -223,10 +192,8 @@ void GamePlayScene::Update()
 
 
 	//プレイヤーの３Dオブジェクトを更新
+	playerManager_->Update(pField_.get(), enemyManager_.get());
 
-	for (auto& player : pPlayer_) {
-		player->UpdateTransform();
-	}
 
 	//エネミーの３Dオブジェクトを更新
 	enemyManager_->UpdateTransform();
@@ -251,12 +218,12 @@ void GamePlayScene::Update()
 		isGameOverFadeStart_ = true;
 	}
 
-	// ------------テスト----------------
-	// プレイヤーの位置テスト
-	for (const auto& player : pPlayer_) {
-		Field::Pos prePlayerPos = { player->GetPrePosX(), player->GetPrePosY(), player->GetPrePosZ() };
-		pField_->SetBlockType(prePlayerPos.x, prePlayerPos.y, prePlayerPos.z, 0);
-	}
+	////// ------------テスト----------------
+	////// プレイヤーの位置テスト
+	//for (const auto& player : pPlayer_) {
+	//	Field::Pos prePlayerPos = { player->GetPrePosX(), player->GetPrePosY(), player->GetPrePosZ() };
+	//	pField_->SetBlockType(prePlayerPos.x, prePlayerPos.y, prePlayerPos.z, 0);
+	//}
 
 	// フィールド毎フレーム更新するやつ
 	for (int z = 0; z < DEPTH; z++)
@@ -307,9 +274,8 @@ void GamePlayScene::Update()
 
 
 #endif
-		for (const auto& player : pPlayer_) {
-			player->ImGui();
-		}
+		playerManager_->ImGui();
+
 		//ImGui::Text("prePlayerPos %d", &prePlayerPos_.x);
 
 
@@ -339,9 +305,8 @@ void GamePlayScene::Draw()
 	//3Dオブジェクトの描画
 	MouseObject->Draw();
 	pField_->Draw();
-	for (const auto& player : pPlayer_) {
-		player->Draw();
-	}
+	playerManager_->Draw();
+
 	// ボールの描画
 	ball->Draw();
 	
