@@ -16,7 +16,6 @@
 #include "skydome.h"
 #include "PlayerManager.h"  // 追加
 
-#include "skydome.h"
 
 class GamePlayScene :public BaseScene
 {
@@ -66,7 +65,7 @@ private:
 
 	//カメラのポインタ
 	Camera* pCamera_ = nullptr;
-	Vector3 cameraPos_ = Vector3(3.0f, -14.285f, 8.334f);
+	Vector3 cameraPos_ = Vector3(3.0f, -10.7f, 7.14f);
 	Vector3 cameraRot_ = Vector3(-2.015f, 0.0f, 0.0f);
 	// 3Dオブジェクト
 	std::vector<Object3D*> pFieldObject_ = {};

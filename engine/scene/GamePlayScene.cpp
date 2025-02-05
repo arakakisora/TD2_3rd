@@ -24,11 +24,11 @@ void GamePlayScene::Initialize()
 
 	ModelManager::GetInstans()->LoadModel("Field0.obj");
 
-
 	// フィールド
 
 	for (int z = 0; z < DEPTH; z++)
 	{
+
 		for (int x = 0; x < WIDTH; x++)
 		{
 			Object3D* pFieldObject = new Object3D();
@@ -263,7 +263,7 @@ void GamePlayScene::Update()
 		}
 		ImGui::DragFloat3("mousPos", &mousePos.x, 0.1f);
 
-		ImGui::SliderFloat3("cameraPos", &cameraPos_.x, -50.0f, 50.0f);
+		ImGui::SliderFloat3("cameraPos", &cameraPos_.x, -20.0f, 20.0f);
 		ImGui::SliderFloat3("cameraRot", &cameraRot_.x, -3.0f, 3.0f);
 
 		pField_->ImGui();
