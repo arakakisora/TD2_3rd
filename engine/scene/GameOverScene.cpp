@@ -31,6 +31,8 @@ void GameOverScene::Initialize()
 	isFadeStart_ = false;
 
 	alpha_ = 1.0f;
+
+	bgm_ = Audio::GetInstance()->SoundLoadWave("Resources/audio/gameover/bgm.wav");
 }
 
 void GameOverScene::Finalize()
@@ -44,6 +46,17 @@ void GameOverScene::Finalize()
 
 void GameOverScene::Update()
 {
+	// BGMの再生
+	if (!isBgmPlay_)
+	{
+		Audio::GetInstance()->SoundPlayWave(bgm_);
+		isBgmPlay_ = true;
+	}
+	if (isBgmPlay_ && !Audio::GetInstance()->IsSoundPlaying())
+	{
+		isBgmPlay_ = false;
+	}
+
 	gameOverSprite_->Update();
 	blackSprite_->Update();
 

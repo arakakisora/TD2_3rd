@@ -94,5 +94,6 @@ private:
 	float whiteAlpha_ = 0.0f;
 	// bgmのサウンドデータ
 	SoundData bgm_;
+	bool isBgmPlay_ = false;
 };
 

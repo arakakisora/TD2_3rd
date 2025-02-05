@@ -48,6 +48,7 @@ private:
 
 	// bgmのデータ
 	SoundData bgm_;
+	bool isBgmPlay_ = false;
 
 };
 

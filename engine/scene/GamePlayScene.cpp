@@ -84,7 +84,6 @@ void GamePlayScene::Initialize()
 
 	// BGMの読み込みと再生
 	bgm_ = Audio::GetInstance()->SoundLoadWave("Resources/audio/gameplay/bgm.wav");
-	Audio::GetInstance()->SoundPlayWave(bgm_);
 }
 
 void GamePlayScene::Finalize()
@@ -110,12 +109,22 @@ void GamePlayScene::Finalize()
 
 	delete whiteSprite_;
 	delete blackSprite_;
-
-	Audio::GetInstance()->SoundUnload(&bgm_);
 }
 
 void GamePlayScene::Update()
 {
+	// BGMの再生
+	if (!isBgmPlay_)
+	{
+		Audio::GetInstance()->SoundPlayWave(bgm_);
+		isBgmPlay_ = true;
+	}
+	if (isBgmPlay_ && !Audio::GetInstance()->IsSoundPlaying())
+	{
+		isBgmPlay_ = false;
+	}
+
+	Audio::GetInstance()->SetPlaybackSpeed(3.0f);
 	
 	//カメラの更新
 	CameraManager::GetInstans()->GetActiveCamera()->Update();

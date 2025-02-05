@@ -75,7 +75,7 @@ public:
 	/*-----------------[ サウンド ]------------------*/
 	//BGM
 	SoundData bgm_;
-
+	bool isBgmPlay_ = false;
 
 	Sprite* titleSprite_ = nullptr;
 	Sprite* blackSprite_ = nullptr;
