@@ -60,8 +60,9 @@ void GamePlayScene::Initialize()
 
 	//エネミーマネージャー
 	enemyManager_ = std::make_unique<EnemyManager>();
-	enemyManager_->SetField(pField_.get());
-	enemyManager_->SetPlayer(playerManager_->GetPlayers());  // プレイヤーをエネミーマネージャーにセット
+	enemyManager_->SetField(pField_.get());						// フィールドをエネミーマネージャーにセット
+	enemyManager_->SetPlayer(playerManager_->GetPlayers());		// プレイヤーをエネミーマネージャーにセット
+	enemyManager_->SetBall(ball);								// ボールをエネミーマネージャーにセット
 	enemyManager_->Initialize("Enemy.obj", 3);
 
 	//天球
@@ -229,6 +230,10 @@ void GamePlayScene::Update()
 		
 	}
 	if (enemyManager_->IsSandwiching() && turnState_ == TurnState::PLAYER)
+	{
+		isGameOverFadeStart_ = true;
+	}
+	if (enemyManager_->IsBallStolen())
 	{
 		isGameOverFadeStart_ = true;
 	}
