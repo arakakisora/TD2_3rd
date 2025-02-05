@@ -38,6 +38,16 @@ void PlayerManager::Update(Field* field, EnemyManager* enemyManager) {
             player->HandleMouseClick(mousePos, field, selectedPlayer_, enemyManager,this);
         }
     }
+
+	//ゴールしたか判定
+	for (const auto& player : players_)
+	{
+		if (player->GetPosX() == WIDTH - 1 && player->HasBall())
+		{
+			isGoal_ = true;
+			break;
+		}
+	}
 }
 
 void PlayerManager::Draw() {

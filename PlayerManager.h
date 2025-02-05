@@ -33,10 +33,12 @@ public:
 
     Ball* GetBall() { return ball_; }
 
-
+	// ゴールしたか判定
+	bool IsGoal() const { return isGoal_; }
 
 private:
     std::vector<std::unique_ptr<Player>> players_;
     Player* selectedPlayer_ = nullptr;
 	Ball* ball_ = nullptr;
+    bool isGoal_ = false;
 };
