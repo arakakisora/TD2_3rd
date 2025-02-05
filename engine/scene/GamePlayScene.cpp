@@ -64,6 +64,10 @@ void GamePlayScene::Initialize()
 	enemyManager_->SetPlayer(playerManager_->GetPlayers());  // プレイヤーをエネミーマネージャーにセット
 	enemyManager_->Initialize("Enemy.obj", 3);
 
+	//天球
+	skydome_ = std::make_unique<skydome>();
+	skydome_->Initialize(Object3DCommon::GetInstance(), "skydome.obj");
+
 	//スプライトの生成
 	whiteSprite_ = new Sprite();
 	whiteSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/white.png");
@@ -209,6 +213,9 @@ void GamePlayScene::Update()
 	//エネミーの３Dオブジェクトを更新
 	enemyManager_->UpdateTransform();
 
+	// 天球の更新
+	skydome_->Update();
+
 	// ゴール判定
 	if (pField_->IsGoal())
 	{
@@ -320,6 +327,9 @@ void GamePlayScene::Draw()
 	
 	//エネミーの描画
 	enemyManager_->Draw();
+
+	// 天球の描画
+	skydome_->Draw();
 
 #pragma endregion
 
