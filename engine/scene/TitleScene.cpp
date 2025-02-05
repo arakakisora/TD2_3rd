@@ -22,8 +22,17 @@ void TitleScene::Initialize()
 	blackSprite_->SetSize({ 1280.0f,720.0f });
 	blackSprite_->setColor({ 1.0f,1.0f,1.0f,0.0f });
 
+	description1Sprite_ = std::make_unique<Sprite>();
+	description1Sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/setumei.png");
+	description1Sprite_->SetSize({ 1280.0f,720.0f });
+
+	description2Sprite_ = std::make_unique<Sprite>();
+	description2Sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/setumei2.png");
+	description2Sprite_->SetSize({ 1280.0f,720.0f });
 
 	isSceneStart_ = true;
+	crick1_ = false;
+	crick2_ = false;
 	isFadeStart_ = false;
 	isChangeScene_ = false;
 	alpha_ = 1.0f;
@@ -93,13 +102,25 @@ void TitleScene::Update()
 	//スプライトの更新
 	titleSprite_->Update();
 	blackSprite_->Update();
-
+	description1Sprite_->Update();
+	description2Sprite_->Update();
 
 	Fade();
 
 	if (Input::GetInstans()->TriggerKey(DIK_SPACE))
 	{
-		isFadeStart_ = true;
+		if (crick2_)
+		{
+			isFadeStart_ = true;
+		}
+		if (crick1_)
+		{
+			crick2_ = true;
+		}
+		if (!crick1_)
+		{
+			crick1_ = true;
+		}
 	}
 
 	if (isChangeScene_)
@@ -138,6 +159,14 @@ void TitleScene::Draw()
 
 	//スプライトの描画
 	titleSprite_->Draw();
+	if (crick1_)
+	{
+		description1Sprite_->Draw();
+	}
+	if (crick2_)
+	{
+		description2Sprite_->Draw();
+	}
 	blackSprite_->Draw();
 
 }
