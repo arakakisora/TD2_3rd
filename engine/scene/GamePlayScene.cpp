@@ -123,6 +123,11 @@ void GamePlayScene::Update()
 				Audio::GetInstance()->ResumeAudio();
 			}
 
+			//音楽を止める
+			if (ImGui::Button("Stop Sound")) {
+				Audio::GetInstance()->StopAudio();
+			}
+
 			//再生速度の設定
 			
 			ImGui::SliderFloat("PlaybackSpeed", &playbackSpeed, 0.1f, 10.0f);
