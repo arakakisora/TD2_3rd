@@ -121,11 +121,11 @@ void Player::Finalize()
 
 void Player::Move(int WIDTH, int DEPTH, PlayerManager* playerManager)
 {
-	// キー入力に応じてプレイヤーの位置を更新
-	if (Input::GetInstans()->TriggerKey(DIK_S) && posZ < DEPTH - 1) { posZ += 1; }
-	if (Input::GetInstans()->TriggerKey(DIK_W) && posZ > 0) { posZ -= 1; }
-	if (Input::GetInstans()->TriggerKey(DIK_A) && posX > 0) { posX -= 1; }
-	if (Input::GetInstans()->TriggerKey(DIK_D) && posX < WIDTH - 1) { posX += 1; }
+	//// キー入力に応じてプレイヤーの位置を更新
+	//if (Input::GetInstans()->TriggerKey(DIK_S) && posZ < DEPTH - 1) { posZ += 1; }
+	//if (Input::GetInstans()->TriggerKey(DIK_W) && posZ > 0) { posZ -= 1; }
+	//if (Input::GetInstans()->TriggerKey(DIK_A) && posX > 0) { posX -= 1; }
+	//if (Input::GetInstans()->TriggerKey(DIK_D) && posX < WIDTH - 1) { posX += 1; }
 
 	// プレイヤーの位置を更新
 	playerData.position = Vector3(static_cast<float>(posX), -0.5f, static_cast<float>(posZ));
